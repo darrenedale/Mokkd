@@ -14,15 +14,9 @@ interface Expectation
     /** Match the expectation against some arguments, and provide the matched return value. */
     public function match(mixed ...$args): mixed;
 
-    /** How many times was the expectation matched? */
-    public function matched(): int;
-
-    /** How many times is this expectation expected to match. */
-    public function expected(): int;
-
     /** Has the expectation been satisfied? */
     public function isSatisfied(): bool;
 
     /** The message indicating the expectation isn't satisified. */
-    public function notSatisfiedMessage(): string;
+    public function message(): string;
 }

@@ -9,9 +9,9 @@ use Mokkd\Contracts\Matcher;
 /**
  * @template T
  *
- * An argument matcher that requires the actual value to be identical to an expected value.
+ * An argument matcher that requires the actual value to be equal to an expected value.
  */
-class Identity implements Matcher
+class Equality implements Matcher
 {
     /** @var T The expected value. */
     private mixed $expected;
@@ -25,6 +25,6 @@ class Identity implements Matcher
     /** @param mixed $actual The actual value to match. */
     public function matches(mixed $actual): bool
     {
-        return $actual === $this->expected;
+        return $actual == $this->expected;
     }
 }

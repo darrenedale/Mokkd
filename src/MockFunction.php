@@ -8,6 +8,7 @@ use Closure;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\MockFunction as MockFunctionContract;
 use Mokkd\Contracts\Expectation as ExpectationContract;
+use Mokkd\Exceptions\FunctionException;
 use Mokkd\Expectations\AbstractExpectation;
 use Mokkd\Expectations\Expectation;
 use Mokkd\Expectations\ReturnMode;
@@ -15,7 +16,6 @@ use Mokkd\Matchers\Identity;
 use Mokkd\Utilities\Guard;
 use ReflectionException;
 use ReflectionFunction;
-use RuntimeException;
 
 use function uopz_get_return;
 use function uopz_set_return;
@@ -46,8 +46,7 @@ class MockFunction implements MockFunctionContract
         try {
             $this->reflector = new ReflectionFunction($this->functionName);
         } catch (ReflectionException $err) {
-            // TODO use our own exception class
-            throw new RuntimeException("Expected valid function name, found '{$functionName}'", previous: $err);
+            throw new FunctionException($functionName, "Expected valid function name, found '{$functionName}'", previous: $err);
         }
 
         // UOPZ requires a Closure, not just an invocable
@@ -67,7 +66,7 @@ class MockFunction implements MockFunctionContract
         foreach ($this->expectations as $expectation) {
             if (
                 $expectation->matches(...$args)
-                && (!$this->consuming || $expectation->matched() < $expectation->expected())
+                && (!$this->consuming || !$expectation->isSatisfied())
             ) {
                 return $expectation->match(...$args);
             }
@@ -175,6 +174,12 @@ class MockFunction implements MockFunctionContract
         return $this;
     }
 
+    public function blocking(): self
+    {
+        $this->blocking = true;
+        return $this;
+    }
+
     public function withoutBlocking(): self
     {
         $this->blocking = false;
@@ -184,6 +189,12 @@ class MockFunction implements MockFunctionContract
     public function consuming(): self
     {
         $this->consuming = true;
+        return $this;
+    }
+
+    public function withoutConsuming(): self
+    {
+        $this->consuming = false;
         return $this;
     }
 

@@ -18,7 +18,7 @@ class Any extends AbstractExpectation
         return $this->expectedCount === ExpectationContract::UnlimitedTimes || $this->matchCount === $this->expectedCount;
     }
 
-    public function notSatisfiedMessage(): string
+    public function message(): string
     {
         return "({any arguments}) expected to be called exactly {$this->expectedCount} time(s) but called {$this->matchCount} time(s)";
     }

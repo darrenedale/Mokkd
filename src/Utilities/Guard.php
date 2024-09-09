@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Mokkd\Utilities;
 
-/** Scope guard. */
+/**
+ * Scope guard.
+ *
+ * Invokes a callable when the guard goes out of scope.
+ */
 final class Guard
 {
     private $fn;

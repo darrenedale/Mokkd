@@ -45,7 +45,7 @@ class Core
     {
         foreach ($mock->expectations() as $expectation) {
             if (!$expectation->isSatisfied()) {
-                throw new ExpectationNotMatchedException("{$mock->name()}{$expectation->notSatisfiedMessage()}");
+                throw new ExpectationNotMatchedException("{$mock->name()}{$expectation->message()}");
             }
         }
     }

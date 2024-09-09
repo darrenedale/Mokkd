@@ -43,7 +43,7 @@ class Expectation extends AbstractExpectation implements ExpectationContract
         return $this->expectedCount === ExpectationContract::UnlimitedTimes || $this->matchCount === $this->expectedCount;
     }
 
-    public function notSatisfiedMessage(): string
+    public function message(): string
     {
         return "(" . implode(", ", Core::serialiser()->serialise(...$this->expectedArgs)) . ") expected to be called exactly {$this->expectedCount} time(s) but called {$this->matchCount} time(s)";
     }
