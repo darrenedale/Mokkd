@@ -1,0 +1,11 @@
+{
+  "require": {
+    "php": "^8.2",
+    "ext-uopz": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Mokkd\\": "src"
+    }
+  }
+}
