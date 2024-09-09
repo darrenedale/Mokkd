@@ -12,6 +12,14 @@ use Mokkd\Expectations\AbstractExpectation;
 use Mokkd\Expectations\Expectation;
 use Mokkd\Expectations\ReturnMode;
 use Mokkd\Matchers\Identity;
+use Mokkd\Utilities\Guard;
+use ReflectionException;
+use ReflectionFunction;
+use RuntimeException;
+
+use function uopz_get_return;
+use function uopz_set_return;
+use function uopz_unset_return;
 
 class MockFunction implements MockFunctionContract
 {
@@ -25,48 +33,56 @@ class MockFunction implements MockFunctionContract
 
     private ?AbstractExpectation $currentExpectation = null;
 
+    private bool $blocking = true;
+
+    private bool $consuming = false;
+
+    private ReflectionFunction $reflector;
+
     public function __construct(string $functionName)
     {
         $this->functionName = strtolower($functionName);
+
+        try {
+            $this->reflector = new ReflectionFunction($this->functionName);
+        } catch (ReflectionException $err) {
+            // TODO use our own exception class
+            throw new RuntimeException("Expected valid function name, found '{$functionName}'", previous: $err);
+        }
+
+        // UOPZ requires a Closure, not just an invocable
         $mock = $this;
-
         $this->fn = fn(mixed ...$args) => $mock(...$args);
-//        $this->fn = (function(mixed ...$args) use ($mock): mixed {
-//            foreach ($mock->expectations as $expectation) {
-//                if ($expectation->matches(...$args)) {
-//                    return $expectation->match(...$args);
-//                }
-//            }
-//
-//            throw new ExpectationNotMatchedException();
-//        })->bindTo($this);
-
-        uopz_set_return($functionName, $this->fn, true);
+        $this->install();
     }
 
     public function __destruct()
     {
-        $this->remove();
+        $this->uninstall();
     }
 
-    public function __invoke(mixed ...$args): mixed
+    /** @return mixed|void */
+    public function __invoke(mixed ...$args)
     {
         foreach ($this->expectations as $expectation) {
-            if ($expectation->matches(...$args)) {
+            if (
+                $expectation->matches(...$args)
+                && (!$this->consuming || $expectation->matched() < $expectation->expected())
+            ) {
                 return $expectation->match(...$args);
             }
         }
 
-        throw new ExpectationNotMatchedException();
+        if (!$this->blocking) {
+            return $this->callOriginal(...$args);
+        }
+
+        throw new ExpectationNotMatchedException("No matching expectation found for function call {$this->functionName}(" . implode(", ", Core::serialiser()->serialise(...$args)) . ")");
     }
 
     private static function createMatcher(mixed $expected): MatcherContract
     {
-        if ($expected instanceof MatcherContract) {
-            return $expected;
-        }
-
-        return new Identity($expected);
+        return ($expected instanceof MatcherContract ? $expected : new Identity($expected));
     }
 
     private function checkAndCreateExpectation(): void
@@ -75,6 +91,25 @@ class MockFunction implements MockFunctionContract
             $this->currentExpectation = Expectation::any();
             $this->expectations[] = $this->currentExpectation;
         }
+    }
+
+    /** @return mixed|void */
+    private function callOriginal(mixed ...$args)
+    {
+        // always reinstall the mock no matter how we exit this method
+        $guard = new Guard(fn() => $this->install());
+        $this->uninstall();
+
+        if (!$this->reflector->hasReturnType() || "void" !== (string) $this->reflector->getReturnType()) {
+            return ($this->functionName)(...$args);
+        }
+
+        ($this->functionName)(...$args);
+    }
+
+    public function name(): string
+    {
+        return $this->functionName;
     }
 
     public function expects(...$args): self
@@ -87,28 +122,28 @@ class MockFunction implements MockFunctionContract
     public function once(): self
     {
         $this->checkAndCreateExpectation();
-        $this->currentExpectation->setExpectedCount(1);
+        $this->currentExpectation->setExpected(1);
         return $this;
     }
 
     public function twice(): self
     {
         $this->checkAndCreateExpectation();
-        $this->currentExpectation->setExpectedCount(1);
+        $this->currentExpectation->setExpected(2);
         return $this;
     }
 
     public function times(int $times): MockFunctionContract
     {
         $this->checkAndCreateExpectation();
-        $this->currentExpectation->setExpectedCount($times);
+        $this->currentExpectation->setExpected($times);
         return $this;
     }
 
     public function never(): MockFunctionContract
     {
         $this->checkAndCreateExpectation();
-        $this->currentExpectation->setExpectedCount(0);
+        $this->currentExpectation->setExpected(0);
         return $this;
     }
 
@@ -140,16 +175,38 @@ class MockFunction implements MockFunctionContract
         return $this;
     }
 
-    public function remove(): void
+    public function withoutBlocking(): self
+    {
+        $this->blocking = false;
+        return $this;
+    }
+
+    public function consuming(): self
+    {
+        $this->consuming = true;
+        return $this;
+    }
+
+    public function uninstall(): void
     {
         if ($this->fn === uopz_get_return($this->functionName)) {
             uopz_unset_return($this->functionName);
         }
     }
 
+    protected function install(): void
+    {
+        uopz_set_return($this->functionName, $this->fn, true);
+    }
+
     public function addExpectation(ExpectationContract $expectation): self
     {
         $this->expectations[] = $expectation;
         return $this;
+    }
+
+    public function expectations(): array
+    {
+        return $this->expectations;
     }
 }

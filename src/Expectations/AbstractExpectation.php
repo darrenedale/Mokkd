@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace Mokkd\Expectations;
 
-use Mokkd\Contracts\Expectation;
+use Mokkd\Contracts\Expectation as ExpectationContract;
 use Mokkd\ExpectationNotMatchedException;
 use LogicException;
 
-abstract class AbstractExpectation implements Expectation
+abstract class AbstractExpectation implements ExpectationContract
 {
-    public const UnlimitedTimes = -1;
-
     private ReturnMode $returnMode;
 
     private mixed $returnValue;
 
-    private int $matchCount = 0;
+    protected int $matchCount = 0;
 
-    private int $expectedCount = self::UnlimitedTimes;
+    protected int $expectedCount = self::UnlimitedTimes;
 
     protected function mappedReturnKeyForArguments(mixed ...$args): string|int
     {
@@ -46,13 +44,13 @@ abstract class AbstractExpectation implements Expectation
         return $this->matchCount;
     }
 
-    public function setExpectedCount(int $count): void
+    public function setExpected(int $count): void
     {
-        assert(self::UnlimitedTimes === $count || 0 <= $count, new LogicException("Expected \$count >= 0 or == AbstractExpectation::UnlimitedTimes, found {$count}"));
+        assert(self::UnlimitedTimes === $count || 0 <= $count, new LogicException("Expected \$count >= 0 or == ExpectationContract::UnlimitedTimes, found {$count}"));
         $this->expectedCount = $count;
     }
 
-    public function expectedCount(): int
+    public function expected(): int
     {
         return $this->expectedCount;
     }

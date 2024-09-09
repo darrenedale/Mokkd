@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Mokkd\Expectations;
 
+use Mokkd\Contracts\Expectation as ExpectationContract;
 use Mokkd\Contracts\Matcher as MatcherContract;
+use Mokkd\Core;
 
-class Expectation extends AbstractExpectation
+class Expectation extends AbstractExpectation implements ExpectationContract
 {
     /** @var MatcherContract[] $expectedArgs  */
     private array $expectedArgs;
@@ -35,4 +37,15 @@ class Expectation extends AbstractExpectation
 
         return true;
     }
+
+    public function isSatisfied(): bool
+    {
+        return $this->expectedCount === ExpectationContract::UnlimitedTimes || $this->matchCount === $this->expectedCount;
+    }
+
+    public function notSatisfiedMessage(): string
+    {
+        return "(" . implode(", ", Core::serialiser()->serialise(...$this->expectedArgs)) . ") expected to be called exactly {$this->expectedCount} time(s) but called {$this->matchCount} time(s)";
+    }
 }
+
