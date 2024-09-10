@@ -38,7 +38,7 @@ interface MockFunction
     public function returningFrom(array $values): self;
 
     /** Set the expectation to return a value mapped from an associative array when the expectation matches. */
-    public function returningMappedValueFrom(array $values): self;
+    public function returningMappedValueFrom(array $values, int|Mapper $mapper): self;
 
     /**
      * Set the expectation to return a value provided by a callable.

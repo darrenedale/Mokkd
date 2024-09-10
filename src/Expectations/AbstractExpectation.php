@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Mokkd\Expectations;
 
 use Mokkd\Contracts\Expectation as ExpectationContract;
+use Mokkd\Contracts\Mapper;
+use Mokkd\Contracts\Mapper as MapperContract;
 use Mokkd\Core as Mokkd;
 use Mokkd\Exceptions\ExpectationException;
 use Mokkd\ExpectationNotMatchedException;
@@ -14,16 +16,13 @@ abstract class AbstractExpectation implements ExpectationContract
 {
     private ReturnMode $returnMode;
 
+    private ?MapperContract $mapper = null;
+
     private mixed $returnValue;
 
     protected int $matchCount = 0;
 
     protected int $expectedCount = self::UnlimitedTimes;
-
-    protected function mappedReturnKeyForArguments(mixed ...$args): string|int
-    {
-        return "";
-    }
 
     public function match(...$args): mixed
     {
@@ -37,7 +36,7 @@ abstract class AbstractExpectation implements ExpectationContract
             ReturnMode::Value => $this->returnValue,
             ReturnMode::Callback => ($this->returnValue)(...$args),
             ReturnMode::Sequential => $this->returnValue[($this->matchCount - 1) % count($this->returnValue)],
-            ReturnMode::Mapped => $this->returnValue[$this->mappedReturnKeyForArguments(...$args)],
+            ReturnMode::Mapped => $this->returnValue[$this->mapper->mapKey(...$args)],
         };
     }
 
@@ -77,20 +76,22 @@ abstract class AbstractExpectation implements ExpectationContract
         $this->returnMode = ReturnMode::Sequential;
     }
 
-    protected function setReturnMap(mixed $map): void
+    protected function setReturnMap(mixed $map, MapperContract $mapper): void
     {
         assert(is_array($map), new LogicException("Expecting valid map"));
         $this->returnValue = $map;
         $this->returnMode = ReturnMode::Mapped;
     }
 
-    public function setReturn(mixed $returnValue, ReturnMode $returnMode = ReturnMode::Value): void
+    public function setReturn(mixed $returnValue, ReturnMode $returnMode = ReturnMode::Value, ?MapperContract $mapper = null): void
     {
+        assert(ReturnMode::Mapped !== $returnMode || $mapper instanceof MapperContract, new LogicException("A Mapper must be provided when the return mode is Mapped"));
+
         match ($returnMode) {
             ReturnMode::Value => $this->setReturnValue($returnValue),
             ReturnMode::Callback => $this->setReturnCallback($returnValue),
             ReturnMode::Sequential => $this->setReturnArray($returnValue),
-            ReturnMode::Mapped => $this->setReturnMap($returnValue),
+            ReturnMode::Mapped => $this->setReturnMap($returnValue, $mapper),
         };
     }
 }
