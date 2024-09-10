@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mokkd\Matchers;
 
 use DateTimeInterface;
+use Mokkd;
 use Mokkd\Contracts\Matcher;
 
 /**
@@ -35,5 +36,11 @@ class Between implements Matcher
     public function matches(mixed $actual): bool
     {
         return !($this->lowerBound > $actual) && !($actual > $this->upperBound);
+    }
+
+    public function __toString(): string
+    {
+        $serialiser = Mokkd::serialiser();
+        return "value between {$serialiser->serialise($this->lowerBound)} and {$serialiser->serialise($this->upperBound)}";
     }
 }

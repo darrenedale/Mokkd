@@ -38,7 +38,7 @@ interface MockFunction
     public function returningFrom(array $values): self;
 
     /** Set the expectation to return a value mapped from an associative array when the expectation matches. */
-    public function returningMappedValueFrom(array $values, int|Mapper $mapper): self;
+    public function returningMappedValueFrom(array $map, int|KeyMapper $keyMapper): self;
 
     /**
      * Set the expectation to return a value provided by a callable.
@@ -98,4 +98,11 @@ interface MockFunction
 
     /** @return Expectation[] */
     public function expectations(): array;
+
+    /**
+     * Verify all the mock's expectations.
+     *
+     * If any expectation is not satisfied, an ExpectationException is thrown.
+     */
+    public function verifyExpectations(): void;
 }

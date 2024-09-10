@@ -8,7 +8,7 @@ use Mokkd\Contracts\Matcher;
 
 /**
  * @template T
- * An argument matcher that feeds the actual value to a callback to determine whther it matches.
+ * An argument matcher that feeds the actual value to a callback to determine whether it matches.
  */
 class Callback implements Matcher
 {
@@ -25,5 +25,10 @@ class Callback implements Matcher
     public function matches(mixed $actual): bool
     {
         return ($this->fn)($actual);
+    }
+
+    public function __toString(): string
+    {
+        return "(callback matcher)";
     }
 }

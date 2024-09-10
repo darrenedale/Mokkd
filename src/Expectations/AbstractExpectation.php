@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace Mokkd\Expectations;
 
-use Mokkd\Contracts\Expectation as ExpectationContract;
-use Mokkd\Contracts\Mapper;
-use Mokkd\Contracts\Mapper as MapperContract;
-use Mokkd\Core as Mokkd;
-use Mokkd\Exceptions\ExpectationException;
-use Mokkd\ExpectationNotMatchedException;
 use LogicException;
+use Mokkd\Contracts\Expectation as ExpectationContract;
+use Mokkd\Contracts\KeyMapper as KeyMapperContract;
+use Mokkd\Exceptions\ExpectationException;
+use Mokkd;
 
 abstract class AbstractExpectation implements ExpectationContract
 {
     private ReturnMode $returnMode;
 
-    private ?MapperContract $mapper = null;
+    private ?KeyMapperContract $mapper = null;
 
     private mixed $returnValue;
 
@@ -76,16 +74,16 @@ abstract class AbstractExpectation implements ExpectationContract
         $this->returnMode = ReturnMode::Sequential;
     }
 
-    protected function setReturnMap(mixed $map, MapperContract $mapper): void
+    protected function setReturnMap(mixed $map, KeyMapperContract $mapper): void
     {
         assert(is_array($map), new LogicException("Expecting valid map"));
         $this->returnValue = $map;
         $this->returnMode = ReturnMode::Mapped;
     }
 
-    public function setReturn(mixed $returnValue, ReturnMode $returnMode = ReturnMode::Value, ?MapperContract $mapper = null): void
+    public function setReturn(mixed $returnValue, ReturnMode $returnMode = ReturnMode::Value, ?KeyMapperContract $mapper = null): void
     {
-        assert(ReturnMode::Mapped !== $returnMode || $mapper instanceof MapperContract, new LogicException("A Mapper must be provided when the return mode is Mapped"));
+        assert(ReturnMode::Mapped !== $returnMode || $mapper instanceof KeyMapperContract, new LogicException("A Mapper must be provided when the return mode is Mapped"));
 
         match ($returnMode) {
             ReturnMode::Value => $this->setReturnValue($returnValue),

@@ -6,6 +6,9 @@
   "autoload": {
     "psr-4": {
       "Mokkd\\": "src"
-    }
+    },
+    "files": [
+      "src/Mokkd.php"
+    ]
   }
 }

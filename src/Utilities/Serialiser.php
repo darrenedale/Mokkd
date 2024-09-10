@@ -42,12 +42,12 @@ class Serialiser implements SerialiserContract
 
     private function serialiseArray(array $values): string
     {
-        return "[" . implode(",", array_map([self::class, "serialiseValue"], $values)) . "]";
+        return "[" . implode(",", array_map([self::class, "serialise"], $values)) . "]";
     }
 
     private function serialiseObject(object $value): string
     {
-        $serialised = "({$value::class})";
+        $serialised = "(" . get_class($value) . ")";
 
         if ($value instanceof Stringable) {
             $serialised .= " {$this->elideString((string) $value)}";
@@ -61,7 +61,12 @@ class Serialiser implements SerialiserContract
         return "(resource [" . get_resource_type($value) . "]) @" . get_resource_id($value);
     }
 
-    public function serialiseValue(mixed $value): string
+    private function serialiseNull(null $value): string
+    {
+        return "NULL";
+    }
+
+    public function serialise(mixed $value): string
     {
         $type = get_debug_type($value);
 
@@ -71,13 +76,13 @@ class Serialiser implements SerialiserContract
             "float" => $this->serialiseFloat($value),
             "bool" => $this->serialiseBool($value),
             "array" => $this->serialiseArray($value),
-            default => (str_starts_with($type, "resource ") ? $this->serialiseResource($value) : $this->serialiseObject($value)),
+            "null" => $this->serialiseNull($value),
+            "resource (closed)" => $this->serialiseResource($value),
+            "class@anonymous" => $this->serialiseObject($value),
+            default => match (true) {
+                str_starts_with($type, "resource") => $this->serialiseResource($value),
+                default => $this->serialiseObject($value),
+            },
         };
-    }
-
-    /** @return string[] */
-    public function serialise(mixed ...$args): array
-    {
-        return array_map([self::class, "serialiseValue"], ...$args);
     }
 }

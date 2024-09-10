@@ -1,14 +1,14 @@
 services:
-  cli:
-    container_name: divion-cli
+  mokkd:
+    container_name: mokkd
     image: darrenedale/equit:php-8.2-cli
     tty: true
     stdin_open: true
     volumes:
-      - ./:/divion
-    working_dir: /divion
+      - ./:/mokkd
+    working_dir: /mokkd
     environment:
-      PHP_IDE_CONFIG: serverName=Divion
+      PHP_IDE_CONFIG: serverName=Mokkd
       XDEBUG_CONFIG: "client_host=xdebug-client"
     extra_hosts:
       - "xdebug-client:host-gateway"

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers;
 
+use Mokkd;
 use Mokkd\Contracts\Matcher;
 
 /**
@@ -26,5 +27,10 @@ class Identity implements Matcher
     public function matches(mixed $actual): bool
     {
         return $actual === $this->expected;
+    }
+
+    public function __toString(): string
+    {
+        return Mokkd::serialiser()->serialise($this->expected);
     }
 }

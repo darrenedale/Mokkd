@@ -6,6 +6,6 @@ namespace Mokkd\Contracts;
 
 interface Serialiser
 {
-    /** @return string[] */
-    public function serialise(mixed ...$args): array;
+    /** @return string */
+    public function serialise(mixed $value): string;
 }

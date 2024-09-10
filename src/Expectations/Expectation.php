@@ -5,17 +5,17 @@ namespace Mokkd\Expectations;
 
 use Mokkd\Contracts\Expectation as ExpectationContract;
 use Mokkd\Contracts\Matcher as MatcherContract;
-use Mokkd\Core;
+use Mokkd;
 
 class Expectation extends AbstractExpectation implements ExpectationContract
 {
-    /** @var MatcherContract[] $expectedArgs  */
-    private array $expectedArgs;
+    /** @var MatcherContract[] $argumentMatchers  */
+    private array $argumentMatchers;
 
     /** @param MatcherContract[] $expectedArgs */
     public function __construct(mixed ...$expectedArgs)
     {
-        $this->expectedArgs = $expectedArgs;
+        $this->argumentMatchers = $expectedArgs;
     }
 
     public static function any(): Any
@@ -25,12 +25,12 @@ class Expectation extends AbstractExpectation implements ExpectationContract
 
     public function matches(...$args): bool
     {
-        if (count($args) !== count($this->expectedArgs)) {
+        if (count($args) !== count($this->argumentMatchers)) {
             return false;
         }
 
         for ($idx = 0; $idx < count($args); $idx++) {
-            if (!$this->expectedArgs[$idx]->matches($args[$idx])) {
+            if (!$this->argumentMatchers[$idx]->matches($args[$idx])) {
                 return false;
             }
         }
@@ -45,7 +45,8 @@ class Expectation extends AbstractExpectation implements ExpectationContract
 
     public function message(): string
     {
-        return "(" . implode(", ", Core::serialiser()->serialise(...$this->expectedArgs)) . ") expected to be called exactly {$this->expectedCount} time(s) but called {$this->matchCount} time(s)";
+        $arguments = array_map(static fn(MatcherContract $matcher): string => (string) $matcher, $this->argumentMatchers);
+        return "(" . implode(", ", $arguments) . ") expected to be called exactly {$this->expectedCount} time(s) but called {$this->matchCount} time(s)";
     }
 }
 
