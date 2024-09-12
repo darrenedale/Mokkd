@@ -80,7 +80,7 @@ class Serialiser implements SerialiserContract
             "resource (closed)" => $this->serialiseResource($value),
             "class@anonymous" => $this->serialiseObject($value),
             default => match (true) {
-                str_starts_with($type, "resource") => $this->serialiseResource($value),
+                str_starts_with($type, "resource (") => $this->serialiseResource($value),
                 default => $this->serialiseObject($value),
             },
         };

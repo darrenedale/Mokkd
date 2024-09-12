@@ -22,9 +22,9 @@ class Mokkd
      * TODO Functions in namespaces don't currently work - need to check UOPZ for why.
      *
      * @param string $functionName The name of the function to mock.
-     * @return MockFunctionContract
+     * @return MockFunction
      */
-    public static function func(string $functionName): MockFunctionContract
+    public static function func(string $functionName): MockFunction
     {
         $key = strtolower($functionName);
 

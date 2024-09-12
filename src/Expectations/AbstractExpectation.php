@@ -25,7 +25,7 @@ abstract class AbstractExpectation implements ExpectationContract
     public function match(...$args): mixed
     {
         if (!$this->matches(...$args)) {
-            throw new ExpectationException($this, sprintf("Expectation does not match arguments (%s)", implode(', ', Mokkd::serialiser()->serialise(...$args))));
+            throw new ExpectationException($this, sprintf("Expectation does not match arguments (%s)", implode(", ", Mokkd::serialiser()->serialise(...$args))));
         }
 
         ++$this->matchCount;

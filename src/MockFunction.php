@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mokkd;
 
 use Closure;
+use Mokkd\Contracts\ExpectationBuilder as ExpectationBuilderContract;
 use Mokkd\Contracts\Expectation as ExpectationContract;
 use Mokkd\Contracts\KeyMapper as KeyMapperContract;
 use Mokkd\Contracts\Matcher as MatcherContract;
@@ -19,8 +20,8 @@ use Mokkd\Matchers\Identity;
 use Mokkd\Utilities\Guard;
 use ReflectionException;
 use ReflectionFunction;
-
 use SplFileInfo;
+
 use function uopz_get_return;
 use function uopz_set_return;
 use function uopz_unset_return;
@@ -34,7 +35,7 @@ use function uopz_unset_return;
  *
  * Currently, all expectations match based on positional arguments - named arguments are not supported.
  */
-class MockFunction implements MockFunctionContract
+class MockFunction implements MockFunctionContract, ExpectationBuilderContract
 {
     /** @var string $functionName The mocked function. */
     private string $functionName;
@@ -131,7 +132,7 @@ class MockFunction implements MockFunctionContract
     }
 
     /** Helper to install the mock. */
-    protected function install(): void
+    public function install(): void
     {
         uopz_set_return($this->functionName, $this->fn, true);
     }
