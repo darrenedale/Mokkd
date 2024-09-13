@@ -98,8 +98,8 @@ class SerialiserTest extends TestCase
 
     public static function dataForTestSerialiseBool1(): iterable
     {
-        yield "false" => [false, "false"];
-        yield "true" => [true, "true"];
+        yield "false" => [false, "(bool) false"];
+        yield "true" => [true, "(bool) true"];
     }
 
     /** Ensure bools are serialised as expected. */
@@ -116,7 +116,7 @@ class SerialiserTest extends TestCase
         yield "strings" => [["one", "three", "two"], "[(string[3]) \"one\", (string[5]) \"three\", (string[3]) \"two\"]"];
         yield "ints" => [[1, 3, 2], "[(int) 1, (int) 3, (int) 2]"];
         yield "floats" => [[1.1, 3.14159265359, 2.0], "[(float) 1.1, (float) 3.141592654, (float) 2.0]"];
-        yield "mmixed" => [[1.1, "3.14159265359", false], "[(float) 1.1, (string[13]) \"3.14159265359\", false]"];
+        yield "mixed" => [[1.1, "3.14159265359", false], "[(float) 1.1, (string[13]) \"3.14159265359\", (bool) false]"];
         yield "excess-elements" => [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "[(int) 1, (int) 2, (int) 3, (int) 4, (int) 5, (int) 6, (int) 7, (int) 8, (int) 9, (int) 10, …]"];
     }
 
@@ -147,7 +147,22 @@ class SerialiserTest extends TestCase
         ];
     }
 
-    /** TODO Ensure resources are serialised as expected. */
+    /** Ensure resources are serialised as expected. */
+    public function testSerialiseResource1(): void
+    {
+        $serialiseResource = self::accessibleMethod($this->serialiser, "serialiseResource");
+        $fh = fopen("php://memory", "r");
+        self::assertMatchesRegularExpression("/^\(resource\[stream]\) @\\d+\$/", $serialiseResource($fh));
+    }
+
+    /** Ensure closed resources are serialised as expected. */
+    public function testSerialiseResource2(): void
+    {
+        $serialiseResource = self::accessibleMethod($this->serialiser, "serialiseResource");
+        $fh = fopen("php://memory", "r");
+        fclose($fh);
+        self::assertMatchesRegularExpression("/^\(resource\[closed]\) @\\d+\$/", $serialiseResource($fh));
+    }
 
     /** Ensure objects are serialised as expected. */
     #[DataProvider("dataForTestSerialiseObject1")]
@@ -161,8 +176,54 @@ class SerialiserTest extends TestCase
     public function testSerialiseNull1(): void
     {
         $serialiseNull = self::accessibleMethod($this->serialiser, "serialiseNull");
-        self::assertSame("NULL", $serialiseNull(null));
+        self::assertSame("(null) null", $serialiseNull(null));
     }
 
-    /** TODO Ensure serialise() delegates to the expected helper. */
+    public static function dataForTestSerialise1(): iterable
+    {
+        yield "string" => ["A test string", "(string[13]) \"A test string\""];
+        yield "int" => [42, "(int) 42"];
+        yield "float" => [3.1415927, "(float) 3.1415927"];
+        yield "true" => [true, "(bool) true"];
+        yield "false" => [false, "(bool) false"];
+        yield "null" => [null, "(null) null"];
+        yield "named-class" => [new Serialiser(), "(Mokkd\\Utilities\\Serialiser)"];
+    }
+
+    /** Ensure serialise() delegates to the expected helper. */
+    #[DataProvider("dataForTestSerialise1")]
+    public function testSerialise1(mixed $value, string $expected): void
+    {
+        self::assertSame($expected, $this->serialiser->serialise($value));
+    }
+
+    public static function dataForTestSerialise2(): iterable
+    {
+        yield "anonymous-class" => [new class{}, "\\(class@anonymous.*\\)"];
+        yield "named-stringable-class" => [new NamedStringable(), "\\(MokkdTests\\\\Utilities\\\\NamedStringable\\) NamedStringable test class"];
+
+        yield "anonymous-stringable-class" => [
+            new class implements Stringable
+            {
+                public function __toString(): string
+                {
+                    return "The test class instance";
+                }
+            },
+            "\\(Stringable@anonymous.*\\) The test class instance",
+        ];
+
+        yield "resource" => [fopen("php://memory", "r"), "\\(resource\\[stream]\) @\\d+"];
+
+        $fh = fopen("php://memory", "r");
+        fclose($fh);
+        yield "closed-resource" => [$fh, "\\(resource\\[closed]\) @\\d+"];
+    }
+
+    /** Ensure serialise() delegates to the expected helper. */
+    #[DataProvider("dataForTestSerialise2")]
+    public function testSerialise2(mixed $value, string $expectedPattern): void
+    {
+        self::assertMatchesRegularExpression("/^{$expectedPattern}\$/", $this->serialiser->serialise($value));
+    }
 }

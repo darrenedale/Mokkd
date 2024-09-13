@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mokkd\Utilities;
 
+use LogicException;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 use Stringable;
 
@@ -47,7 +48,7 @@ class Serialiser implements SerialiserContract
 
     private function serialiseBool(bool $value): string
     {
-        return $value ? "true" : "false";
+        return "(bool) " . ($value ? "true" : "false");
     }
 
     private function serialiseArray(array $values): string
@@ -75,12 +76,20 @@ class Serialiser implements SerialiserContract
 
     private function serialiseResource($value): string
     {
-        return "(resource [" . get_resource_type($value) . "]) @" . get_resource_id($value);
+        assert(is_resource($value), new LogicException("Expected resource, found " . get_debug_type($value)));
+
+        if ("resource (closed)" === get_debug_type($value)) {
+            $serialised = "(resource[closed]) @";
+        } else {
+            $serialised = "(resource[" . get_resource_type($value) . "]) @";
+        }
+
+        return $serialised . get_resource_id($value);
     }
 
     private function serialiseNull(null $value): string
     {
-        return "NULL";
+        return "(null) null";
     }
 
     public function serialise(mixed $value): string
