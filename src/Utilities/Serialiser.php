@@ -10,10 +10,14 @@ use Stringable;
 /** Serialise argument lists. */
 class Serialiser implements SerialiserContract
 {
+    private const MaxStringLength = 30;
+
+    private const MaxArraySize = 10;
+
     private function elideString(string $str): string
     {
-        if (30 < strlen($str)) {
-            return substr($str, 0, 29) . "…";
+        if (self::MaxStringLength < strlen($str)) {
+            return substr($str, 0, self::MaxStringLength - 1) . "…";
         }
 
         return $str;
@@ -32,7 +36,13 @@ class Serialiser implements SerialiserContract
 
     private function serialiseFloat(float $value): string
     {
-        return "(float) {$value}";
+        $str = rtrim(sprintf("%0.9f", $value), "0");
+
+        if (str_ends_with($str, ".")) {
+            $str .= "0";
+        }
+
+        return "(float) {$str}";
     }
 
     private function serialiseBool(bool $value): string
@@ -42,12 +52,19 @@ class Serialiser implements SerialiserContract
 
     private function serialiseArray(array $values): string
     {
-        return "[" . implode(",", array_map([self::class, "serialise"], $values)) . "]";
+        $truncated = false;
+
+        if (self::MaxArraySize < count($values)) {
+            array_splice($values, self::MaxArraySize);
+            $truncated = true;
+        }
+
+        return "[" . implode(", ", array_map([self::class, "serialise"], $values)) . ($truncated ? ", …]" : "]");
     }
 
     private function serialiseObject(object $value): string
     {
-        $serialised = "(" . get_class($value) . ")";
+        $serialised = "(" . $value::class . ")";
 
         if ($value instanceof Stringable) {
             $serialised .= " {$this->elideString((string) $value)}";
@@ -81,6 +98,8 @@ class Serialiser implements SerialiserContract
             "class@anonymous" => $this->serialiseObject($value),
             default => match (true) {
                 str_starts_with($type, "resource (") => $this->serialiseResource($value),
+
+                // this will catch both named class instances and anonymous instances that implement a single interface
                 default => $this->serialiseObject($value),
             },
         };
