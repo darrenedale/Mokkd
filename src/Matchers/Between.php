@@ -5,25 +5,26 @@ declare(strict_types=1);
 namespace Mokkd\Matchers;
 
 use DateTimeInterface;
-use Mokkd;
-use Mokkd\Contracts\Matcher;
+use Mokkd\Contracts\Matcher as MatcherContract;
+use Mokkd\Contracts\Serialiser as SerialiserContract;
 
 /**
- * @template T of int|float|DateTimeInterface
+ * @template T of numeric|DateTimeInterface
+ * @template U of T
  *
  * An argument matcher that requires the actual value to be between two expected values.
  */
-class Between implements Matcher
+class Between implements MatcherContract
 {
     /** @var T The lowest expected value. */
     private mixed $lowerBound;
 
-    /** @var T The highest expected value. */
+    /** @var U The highest expected value. */
     private mixed $upperBound;
 
     /**
      * @param T $lowerBound The lowest expected value.
-     * @param T $upperBound The highest expected value.
+     * @param U $upperBound The highest expected value.
      */
     public function __construct(mixed $lowerBound, mixed $upperBound)
     {
@@ -38,9 +39,8 @@ class Between implements Matcher
         return !($this->lowerBound > $actual) && !($actual > $this->upperBound);
     }
 
-    public function __toString(): string
+    public function describe(SerialiserContract $serialiser): string
     {
-        $serialiser = Mokkd::serialiser();
         return "value between {$serialiser->serialise($this->lowerBound)} and {$serialiser->serialise($this->upperBound)}";
     }
 }

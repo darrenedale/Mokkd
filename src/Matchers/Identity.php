@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers;
 
-use Mokkd;
-use Mokkd\Contracts\Matcher;
+use Mokkd\Contracts\Matcher as MatcherContract;
+use Mokkd\Contracts\Serialiser as SerialiserContract;
 
 /**
  * @template T
  *
  * An argument matcher that requires the actual value to be identical to an expected value.
  */
-class Identity implements Matcher
+class Identity implements MatcherContract
 {
     /** @var T The expected value. */
     private mixed $expected;
@@ -29,8 +29,8 @@ class Identity implements Matcher
         return $actual === $this->expected;
     }
 
-    public function __toString(): string
+    public function describe(SerialiserContract $serialiser): string
     {
-        return Mokkd::serialiser()->serialise($this->expected);
+        return $serialiser->serialise($this->expected);
     }
 }

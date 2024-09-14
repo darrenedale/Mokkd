@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers;
 
-use Mokkd\Contracts\Matcher;
+use Mokkd\Contracts\Matcher as MatcherContract;
+use Mokkd\Contracts\Serialiser as SerialiserContract;
 
 /**
  * @template T
  * An argument matcher that feeds the actual value to a callback to determine whether it matches.
  */
-class Callback implements Matcher
+class Callback implements MatcherContract
 {
     /** @var callable(T): bool */
     private $fn;
@@ -27,7 +28,7 @@ class Callback implements Matcher
         return ($this->fn)($actual);
     }
 
-    public function __toString(): string
+    public function describe(SerialiserContract $serialiser): string
     {
         return "(callback matcher)";
     }
