@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use Mokkd\Contracts\ExpectationBuilder;
+use Mokkd\Contracts\MockFactory as MockFactoryContract;
 use Mokkd\Contracts\MockFunction as MockFunctionContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
-use Mokkd\MockFunction;
+use Mokkd\MockFactory;
 use Mokkd\Utilities\Guard;
 use Mokkd\Utilities\Serialiser;
 
@@ -14,6 +16,8 @@ class Mokkd
     /** @var MockFunctionContract[] */
     private static array $mocks = [];
 
+    private static ?MockFactoryContract $mockFactory = null;
+
     private static ?SerialiserContract $serialiser = null;
 
     /**
@@ -22,20 +26,33 @@ class Mokkd
      * TODO Functions in namespaces don't currently work - need to check UOPZ for why.
      *
      * @param string $functionName The name of the function to mock.
-     * @return MockFunction
      */
-    public static function func(string $functionName): MockFunction
+    public static function func(string $functionName): MockFunctionContract|ExpectationBuilder
     {
         $key = strtolower($functionName);
 
         if (!array_key_exists($key, Mokkd::$mocks)) {
-            $mock = new MockFunction($functionName);
-            self::$mocks[$key] = $mock;
+            self::$mocks[$key] = self::factory()->createMockFunction($functionName);
         }
 
         return self::$mocks[$key];
     }
 
+    /** Fetch the installed mock factory. */
+    public static function factory(): MockFactoryContract
+    {
+        if (!self::$mockFactory) {
+            self::$mockFactory = new MockFactory();
+        }
+
+        return self::$mockFactory;
+    }
+
+    /** Set the factory to use when new mocks need to be created. */
+    public static function setFactory(MockFactoryContract $factory): void
+    {
+        self::$mockFactory = $factory;
+    }
 
     /** Fetch the installed serialiser. */
     public static function serialiser(): SerialiserContract
@@ -56,8 +73,12 @@ class Mokkd
     /** Close the mock session */
     public static function close(): void
     {
-        // ensure all mocks are unregistered no matter how we exit this method
-        $guard = new Guard(static fn() => self::$mocks = []);
+        // ensure everything is cleaned up no matter how we exit this method
+        $guard = new Guard(static function () {
+            self::$mocks = [];
+            self::$mockFactory = null;
+            self::$serialiser = null;
+        });
 
         foreach (self::$mocks as $mock) {
             $mock->uninstall();

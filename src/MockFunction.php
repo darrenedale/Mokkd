@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mokkd;
 
 use Closure;
+use Mokkd;
 use Mokkd\Contracts\ExpectationBuilder as ExpectationBuilderContract;
 use Mokkd\Contracts\Expectation as ExpectationContract;
 use Mokkd\Contracts\KeyMapper as KeyMapperContract;
@@ -196,11 +197,15 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
             }
         }
 
-        throw new UnexpectedFunctionCallException($this->name(), "No matching expectation found for function call {$this->functionName}(" . implode(", ", Mokkd::serialiser()->serialise(...$args)) . ")");
+        throw new UnexpectedFunctionCallException(
+            $this->functionName(),
+            "No matching expectation found for function call {$this->functionName}("
+            . implode(", ", array_map([Mokkd::serialiser(), "serialise"], $args)) . ")"
+        );
     }
 
     /** The name of the mocked function, including its namespace (if any). */
-    public function name(): string
+    public function functionName(): string
     {
         return $this->functionName;
     }
@@ -242,14 +247,14 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
      *
      * @param int $times The number of expected matches. Must be >= 0.
      */
-    public function times(int $times): MockFunctionContract
+    public function times(int $times): self
     {
         $this->currentExpectation()->setExpected($times);
         return $this;
     }
 
     /** Set the current expectation to expect never to be matched. */
-    public function never(): MockFunctionContract
+    public function never(): self
     {
         return $this->times(0);
     }
@@ -399,7 +404,7 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
     {
         foreach ($this->expectations() as $expectation) {
             if (!$expectation->isSatisfied()) {
-                throw new ExpectationException($expectation, "{$this->name()}{$expectation->message()}");
+                throw new ExpectationException($expectation, "{$this->functionName()}{$expectation->message()}");
             }
         }
     }

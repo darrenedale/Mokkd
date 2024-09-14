@@ -22,10 +22,30 @@ abstract class AbstractExpectation implements ExpectationContract
 
     protected int $expectedCount = self::UnlimitedTimes;
 
+    /** Helper to check and fetch the mapped return key. */
+    private function returnFromMap(mixed ...$args): mixed
+    {
+        $key = $this->mapper->mapKey(...$args);
+
+        if (!array_key_exists($key, $this->returnValue)) {
+            throw new LogicException("Expected mapped key, found \"{$key}\"");
+        }
+
+        return $this->returnValue[$key];
+    }
+
     public function match(...$args): mixed
     {
+        assert(isset($this->returnMode), new LogicException("Can't match an expectation when it doesn't have a return mode set"));
+
         if (!$this->matches(...$args)) {
-            throw new ExpectationException($this, sprintf("Expectation does not match arguments (%s)", implode(", ", Mokkd::serialiser()->serialise(...$args))));
+            throw new ExpectationException(
+                $this,
+                sprintf(
+                    "Expectation does not match arguments (%s)",
+                    implode(", ", array_map([Mokkd::serialiser(), "serialise"], $args))
+                )
+            );
         }
 
         ++$this->matchCount;
@@ -34,7 +54,7 @@ abstract class AbstractExpectation implements ExpectationContract
             ReturnMode::Value => $this->returnValue,
             ReturnMode::Callback => ($this->returnValue)(...$args),
             ReturnMode::Sequential => $this->returnValue[($this->matchCount - 1) % count($this->returnValue)],
-            ReturnMode::Mapped => $this->returnValue[$this->mapper->mapKey(...$args)],
+            ReturnMode::Mapped => $this->returnFromMap(...$args),
         };
     }
 
@@ -54,30 +74,33 @@ abstract class AbstractExpectation implements ExpectationContract
         return $this->expectedCount;
     }
 
+    /** Helper to set return-by-value. */
     protected function setReturnValue(mixed $value): void
     {
         $this->returnValue = $value;
         $this->returnMode = ReturnMode::Value;
     }
 
+    /** Helper to set return-by-callback. */
     protected function setReturnCallback(mixed $callback): void
     {
-        assert(is_callable($callback, true), new LogicException("Expecting valid callable"));
+        assert(is_callable($callback), new LogicException("Expecting valid callable"));
         $this->returnValue = $callback;
         $this->returnMode = ReturnMode::Callback;
     }
 
     protected function setReturnArray(mixed $array): void
     {
-        assert(is_array($array) && array_is_list($array), new LogicException("Expecting valid array"));
+        assert(is_array($array) && 0 < count($array) && array_is_list($array), new LogicException("Expecting valid array"));
         $this->returnValue = $array;
         $this->returnMode = ReturnMode::Sequential;
     }
 
     protected function setReturnMap(mixed $map, KeyMapperContract $mapper): void
     {
-        assert(is_array($map), new LogicException("Expecting valid map"));
+        assert(is_array($map) && 0 < count($map), new LogicException("Expecting valid map"));
         $this->returnValue = $map;
+        $this->mapper = $mapper;
         $this->returnMode = ReturnMode::Mapped;
     }
 

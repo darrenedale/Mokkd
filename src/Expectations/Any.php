@@ -8,7 +8,7 @@ use Mokkd\Contracts\Expectation as ExpectationContract;
 
 class Any extends AbstractExpectation
 {
-    public function matches(...$args): bool
+    public function matches(mixed ...$args): bool
     {
         return true;
     }

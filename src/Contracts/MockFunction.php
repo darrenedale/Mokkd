@@ -10,7 +10,7 @@ namespace Mokkd\Contracts;
 interface MockFunction
 {
     /** The name of the mocked function. */
-    public function name(): string;
+    public function functionName(): string;
 
     /**
      * Install the mock.
