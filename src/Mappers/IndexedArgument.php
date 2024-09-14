@@ -37,9 +37,9 @@ class IndexedArgument implements KeyMapper
      * @throws RuntimeException If there are insufficient arguments or the located key is not a string or int >= 0.
      * @return int|string The map key.
      */
-    public function mapKey(...$args): string|int
+    public function mapKey(mixed ...$args): int|string
     {
-        if (count($args) < $this->index - 1) {
+        if ($this->index >= count($args)) {
             throw new RuntimeException("Not enough arguments to select argument #{$this->index} as the mapped return value key");
         }
 

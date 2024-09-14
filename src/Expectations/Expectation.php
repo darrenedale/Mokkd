@@ -5,7 +5,6 @@ namespace Mokkd\Expectations;
 
 use Mokkd\Contracts\Expectation as ExpectationContract;
 use Mokkd\Contracts\Matcher as MatcherContract;
-use Mokkd;
 
 class Expectation extends AbstractExpectation implements ExpectationContract
 {

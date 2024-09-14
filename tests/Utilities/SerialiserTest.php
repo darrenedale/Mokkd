@@ -6,10 +6,12 @@ namespace MokkdTests\Utilities;
 
 use Mokkd\Utilities\Serialiser;
 use MokkdTests\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
 use Stringable;
 
+#[CoversClass(Serialiser::class)]
 class SerialiserTest extends TestCase
 {
     private Serialiser $serialiser;
@@ -112,12 +114,13 @@ class SerialiserTest extends TestCase
 
     public static function dataForTestSerialiseArray1(): iterable
     {
-        yield "empty" => [[], "[]"];
-        yield "strings" => [["one", "three", "two"], "[(string[3]) \"one\", (string[5]) \"three\", (string[3]) \"two\"]"];
-        yield "ints" => [[1, 3, 2], "[(int) 1, (int) 3, (int) 2]"];
-        yield "floats" => [[1.1, 3.14159265359, 2.0], "[(float) 1.1, (float) 3.141592654, (float) 2.0]"];
-        yield "mixed" => [[1.1, "3.14159265359", false], "[(float) 1.1, (string[13]) \"3.14159265359\", (bool) false]"];
-        yield "excess-elements" => [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "[(int) 1, (int) 2, (int) 3, (int) 4, (int) 5, (int) 6, (int) 7, (int) 8, (int) 9, (int) 10, …]"];
+        yield "empty" => [[], "(array[0]) []"];
+        yield "strings" => [["one", "three", "two"], "(array[3]) [(string[3]) \"one\", (string[5]) \"three\", (string[3]) \"two\"]"];
+        yield "ints" => [[1, 3, 2], "(array[3]) [(int) 1, (int) 3, (int) 2]"];
+        yield "floats" => [[1.1, 3.14159265359, 2.0], "(array[3]) [(float) 1.1, (float) 3.141592654, (float) 2.0]"];
+        yield "mixed" => [[1.1, "3.14159265359", false], "(array[3]) [(float) 1.1, (string[13]) \"3.14159265359\", (bool) false]"];
+        yield "excess-elements" => [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "(array[11]) [(int) 1, (int) 2, (int) 3, (int) 4, (int) 5, (int) 6, (int) 7, (int) 8, (int) 9, (int) 10, …]"];
+        yield "mixed-excess-map" => [[1, 2, 3.1415927, 4, "mokkd" => "func", false, true, 8, null, 10, 11], "(array[11]) [0 => (int) 1, 1 => (int) 2, 2 => (float) 3.1415927, 3 => (int) 4, \"mokkd\" => (string[4]) \"func\", 4 => (bool) false, 5 => (bool) true, 6 => (int) 8, 7 => (null) null, 8 => (int) 10, …]"];
     }
 
     /** Ensure arrays are serialised as expected. */
@@ -188,6 +191,11 @@ class SerialiserTest extends TestCase
         yield "false" => [false, "(bool) false"];
         yield "null" => [null, "(null) null"];
         yield "named-class" => [new Serialiser(), "(Mokkd\\Utilities\\Serialiser)"];
+
+        yield "array" => [
+            ["mokkd", 42, 3.1415927, null, false, true, "mokkd again"],
+            "(array[7]) [(string[5]) \"mokkd\", (int) 42, (float) 3.1415927, (null) null, (bool) false, (bool) true, (string[11]) \"mokkd again\"]",
+        ];
     }
 
     /** Ensure serialise() delegates to the expected helper. */

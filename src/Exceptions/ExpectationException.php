@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace Mokkd\Exceptions;
 
 use Mokkd\Contracts\Expectation as ExpectationContract;
+use RuntimeException;
 use Throwable;
 
 /** Base class for all exceptions triggered by expectations. */
-class ExpectationException extends \RuntimeException implements Throwable
+class ExpectationException extends RuntimeException implements Throwable
 {
     protected ExpectationContract $expectation;
 

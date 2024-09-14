@@ -7,8 +7,10 @@ namespace MokkdTests\Utilities;
 use Mokkd\Utilities\Guard;
 use MokkdTests\TestCase;
 use MokkdTests\TestException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+#[CoversClass(Guard::class)]
 class GuardTest extends TestCase
 {
     public const TestExceptionMessage = "The guard callback was called";
