@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers;
 
 use Mokkd\Contracts\Serialiser as SerialiserContract;
-use Mokkd\Matchers\Identity;
+use Mokkd\Matchers\Comparisons\IsIdenticalTo;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-#[CoversClass(Identity::class)]
+#[CoversClass(IsIdenticalTo::class)]
 class IdentityTest extends TestCase
 {
     public static function dataForTestMatches1(): iterable
@@ -28,7 +28,7 @@ class IdentityTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(mixed $matchAgainst, mixed $value): void
     {
-        self::assertTrue((new Identity($matchAgainst))->matches($value));
+        self::assertTrue((new IsIdenticalTo($matchAgainst))->matches($value));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -78,7 +78,7 @@ class IdentityTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(mixed $matchAgainst, mixed $value): void
     {
-        self::assertFalse((new Identity($matchAgainst))->matches($value));
+        self::assertFalse((new IsIdenticalTo($matchAgainst))->matches($value));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -121,15 +121,15 @@ class IdentityTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches3(mixed $matchAgainst, mixed $value): void
     {
-        self::assertFalse((new Identity($matchAgainst))->matches($value));
+        self::assertFalse((new IsIdenticalTo($matchAgainst))->matches($value));
     }
 
     /** Ensure objects must be the same instance. */
     public function testMatches4(): void
     {
         $object = new class{};
-        self::assertTrue((new Identity($object))->matches($object));
-        self::assertFalse((new Identity($object))->matches(clone $object));
+        self::assertTrue((new IsIdenticalTo($object))->matches($object));
+        self::assertFalse((new IsIdenticalTo($object))->matches(clone $object));
     }
 
     /** Ensure the serialiser is used to describe the Identity matcher. */
@@ -144,7 +144,7 @@ class IdentityTest extends TestCase
             }
         };
 
-        self::assertSame("The test-serialised value", (new Identity("test value"))->describe($serialiser));
+        self::assertSame("The test-serialised value", (new IsIdenticalTo("test value"))->describe($serialiser));
     }
 
 }

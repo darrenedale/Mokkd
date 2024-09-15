@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mokkd\Matchers;
+namespace Mokkd\Matchers\Comparisons;
 
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
@@ -10,9 +10,9 @@ use Mokkd\Contracts\Serialiser as SerialiserContract;
 /**
  * @template T
  *
- * An argument matcher that requires the actual value to be equal to an expected value.
+ * An argument matcher that requires the actual value to be identical to an expected value.
  */
-class Equality implements MatcherContract
+class IsIdenticalTo implements MatcherContract
 {
     /** @var T The expected value. */
     private mixed $expected;
@@ -26,7 +26,7 @@ class Equality implements MatcherContract
     /** @param mixed $actual The actual value to match. */
     public function matches(mixed $actual): bool
     {
-        return $actual == $this->expected;
+        return $actual === $this->expected;
     }
 
     public function describe(SerialiserContract $serialiser): string

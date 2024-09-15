@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers;
 
 use Mokkd\Contracts\Serialiser as SerialiserContract;
-use Mokkd\Matchers\Equality;
+use Mokkd\Matchers\Comparisons\IsEqualTo;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-#[CoversClass(Equality::class)]
+#[CoversClass(IsEqualTo::class)]
 class EqualityTest extends TestCase
 {
     public static function dataForTestMatches1(): iterable
@@ -65,7 +65,7 @@ class EqualityTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(mixed $matchAgainst, mixed $value): void
     {
-        self::assertTrue((new Equality($matchAgainst))->matches($value));
+        self::assertTrue((new IsEqualTo($matchAgainst))->matches($value));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -112,21 +112,21 @@ class EqualityTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(mixed $matchAgainst, mixed $value): void
     {
-        self::assertFalse((new Equality($matchAgainst))->matches($value));
+        self::assertFalse((new IsEqualTo($matchAgainst))->matches($value));
     }
 
     /** Ensure identical objects match. */
     public function testMatches3(): void
     {
         $object = new class{};
-        self::assertTrue((new Equality($object))->matches($object));
+        self::assertTrue((new IsEqualTo($object))->matches($object));
     }
 
     /** Ensure equal objects match. */
     public function testMatches4(): void
     {
         $object = new class{};
-        self::assertTrue((new Equality($object))->matches(clone $object));
+        self::assertTrue((new IsEqualTo($object))->matches(clone $object));
     }
 
     /** Ensure the serialiser is used to describe the Equality matcher. */
@@ -141,6 +141,6 @@ class EqualityTest extends TestCase
             }
         };
 
-        self::assertSame("The test-serialised value", (new Equality("test value"))->describe($serialiser));
+        self::assertSame("The test-serialised value", (new IsEqualTo("test value"))->describe($serialiser));
     }
 }

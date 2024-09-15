@@ -1,6 +1,7 @@
 {
   "require": {
     "php": "^8.2",
+    "ext-mbstring": "*",
     "ext-uopz": "*"
   },
   "require-dev": {

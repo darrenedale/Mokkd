@@ -6,23 +6,22 @@ namespace Mokkd;
 
 use Closure;
 use Mokkd;
-use Mokkd\Contracts\ExpectationBuilder as ExpectationBuilderContract;
 use Mokkd\Contracts\Expectation as ExpectationContract;
+use Mokkd\Contracts\ExpectationBuilder as ExpectationBuilderContract;
 use Mokkd\Contracts\KeyMapper as KeyMapperContract;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\MockFunction as MockFunctionContract;
 use Mokkd\Exceptions\ExpectationException;
-use Mokkd\Exceptions\UnexpectedFunctionCallException;
 use Mokkd\Exceptions\FunctionException;
+use Mokkd\Exceptions\UnexpectedFunctionCallException;
 use Mokkd\Expectations\AbstractExpectation;
 use Mokkd\Expectations\Expectation;
 use Mokkd\Expectations\ReturnMode;
-use Mokkd\Matchers\Identity;
+use Mokkd\Matchers\Comparisons\IsIdenticalTo;
 use Mokkd\Utilities\Guard;
 use ReflectionException;
 use ReflectionFunction;
 use SplFileInfo;
-
 use function uopz_get_return;
 use function uopz_set_return;
 use function uopz_unset_return;
@@ -129,7 +128,7 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
     /** Helper to create a matcher for an argument provided to expects(). */
     private static function createMatcher(mixed $expected): MatcherContract
     {
-        return ($expected instanceof MatcherContract ? $expected : new Identity($expected));
+        return ($expected instanceof MatcherContract ? $expected : new IsIdenticalTo($expected));
     }
 
     /** Helper to install the mock. */

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers\Types;
 
-use Mokkd\Matchers\Identity;
+use Mokkd\Matchers\Comparisons\IsIdenticalTo;
 
 /** Matcher that requires a null value. */
-class IsNull extends Identity
+class IsNull extends IsIdenticalTo
 {
     public function __construct()
     {
