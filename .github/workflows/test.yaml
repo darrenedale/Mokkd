@@ -52,12 +52,6 @@ jobs:
           rm -rf vendor
           composer install --prefer-dist --no-progress
 
-      - name: Install dependencies
-        run: |
-          cd "$GITHUB_WORKSPACE"
-          rm -rf vendor
-          composer install --prefer-dist --no-progress
-
       - name: Run unit tests
         run: |
           cd "$GITHUB_WORKSPACE"
