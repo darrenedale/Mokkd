@@ -1,0 +1,64 @@
+name: Composer Validation and Unit Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php_version: ["8.2", "8.3"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PHP ${{ matrix.php_version }}
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          sudo add-apt-repository -y ppa:ondrej/php
+          sudo apt-get update
+          sudo apt-get -y install php${{ matrix.php_version }}-cli php${{ matrix.php_version }}-mbstring php${{ matrix.php_version }}-uopz
+
+      - name: Configure PHP ${{ matrix.php_version }}
+        run: |
+          sudo install -m 644 /usr/lib/php/${{ matrix.php_version }}/php.ini-development /etc/php/${{ matrix.php_version }}/cli/php.ini
+          sudo update-alternatives --set php /usr/bin/php${{ matrix.php_version }}
+
+      - name: Validate composer.json and composer.lock
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: "$GITHUB_WORKSPACE/vendor"
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          rm -rf vendor
+          composer install --prefer-dist --no-progress
+
+      - name: Install dependencies
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          rm -rf vendor
+          composer install --prefer-dist --no-progress
+
+      - name: Run unit tests
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          ./vendor/bin/phpunit --testsuite 'all' --do-not-cache-result
