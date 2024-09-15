@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers;
 
+use Mokkd\Contracts\Serialiser as SerialiserContract;
 use Mokkd\Matchers\Equality;
-use Mokkd\Utilities\Serialiser;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -129,31 +129,18 @@ class EqualityTest extends TestCase
         self::assertTrue((new Equality($object))->matches(clone $object));
     }
 
-    public static function dataForTestToString1(): iterable
+    /** Ensure the serialiser is used to describe the Equality matcher. */
+    public function testDescribe1(): void
     {
-        $serialiser = new Serialiser();
+        $serialiser = new class implements SerialiserContract
+        {
+            public function serialise(mixed $value): string
+            {
+                EqualityTest::assertSame("test value", $value);
+                return "The test-serialised value";
+            }
+        };
 
-        foreach (self::dataForTestMatches1() as $key => $matchAgainst) {
-            yield $key => [$matchAgainst, $serialiser->serialise($matchAgainst)];
-        }
-
-        $fh = fopen("php://memory", "r");
-        yield "resource" => [$fh, $serialiser->serialise($fh)];
-
-        $fh = fopen("php://memory", "r");
-        fclose($fh);
-        yield "closed-resource" => [$fh, $serialiser->serialise($fh)];
-
-        $object = new class{};
-        yield "anonymous-object" => [$object, $serialiser->serialise($object)];
-
-        yield "object" => [$serialiser, $serialiser->serialise($serialiser)];
-    }
-
-    /** Ensure the serialiser is used to produce string representations of the value being matched against. */
-    #[DataProvider("dataForTestToString1")]
-    public function testToString1(mixed $value, string $expected): void
-    {
-        self::assertSame($expected, (string) (new Equality($value)));
+        self::assertSame("The test-serialised value", (new Equality("test value"))->describe($serialiser));
     }
 }
