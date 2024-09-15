@@ -1,4 +1,7 @@
 {
+  "name": "mokkd/mokkd",
+  "description": "A library for mocking free-standing functions in PHP",
+  "license": "Apache-2.0",
   "require": {
     "php": "^8.2",
     "ext-mbstring": "*",
