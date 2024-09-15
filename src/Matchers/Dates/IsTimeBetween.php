@@ -12,13 +12,17 @@ use Mokkd\Contracts\Serialiser;
 /**
  * The bounds are inclusive.
  *
- * Only the date portion of the DateTime is significant - the time part is discarded.
+ * Only the time portion of the DateTime is significant - the date part is discarded. So a DateTime representing
+ * 2024-04-23 16:00:00 will be considered between 2000-07-14 14:00:00 and 1996-08-01 18:00:00 because 16:00:00 is
+ * between 14:00:00 and 18:00:00.
+ *
+ * Sub-second time components are discarded.
  */
-class IsDateBetween implements MatcherContract
+class IsTimeBetween implements MatcherContract
 {
-    private const DisplayFormat = "Y-m-d";
+    private const DisplayFormat = "H:i:s";
 
-    private const ComparisonFormat = "Ymd";
+    private const ComparisonFormat = "His";
 
     private int $lowerBoundNumeric;
 

@@ -7,6 +7,7 @@ namespace MokkdTests\Expectations;
 use Error;
 use LogicException;
 use Mokkd\Expectations\Any;
+use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -37,30 +38,12 @@ class AnyTest extends TestCase
 
     public static function dataForTestMatches1(): iterable
     {
-        yield "empty" => [];
-        yield "int" => [42];
-        yield "ints" => [42, 17];
-        yield "float" => [3.1414936];
-        yield "floats" => [3.1414936, 0.577215665];
-        yield "string" => ["mokkd"];
-        yield "strings" => ["mokkd", "func"];
-        yield "true" => [true];
-        yield "false" => [false];
-        yield "bools" => [true, false];
-        yield "array" => [[1, 2, 3]];
-        yield "arrays" => [[1, 2, 3], [4, 5, 6]];
-        yield "empty-array" => [[]];
-        yield "empty-arrays" => [[], []];
-        yield "null" => [null];
-        yield "nulls" => [null, null];
-        yield "object" => [new class{}];
-        yield "objects" => [new class{}, new class{}];
-        yield "resource" => [fopen("php://memory", "r")];
-        yield "resources" => [fopen("php://memory", "r"), fopen("php://memory", "r")];
-        yield "mixed" => [42, "mokkd", 3.1415926, fopen("php://memory", "r"), "func", [], 17, false, 0.577215665, null, new class{}, true, [1, 2, 3]];
+        yield from DataFactory::arrays();
+        yield from DataFactory::strings();
+        yield "no-arguments" => [];
     }
 
-    /** Ensure (to a sensible approximation) that anything matches. */
+    /** Ensure (or a sensible approximation thereof) that anything matches. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(mixed ...$args): void
     {
@@ -71,7 +54,7 @@ class AnyTest extends TestCase
     {
         yield "once" => [1, "mokkd", 42];
         yield "twice" => [2, null, true, 3.1415927];
-        yield "ten-times" => [10, false, new class{}, "func", "mokkd"];
+        yield "ten-times" => [10, false, new class {}, "func", "mokkd"];
         yield "never" => [0, [1, 2, 3]];
     }
 

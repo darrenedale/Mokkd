@@ -135,7 +135,7 @@ class SerialiserTest extends TestCase
     {
         yield "stdClass" => [new stdClass(), "\\(stdClass\\)", ];
         yield "named" => [new Serialiser(), "\\(Mokkd\\\\Utilities\\\\Serialiser\\)"];
-        yield "anonymous" => [new class{}, "\\(class@anonymous.*\\)"];
+        yield "anonymous" => [new class {}, "\\(class@anonymous.*\\)"];
         yield "named-stringable" => [new NamedStringable(), "\\(MokkdTests\\\\Utilities\\\\NamedStringable\\) NamedStringable test class"];
 
         yield "anonymous-stringable" => [
@@ -207,7 +207,7 @@ class SerialiserTest extends TestCase
 
     public static function dataForTestSerialise2(): iterable
     {
-        yield "anonymous-class" => [new class{}, "\\(class@anonymous.*\\)"];
+        yield "anonymous-class" => [new class {}, "\\(class@anonymous.*\\)"];
         yield "named-stringable-class" => [new NamedStringable(), "\\(MokkdTests\\\\Utilities\\\\NamedStringable\\) NamedStringable test class"];
 
         yield "anonymous-stringable-class" => [

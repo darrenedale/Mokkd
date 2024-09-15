@@ -85,7 +85,7 @@ class IndexedArgumentTest extends TestCase
         yield "float" => [0, 3.1415926, "key", 1];
         yield "true" => [2, 2, 1, true];
         yield "false" => [1, 2, false, "key"];
-        yield "object" => [2, 2, "key", new class{}];
+        yield "object" => [2, 2, "key", new class {}];
         yield "array" => [1, "key", [], 0];
         yield "resource" => [0, fopen("php://memory", "r"), "key", 1];
     }

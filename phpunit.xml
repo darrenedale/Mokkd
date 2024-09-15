@@ -13,6 +13,12 @@
         <testsuite name="default">
             <directory>tests</directory>
         </testsuite>
+        <testsuite name="matchers">
+            <directory>tests/Matchers</directory>
+        </testsuite>
+        <testsuite name="utilities">
+            <directory>tests/Utilities</directory>
+        </testsuite>
     </testsuites>
 
     <source ignoreIndirectDeprecations="true" restrictNotices="true" restrictWarnings="true">
