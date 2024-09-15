@@ -25,7 +25,7 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           sudo add-apt-repository -y ppa:ondrej/php
           sudo apt-get update
-          sudo apt-get -y install php${{ matrix.php_version }}-cli php${{ matrix.php_version }}-mbstring php${{ matrix.php_version }}-uopz
+          sudo apt-get -y install php${{ matrix.php_version }}-cli php${{ matrix.php_version }}-dom php${{ matrix.php_version }}-mbstring php${{ matrix.php_version }}-uopz
 
       - name: Configure PHP ${{ matrix.php_version }}
         run: |
