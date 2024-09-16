@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers;
 
 use MokkdTests\TestCase;
-use ReflectionClass;
-use ReflectionType;
 use stdClass;
 
 class DataFactory
@@ -112,6 +110,30 @@ class DataFactory
         yield "array-empty" => [[]];
     }
 
+    public static function mixedArray(): iterable
+    {
+        yield "array-mixed" => [
+            [
+                "func",
+                true,
+                null,
+                3.1415927,
+                [],
+                fopen("php://memory", "r"),
+                1,
+                "test",
+                new class {},
+                1.4142136,
+                "mokkd",
+                [new class {}, ["mokkd", 3], true],
+                3,
+                false,
+                0.57721567,
+                2,
+            ]
+        ];
+    }
+
     public static function arrays(): iterable
     {
         yield from self::emptyArray();
@@ -136,27 +158,8 @@ class DataFactory
         yield "array-three-arrays" => [[["mokkd", 3, 1.4142136], [null, "test", new class {}], [$resource, [], true]]];
         yield "array-three-objects" => [[new class {}, new class {}, new class {}]];
         yield "array-three-resources" => [[$resource, $resource, $resource]];
-        
-        yield "array-mixed" => [
-            [
-                "func",
-                true,
-                null,
-                3.1415927,
-                [],
-                $resource,
-                1,
-                "test",
-                new class {},
-                1.4142136,
-                "mokkd",
-                [new class {}, ["mokkd", 3], true],
-                3,
-                false,
-                0.57721567,
-                2,
-            ]
-        ];
+
+        yield from self::mixedArray();
     }
 
     //
@@ -460,5 +463,105 @@ class DataFactory
         yield from self::temporaryStream();
         yield from self::dataStream();
         yield from self::dataStream("\x89\x50\x4e\x47\x0d\x0a\x1a\x0a\x00\x00\x00\x0d\x49\x48\x44\x52\x00\x00\x00\x0c\x00\x00\x00\x0d\x08\x06\x00\x00\x00\x9d\x29\x8f\x42\x00\x00\x00\x09\x70\x48\x59\x73\x00\x00\x0e\xc4\x00\x00\x0e\xc4\x01\x95\x2b\x0e\x1b\x00\x00\x00\x19\x49\x44\x41\x54\x28\x91\x63\x64\x60\x60\xf8\xcf\x40\x02\x60\x22\x45\xf1\xa8\x86\x51\x0d\x78\x00\x00\x99\x7b\x01\x19\xf9\xcd\xc9\x79\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60", "image/png");
+    }
+
+    //
+    // callables
+    //
+
+    /**
+     * @param callable|null $callback A callback that you can use to "check in" with your test. It will be called with
+     * the arguments specified
+     * @param mixed|null $return The value that the test callables should return.
+     * @return iterable<int,callable>
+     */
+    public static function callables(callable $callback = null, mixed $return = null): iterable
+    {
+        $callableObject = new class($callback, $return)
+        {
+            private $callback;
+
+            private mixed $return;
+
+            public function __construct(?callable $callback, mixed $return)
+            {
+                $this->callback = $callback;
+                $this->return = $return;
+            }
+
+            private function invokeCallback(mixed ...$args): mixed
+            {
+                if (null !== $this->callback) {
+                    ($this->callback)(...$args);
+                }
+
+                return $this->return;
+            }
+
+            public function __invoke(mixed ...$args): mixed
+            {
+                return $this->invokeCallback(...$args);
+            }
+
+            public function instanceMethod(mixed ...$args): mixed
+            {
+                return self::invokeCallback(...$args);
+            }
+
+            public static function staticMethod(): void
+            {}
+        };
+
+        yield "callable-closure" => [static function (mixed ...$args) use ($callback, $return) {
+            if (is_callable($callback)) {
+                $callback(...$args);
+            }
+
+            return $return;
+        }];
+
+
+        yield "callable-instance-function" => [[$callableObject, "instanceMethod"]];
+        yield "callable-invokable" => [$callableObject];
+
+        # this is only viable without a callback since any static properties on the callable object would persist
+        # between runs, forcing the tests using the data to run in their own process or fail due to expectations from
+        # one test overwriting expectations for another
+        if (null === $callback && null === $return) {
+            yield "callable-static-method" => [[$callableObject::class, "staticMethod"]];
+        }
+    }
+
+    /** Helper to unwrap the dataset yielded by a factory method that returns a single dataset. */
+    public static function unwrapSingle(iterable $data): mixed
+    {
+        if (!is_array($data)) {
+            $data = iterator_to_array($data);
+        }
+
+        assert (1 === count($data));
+        $data = array_values($data);
+        return $data[0];
+    }
+
+    /**
+     * Combine two or more data providers into a single data provider covering all combinations of the source providers'
+     * datasets.
+     */
+    public static function combine(iterable $data1, iterable $data2, iterable ...$otherData): iterable
+    {
+        $generator = static function() use ($data1, $data2): iterable {
+            foreach ($data1 as $label1 => $args1) {
+                foreach ($data2 as $label2 => $args2) {
+                    yield "{$label1}-{$label2}" => [...$args1, ...$args2];
+                }
+            }
+        };
+
+        if (0 === count($otherData)) {
+            yield from $generator();
+        } else {
+            yield from DataFactory::combine($generator(), ...$otherData);
+        }
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MokkdTests;
 
+use Mokkd\Utilities\Guard;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use ReflectionException;
 use ReflectionMethod;
@@ -29,5 +30,10 @@ class TestCase extends PHPUnitTestCase
         if (self::ZendAssertionsActive !== (int) ini_get("zend.assertions")) {
             self::markTestSkipped("This test requires assertions to be enabled.");
         }
+    }
+
+    protected function markTestPassedWithoutAssertions(): void
+    {
+        self::assertTrue(true);
     }
 }

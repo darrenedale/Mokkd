@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers;
 
+use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
