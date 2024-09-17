@@ -7,7 +7,12 @@ namespace Mokkd\Matchers\Types;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
-/** Matcher that requires any float or int value. */
+/**
+ * Matcher that requires any float or int value.
+ *
+ * This is type-safe - values that can ordinarily be coerced to ints/floats (e.g. strings containing int or float
+ * values) *do not match*.
+ */
 class IsNumeric implements MatcherContract
 {
     public function matches(mixed $actual): bool
@@ -17,6 +22,6 @@ class IsNumeric implements MatcherContract
 
     public function describe(SerialiserContract $serialiser): string
     {
-        return "(float|int) {any}";
+        return "(int|float) {any}";
     }
 }

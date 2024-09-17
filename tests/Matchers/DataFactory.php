@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers;
 
+use LogicException;
 use MokkdTests\TestCase;
 use stdClass;
 
+// TODO use box() helper to wrap datasets
 class DataFactory
 {
     public static function identicalValues(): iterable
@@ -457,12 +459,27 @@ class DataFactory
         yield from self::stream("data://{$mediaType};base64,{$data}");
     }
 
-    public static function resources(): iterable
+    public static function openResources(): iterable
     {
         yield from self::memoryStream();
         yield from self::temporaryStream();
         yield from self::dataStream();
         yield from self::dataStream("\x89\x50\x4e\x47\x0d\x0a\x1a\x0a\x00\x00\x00\x0d\x49\x48\x44\x52\x00\x00\x00\x0c\x00\x00\x00\x0d\x08\x06\x00\x00\x00\x9d\x29\x8f\x42\x00\x00\x00\x09\x70\x48\x59\x73\x00\x00\x0e\xc4\x00\x00\x0e\xc4\x01\x95\x2b\x0e\x1b\x00\x00\x00\x19\x49\x44\x41\x54\x28\x91\x63\x64\x60\x60\xf8\xcf\x40\x02\x60\x22\x45\xf1\xa8\x86\x51\x0d\x78\x00\x00\x99\x7b\x01\x19\xf9\xcd\xc9\x79\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60", "image/png");
+    }
+
+    public static function closedResources(): iterable
+    {
+        foreach ([...self::memoryStream(), ...self::temporaryStream()] as $label => $stream) {
+            $stream = self::unboxSingle($stream);
+            fclose($stream);
+            yield "closed-{$label}" => [$stream];
+        }
+    }
+
+    public static function resources(): iterable
+    {
+        yield from self::openResources();
+        yield from self::closedResources();
     }
 
     //
@@ -532,14 +549,44 @@ class DataFactory
         }
     }
 
+    //
+    // Helpers
+    //
+
+    /** Helper to repeat a value or values n times in an array. */
+    public static function repeatDataset(int $count, string $labelPrefix, mixed $value, mixed ...$values): iterable
+    {
+        assert(0 <= $count, new LogicException("Expected int >= 0, found {$count}"));
+
+        for ($idx = 0; $idx < $count; ++$idx) {
+            yield "{$labelPrefix}-" . ($count + 1) => self::box($value, ...$values);
+        }
+    }
+
+    /** Helper to repeat a single value n times. */
+    public static function repeat(int $count, mixed $value): iterable
+    {
+        assert(0 <= $count, new LogicException("Expected int >= 0, found {$count}"));
+
+        for ($idx = 0; $idx < $count; ++$idx) {
+            yield $value;
+        }
+    }
+
     /** Helper to unwrap the dataset yielded by a factory method that returns a single dataset. */
-    public static function unwrapSingle(iterable $data): mixed
+    public static function box(mixed $value, mixed ...$values): array
+    {
+        return [$value, ...$values];
+    }
+
+    /** Helper to unwrap the dataset yielded by a factory method that returns a single dataset. */
+    public static function unboxSingle(iterable $data): mixed
     {
         if (!is_array($data)) {
             $data = iterator_to_array($data);
         }
 
-        assert (1 === count($data));
+        assert(1 === count($data));
         $data = array_values($data);
         return $data[0];
     }

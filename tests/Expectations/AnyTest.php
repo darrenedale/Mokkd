@@ -7,6 +7,7 @@ namespace MokkdTests\Expectations;
 use Error;
 use LogicException;
 use Mokkd\Expectations\Any;
+use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -15,6 +16,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 #[CoversClass(Any::class)]
 class AnyTest extends TestCase
 {
+    use CreatesNullSerialiser;
+
     private Any $any;
 
     public function setUp(): void
@@ -148,6 +151,6 @@ class AnyTest extends TestCase
             --$actualTimes;
         }
         
-        self::assertSame($expectedMessage, $this->any->message());
+        self::assertSame($expectedMessage, $this->any->message(self::nullSerialiser()));
     }
 }

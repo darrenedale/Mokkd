@@ -18,5 +18,5 @@ interface Expectation
     public function isSatisfied(): bool;
 
     /** The message indicating the expectation isn't satisified. */
-    public function message(): string;
+    public function message(Serialiser $serialiser): string;
 }

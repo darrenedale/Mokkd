@@ -7,6 +7,7 @@ namespace MokkdTests\Expectations;
 use LogicException;
 use Mokkd\Contracts\Expectation;
 use Mokkd\Contracts\KeyMapper as KeyMapperContract;
+use Mokkd\Contracts\Serialiser as SerialiserContract;
 use Mokkd\Exceptions\ExpectationException;
 use Mokkd\Expectations\AbstractExpectation;
 use Mokkd\Expectations\ReturnMode;
@@ -45,9 +46,9 @@ class AbstractExpectationTest extends TestCase
                 return ($this->isSatisfiedFn)();
             }
 
-            public function message(): string
+            public function message(SerialiserContract $serialiser): string
             {
-                return ($this->messageFn)();
+                return ($this->messageFn)($serialiser);
             }
         };
 

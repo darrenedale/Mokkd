@@ -6,6 +6,7 @@ namespace Mokkd\Expectations;
 
 use Mokkd\Contracts\Expectation as ExpectationContract;
 use Mokkd\Contracts\Matcher as MatcherContract;
+use Mokkd\Contracts\Serialiser as SerialiserContract;
 
 class Expectation extends AbstractExpectation implements ExpectationContract
 {
@@ -43,9 +44,9 @@ class Expectation extends AbstractExpectation implements ExpectationContract
         return $this->expectedCount === ExpectationContract::UnlimitedTimes || $this->matchCount === $this->expectedCount;
     }
 
-    public function message(): string
+    public function message(SerialiserContract $serialiser): string
     {
-        $arguments = array_map(static fn(MatcherContract $matcher): string => (string) $matcher, $this->argumentMatchers);
+        $arguments = array_map(static fn(MatcherContract $matcher): string => $matcher->describe($serialiser), $this->argumentMatchers);
         return "(" . implode(", ", $arguments) . ") expected to be called exactly {$this->expectedCount} time(s) but called {$this->matchCount} time(s)";
     }
 }
