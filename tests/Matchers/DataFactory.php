@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers;
 
 use LogicException;
+use Mokkd\Utilities\IterableAlgorithms;
 use MokkdTests\TestCase;
 use stdClass;
 
@@ -425,12 +426,19 @@ class DataFactory
         }
     }
 
+    /** @return iterable<string,object> */
     public static function objects(): iterable
     {
         yield from self::anonymousObject();
         yield from self::stdClassObject();
         yield from self::typeMatcherInstances();
     }
+
+    public static function classNames(): iterable
+    {
+        yield from IterableAlgorithms::transform(self::objects(), fn(array $object): array => [(self::unboxSingle($object))::class]);
+    }
+
 
     //
     // resources

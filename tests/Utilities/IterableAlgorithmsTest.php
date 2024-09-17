@@ -8,10 +8,12 @@ use ArrayIterator;
 use Generator;
 use Mokkd\Utilities\IterableAlgorithms;
 use MokkdTests\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Traversable;
 
-class IterableUtilitiesTest extends TestCase
+#[CoversClass(IterableAlgorithms::class)]
+class IterableAlgorithmsTest extends TestCase
 {
     private static function createGenerator(array $items): Generator
     {
@@ -26,9 +28,9 @@ class IterableUtilitiesTest extends TestCase
     public static function emptyIterables(): iterable
     {
         $data = [];
-        yield "int-array" => [$data];
-        yield "int-generator" => [self::createGenerator($data)];
-        yield "int-traversable" => [self::createTraversable($data)];
+        yield "empty-array" => [$data];
+        yield "empty-generator" => [self::createGenerator($data)];
+        yield "empty-traversable" => [self::createTraversable($data)];
     }
 
     public static function intIterables(): iterable
@@ -111,7 +113,7 @@ class IterableUtilitiesTest extends TestCase
         $called = false;
 
         $predicate = static function(mixed $value) use (&$called): bool {
-            IterableUtilitiesTest::assertFalse($called);
+            IterableAlgorithmsTest::assertFalse($called);
             $called = true;
             return false;
         };
@@ -132,7 +134,7 @@ class IterableUtilitiesTest extends TestCase
         $called = false;
 
         $predicate = static function(mixed $value) use (&$called): bool {
-            IterableUtilitiesTest::fail("The predicate should not be called");
+            IterableAlgorithmsTest::fail("The predicate should not be called");
         };
 
         self::assertSame(true, IterableAlgorithms::all($testData, $predicate));
@@ -213,7 +215,7 @@ class IterableUtilitiesTest extends TestCase
         $called = false;
 
         $predicate = static function(mixed $value) use (&$called): bool {
-            IterableUtilitiesTest::assertFalse($called);
+            IterableAlgorithmsTest::assertFalse($called);
             $called = true;
             return false;
         };
@@ -234,7 +236,7 @@ class IterableUtilitiesTest extends TestCase
         $called = false;
 
         $predicate = static function(mixed $value) use (&$called): bool {
-            IterableUtilitiesTest::fail("The predicate should not be called");
+            IterableAlgorithmsTest::fail("The predicate should not be called");
         };
 
         self::assertSame(true, IterableAlgorithms::allKeys($testData, $predicate));
@@ -281,5 +283,68 @@ class IterableUtilitiesTest extends TestCase
 
         self::assertSame(false, IterableAlgorithms::allKeys($testData, $predicate));
         self::assertSame(3, $called);
+    }
+
+    public static function dataForTestTransform1(): iterable
+    {
+        yield from self::iterables();
+    }
+
+    /** Ensure the transformation function is called exactly once per value. */
+    #[DataProvider("dataForTestTransform1")]
+    public function testTransform1(iterable $values): void
+    {
+        $received = [];
+        $expected = [];
+        $values = IterableAlgorithms::cache($values, $expected);
+
+        $transform = static function(mixed $value) use (&$received): int {
+            $received[] = $value;
+            return count($received);
+        };
+
+        $actual = IterableAlgorithms::transform($values, $transform);
+        self::assertIsIterable($actual);
+        self::assertSame(array_values($expected), $received);
+        $actual = iterator_to_array($actual);
+
+        if (0 === count($expected)) {
+            self::assertSame([], $actual);
+        } else {
+            self::assertSame(range(1, count($expected)), array_values($actual));
+            self::assertSame(array_keys($expected), array_keys($actual));
+        }
+    }
+
+    public static function dataForTestCache1(): iterable
+    {
+        yield from self::iterables();
+    }
+
+    /** Ensure the yielded iterable and the cache matches the original. */
+    #[DataProvider("dataForTestCache1")]
+    public function testCache1(iterable $iterable): void
+    {
+        $cache = [];
+        $iterable = iterator_to_array($iterable);
+        $actual = iterator_to_array(IterableAlgorithms::cache($iterable, $cache));
+        self::assertSame($iterable, $actual);
+        self::assertSame($iterable, $cache);
+    }
+
+    public static function dataForTestCache2(): iterable
+    {
+        yield from self::iterables();
+    }
+
+    /** Ensure the cache and the iterable are the same. */
+    #[DataProvider("dataForTestCache2")]
+    public function testCache2(iterable $iterable): void
+    {
+        $cache = [];
+        $actual = IterableAlgorithms::cache($iterable, $cache);
+        self::assertIsIterable($actual);
+        $actual = iterator_to_array($actual);
+        self::assertSame($actual, $cache);
     }
 }

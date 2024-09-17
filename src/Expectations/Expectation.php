@@ -19,12 +19,13 @@ class Expectation extends AbstractExpectation implements ExpectationContract
         $this->argumentMatchers = $expectedArgs;
     }
 
+    /** Convenience method to fetch an Expectation that matches any call args. */
     public static function any(): Any
     {
         return new Any();
     }
 
-    public function matches(...$args): bool
+    public function matches(mixed ...$args): bool
     {
         if (count($args) !== count($this->argumentMatchers)) {
             return false;
