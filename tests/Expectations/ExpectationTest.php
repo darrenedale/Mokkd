@@ -150,7 +150,7 @@ class ExpectationTest extends TestCase
     /** Ensure message() calls the provided serialiser for is arguments. */
     public function testMessage1(): void
     {
-        $args = DataFactory::unboxSingle(DataFactory::mixedArray());
+        $args = DataFactory::unboxSingle(DataFactory::mixedListArray());
         $serialised = array_map(static fn(mixed $value) => gettype($value), $args);
         $matchers = array_map(static fn(mixed $value): MatcherContract => new IsEqualTo($value), $args);
 

@@ -29,7 +29,7 @@ class IsAssociativeArrayTest extends TestCase
     public static function dataForTestMatches2(): iterable
     {
         yield "null" => [null];
-        yield from DataFactory::listArrays();
+        yield from DataFactory::nonEmptyListArrays();
         yield from DataFactory::strings();
         yield from DataFactory::integers();
         yield from DataFactory::floats();

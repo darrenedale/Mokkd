@@ -17,9 +17,10 @@ class IsNonEmptyAssociativeArrayTest extends TestCase
     public static function dataForTestMatches1(): iterable
     {
         yield from DataFactory::nonEmptyAssociativeArrays();
+        yield from DataFactory::nonEmptyPropertyMaps();
     }
 
-    /** Ensure all non-empty arrays (or a sensible approximation thereof) successfully match. */
+    /** Ensure all non-empty associative arrays (or a sensible approximation thereof) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(array $test): void
     {
@@ -31,7 +32,7 @@ class IsNonEmptyAssociativeArrayTest extends TestCase
         yield "null" => [null];
         yield from DataFactory::strings();
         yield from DataFactory::emptyArray();
-        yield from DataFactory::listArrays();
+        yield from DataFactory::nonEmptyListArrays();
         yield from DataFactory::integers();
         yield from DataFactory::floats();
         yield from DataFactory::booleans();

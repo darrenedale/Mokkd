@@ -13,7 +13,7 @@ class IsAssociativeArray implements MatcherContract
 {
     public function matches(mixed $actual): bool
     {
-        return is_array($actual) && !array_is_list($actual);
+        return is_array($actual) && (0 === count($actual) || !array_is_list($actual));
     }
 
     public function describe(SerialiserContract $serialiser): string

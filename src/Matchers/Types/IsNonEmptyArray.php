@@ -17,6 +17,6 @@ class IsNonEmptyArray implements MatcherContract
 
     public function describe(SerialiserContract $serialiser): string
     {
-        return "(array) {empty}";
+        return "(array) {non-empty}";
     }
 }

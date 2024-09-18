@@ -170,7 +170,7 @@ class DataFactory
 
     public static function mixedAssociativeArray(): iterable
     {
-        yield "array-mixed" => [
+        yield "associative-array-mixed" => [
             [
                 "string" => "func",
                 "true" => true,
@@ -192,28 +192,14 @@ class DataFactory
         ];
     }
 
+    /** These are all not property maps - these are arrays that are neither lists  nor property maps. */
     public static function nonEmptyAssociativeArrays(): iterable
     {
-        $resource = fopen("php://memory", "r");
-        yield "associative-associative-array-one-int" => [["int" => 2]];
-        yield "associative-array-one-float" => [["float" => 1.4142136]];
-        yield "associative-array-one-string" => [["string" => "mokkd"]];
-        yield "associative-array-one-true" => [["true" => true]];
-        yield "associative-array-one-false" => [["false" => false]];
-        yield "associative-array-one-null" => [["null" => null]];
-        yield "associative-array-one-empty-array" => [["empty-array" => []]];
-        yield "associative-array-one-array" => [["array" => ["mokkd", 3, 1.4142136]]];
-        yield "associative-array-one-object" => [["object" => new class {}]];
-        yield "associative-array-one-resource" => [["resource" => $resource]];
-        yield "associative-array-three-ints" => [["one" => 1, "two" => 2, "three" => 3]];
+        yield "associative-array-three-ints" => [["one" => 1, 2 => 2, "three" => 3]];
         yield "associative-array-three-floats" => [[" 0" => 3.1415927, 1 => 0.57721567, 2 => 1.4142136]];
         yield "associative-array-three-strings" => [[0 => "mokkd", 1 => "func", 3 => "test"]];
         yield "associative-array-three-bools" => [[1 => true, 2 => false, 3 => false]];
-        yield "associative-array-three-nulls" => [["null-1" => null, "null-2" => null, "null-3" => null]];
-        yield "associative-array-three-empty-arrays" => [["empty-1" => [], "empty-2" => [], "empty-3" => []]];
-        yield "associative-array-three-arrays" => [["array-1" => ["mokkd", 3, 1.4142136], "array-2" => [null, "test", new class {}], "array-3" => [$resource, [], true]]];
         yield "associative-array-three-objects" => [[0 => new class {}, 2 => new class {}, 3 => new class {}]];
-        yield "associative-array-three-resources" => [["resource-1" => $resource, "resource-2" => $resource, "resource-3" => $resource]];
 
         yield from self::mixedAssociativeArray();
     }
@@ -226,12 +212,71 @@ class DataFactory
         yield from self::nonEmptyAssociativeArrays();
     }
 
+    /** A property map (string keys) with mixed values. */
+    public static function mixedPropertyMap(): iterable
+    {
+        yield "property-map-mixed" => [
+            [
+                "string" => "func",
+                "true" => true,
+                "nil" => null,
+                "pi" => 3.1415927,
+                "empty-array" => [],
+                "resource" => fopen("php://memory", "r"),
+                "two" => 1,
+                "test" => "test",
+                "object" => new class {},
+                "pythagoras" => 1.4142136,
+                "string-2" => "mokkd",
+                "array" => [new class {}, ["mokkd", 3], true],
+                "three" => 3,
+                "four" => false,
+                "float-2" => 0.57721567,
+                "int" => 2,
+            ]
+        ];
+    }
+
+    /** Property maps (string keys) that are not empty. */
+    public static function nonEmptyPropertyMaps(): iterable
+    {
+        $resource = fopen("php://memory", "r");
+        yield "property-map-one-int" => [["int" => 2]];
+        yield "property-map-one-float" => [["float" => 1.4142136]];
+        yield "property-map-one-string" => [["string" => "mokkd"]];
+        yield "property-map-one-true" => [["true" => true]];
+        yield "property-map-one-false" => [["false" => false]];
+        yield "property-map-one-null" => [["null" => null]];
+        yield "property-map-one-empty-array" => [["empty-array" => []]];
+        yield "property-map-one-array" => [["array" => ["mokkd", 3, 1.4142136]]];
+        yield "property-map-one-object" => [["object" => new class {}]];
+        yield "property-map-one-resource" => [["resource" => $resource]];
+        yield "property-map-three-nulls" => [["null-1" => null, "null-2" => null, "null-3" => null]];
+        yield "property-map-three-empty-arrays" => [["empty-1" => [], "empty-2" => [], "empty-3" => []]];
+        yield "property-map-three-arrays" => [["array-1" => ["mokkd", 3, 1.4142136], "array-2" => [null, "test", new class {}], "array-3" => [$resource, [], true]]];
+        yield "property-map-three-resources" => [["resource-1" => $resource, "resource-2" => $resource, "resource-3" => $resource]];
+
+        yield from self::mixedPropertyMap();
+    }
+
+    /** All property maps (string keys) */
+    public static function propertyMaps(): iterable
+    {
+        foreach (self::emptyArray() as $label => $data) {
+            yield "property-map-{$label}" => $data;
+        }
+
+        yield from self::nonEmptyPropertyMaps();
+    }
+
     public static function nonEmptyArrays(): iterable
     {
         yield from self::nonEmptyListArrays();
         yield from self::nonEmptyAssociativeArrays();
+        yield from self::nonEmptyPropertyMaps();
     }
 
+    /** @return iterable<string,array> */
     public static function arrays(): iterable
     {
         yield from self::listArrays();

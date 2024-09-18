@@ -29,7 +29,8 @@ class IsListTest extends TestCase
     public static function dataForTestMatches2(): iterable
     {
         yield "null" => [null];
-        yield from DataFactory::associativeArrays();
+        yield from DataFactory::nonEmptyAssociativeArrays();
+        yield from DataFactory::nonEmptyPropertyMaps();
         yield from DataFactory::strings();
         yield from DataFactory::integers();
         yield from DataFactory::floats();
