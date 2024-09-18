@@ -4,33 +4,34 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers\Types;
 
-use Mokkd\Matchers\Types\IsList;
+use Mokkd\Matchers\Types\IsNonEmptyList;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class IsListTest extends TestCase
+class IsNonEmptyListTest extends TestCase
 {
     use CreatesNullSerialiser;
 
     public static function dataForTestMatches1(): iterable
     {
-        yield from DataFactory::listArrays();
+        yield from DataFactory::nonEmptyListArrays();
     }
 
-    /** Ensure all lists (or a sensible approximation thereof) successfully match. */
+    /** Ensure all non-empty lists (or a sensible approximation thereof) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(array $test): void
     {
-        self::assertTrue((new IsList())->matches($test));
+        self::assertTrue((new IsNonEmptyList())->matches($test));
     }
 
     public static function dataForTestMatches2(): iterable
     {
         yield "null" => [null];
-        yield from DataFactory::associativeArrays();
         yield from DataFactory::strings();
+        yield from DataFactory::emptyArray();
+        yield from DataFactory::nonEmptyAssociativeArrays();
         yield from DataFactory::integers();
         yield from DataFactory::floats();
         yield from DataFactory::booleans();
@@ -38,16 +39,16 @@ class IsListTest extends TestCase
         yield from DataFactory::resources();
     }
 
-    /** Ensure non-lists fail to match. */
+    /** Ensure non-arrays fail to match. */
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(mixed $test): void
     {
-        self::assertFalse((new IsList())->matches($test));
+        self::assertFalse((new IsNonEmptyList())->matches($test));
     }
 
-    /** Ensure the IsList matcher describes itself as expected. */
+    /** Ensure the IsNonEmptyList matcher describes itself as expected. */
     public function testDescribe1(): void
     {
-        self::assertSame("(array) {list}", (new IsList())->describe(self::nullSerialiser()));
+        self::assertSame("(array) {non-empty list}", (new IsNonEmptyList())->describe(self::nullSerialiser()));
     }
 }

@@ -4,33 +4,34 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers\Types;
 
-use Mokkd\Matchers\Types\IsList;
+use Mokkd\Matchers\Types\IsNonEmptyAssociativeArray;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class IsListTest extends TestCase
+class IsNonEmptyAssociativeArrayTest extends TestCase
 {
     use CreatesNullSerialiser;
 
     public static function dataForTestMatches1(): iterable
     {
-        yield from DataFactory::listArrays();
+        yield from DataFactory::nonEmptyAssociativeArrays();
     }
 
-    /** Ensure all lists (or a sensible approximation thereof) successfully match. */
+    /** Ensure all non-empty arrays (or a sensible approximation thereof) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(array $test): void
     {
-        self::assertTrue((new IsList())->matches($test));
+        self::assertTrue((new IsNonEmptyAssociativeArray())->matches($test));
     }
 
     public static function dataForTestMatches2(): iterable
     {
         yield "null" => [null];
-        yield from DataFactory::associativeArrays();
         yield from DataFactory::strings();
+        yield from DataFactory::emptyArray();
+        yield from DataFactory::listArrays();
         yield from DataFactory::integers();
         yield from DataFactory::floats();
         yield from DataFactory::booleans();
@@ -38,16 +39,16 @@ class IsListTest extends TestCase
         yield from DataFactory::resources();
     }
 
-    /** Ensure non-lists fail to match. */
+    /** Ensure non-arrays fail to match. */
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(mixed $test): void
     {
-        self::assertFalse((new IsList())->matches($test));
+        self::assertFalse((new IsNonEmptyAssociativeArray())->matches($test));
     }
 
-    /** Ensure the IsList matcher describes itself as expected. */
+    /** Ensure the IsNonEmptyAssociativeArray matcher describes itself as expected. */
     public function testDescribe1(): void
     {
-        self::assertSame("(array) {list}", (new IsList())->describe(self::nullSerialiser()));
+        self::assertSame("(array) {non-empty-associative}", (new IsNonEmptyAssociativeArray())->describe(self::nullSerialiser()));
     }
 }

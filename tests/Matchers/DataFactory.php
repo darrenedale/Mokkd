@@ -113,7 +113,7 @@ class DataFactory
         yield "array-empty" => [[]];
     }
 
-    public static function mixedArray(): iterable
+    public static function mixedListArray(): iterable
     {
         yield "array-mixed" => [
             [
@@ -137,10 +137,8 @@ class DataFactory
         ];
     }
 
-    public static function listArrays(): iterable
+    public static function nonEmptyListArrays(): iterable
     {
-        yield from self::emptyArray();
-
         $resource = fopen("php://memory", "r");
         yield "array-one-int" => [[2]];
         yield "array-one-float" => [[1.4142136]];
@@ -161,11 +159,40 @@ class DataFactory
         yield "array-three-arrays" => [[["mokkd", 3, 1.4142136], [null, "test", new class {}], [$resource, [], true]]];
         yield "array-three-objects" => [[new class {}, new class {}, new class {}]];
         yield "array-three-resources" => [[$resource, $resource, $resource]];
-
-        yield from self::mixedArray();
+        yield from self::mixedListArray();
     }
 
-    public static function associativeArrays(): iterable
+    public static function listArrays(): iterable
+    {
+        yield from self::emptyArray();
+        yield from self::nonEmptyListArrays();
+    }
+
+    public static function mixedAssociativeArray(): iterable
+    {
+        yield "array-mixed" => [
+            [
+                "string" => "func",
+                "true" => true,
+                "0" => null,
+                1 => 3.1415927,
+                "empty-array" => [],
+                "resource" => fopen("php://memory", "r"),
+                2 => 1,
+                "test" => "test",
+                "object" => new class {},
+                "float" => 1.4142136,
+                "string-2" => "mokkd",
+                "array" => [new class {}, ["mokkd", 3], true],
+                3 => 3,
+                4 => false,
+                "float-2" => 0.57721567,
+                "int" => 2,
+            ]
+        ];
+    }
+
+    public static function nonEmptyAssociativeArrays(): iterable
     {
         $resource = fopen("php://memory", "r");
         yield "associative-associative-array-one-int" => [["int" => 2]];
@@ -179,7 +206,7 @@ class DataFactory
         yield "associative-array-one-object" => [["object" => new class {}]];
         yield "associative-array-one-resource" => [["resource" => $resource]];
         yield "associative-array-three-ints" => [["one" => 1, "two" => 2, "three" => 3]];
-        yield "associative-array-three-floats" => [["0" => 3.1415927, "1" => 0.57721567, "2" => 1.4142136]];
+        yield "associative-array-three-floats" => [[" 0" => 3.1415927, 1 => 0.57721567, 2 => 1.4142136]];
         yield "associative-array-three-strings" => [[0 => "mokkd", 1 => "func", 3 => "test"]];
         yield "associative-array-three-bools" => [[1 => true, 2 => false, 3 => false]];
         yield "associative-array-three-nulls" => [["null-1" => null, "null-2" => null, "null-3" => null]];
@@ -187,6 +214,22 @@ class DataFactory
         yield "associative-array-three-arrays" => [["array-1" => ["mokkd", 3, 1.4142136], "array-2" => [null, "test", new class {}], "array-3" => [$resource, [], true]]];
         yield "associative-array-three-objects" => [[0 => new class {}, 2 => new class {}, 3 => new class {}]];
         yield "associative-array-three-resources" => [["resource-1" => $resource, "resource-2" => $resource, "resource-3" => $resource]];
+
+        yield from self::mixedAssociativeArray();
+    }
+
+    public static function associativeArrays(): iterable
+    {
+        foreach (self::emptyArray() as $label => $data) {
+            yield "associative-{$label}" => $data;
+        }
+        yield from self::nonEmptyAssociativeArrays();
+    }
+
+    public static function nonEmptyArrays(): iterable
+    {
+        yield from self::nonEmptyListArrays();
+        yield from self::nonEmptyAssociativeArrays();
     }
 
     public static function arrays(): iterable
