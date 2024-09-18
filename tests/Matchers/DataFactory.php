@@ -137,7 +137,7 @@ class DataFactory
         ];
     }
 
-    public static function arrays(): iterable
+    public static function listArrays(): iterable
     {
         yield from self::emptyArray();
 
@@ -163,6 +163,36 @@ class DataFactory
         yield "array-three-resources" => [[$resource, $resource, $resource]];
 
         yield from self::mixedArray();
+    }
+
+    public static function associativeArrays(): iterable
+    {
+        $resource = fopen("php://memory", "r");
+        yield "associative-associative-array-one-int" => [["int" => 2]];
+        yield "associative-array-one-float" => [["float" => 1.4142136]];
+        yield "associative-array-one-string" => [["string" => "mokkd"]];
+        yield "associative-array-one-true" => [["true" => true]];
+        yield "associative-array-one-false" => [["false" => false]];
+        yield "associative-array-one-null" => [["null" => null]];
+        yield "associative-array-one-empty-array" => [["empty-array" => []]];
+        yield "associative-array-one-array" => [["array" => ["mokkd", 3, 1.4142136]]];
+        yield "associative-array-one-object" => [["object" => new class {}]];
+        yield "associative-array-one-resource" => [["resource" => $resource]];
+        yield "associative-array-three-ints" => [["one" => 1, "two" => 2, "three" => 3]];
+        yield "associative-array-three-floats" => [["0" => 3.1415927, "1" => 0.57721567, "2" => 1.4142136]];
+        yield "associative-array-three-strings" => [[0 => "mokkd", 1 => "func", 3 => "test"]];
+        yield "associative-array-three-bools" => [[1 => true, 2 => false, 3 => false]];
+        yield "associative-array-three-nulls" => [["null-1" => null, "null-2" => null, "null-3" => null]];
+        yield "associative-array-three-empty-arrays" => [["empty-1" => [], "empty-2" => [], "empty-3" => []]];
+        yield "associative-array-three-arrays" => [["array-1" => ["mokkd", 3, 1.4142136], "array-2" => [null, "test", new class {}], "array-3" => [$resource, [], true]]];
+        yield "associative-array-three-objects" => [[0 => new class {}, 2 => new class {}, 3 => new class {}]];
+        yield "associative-array-three-resources" => [["resource-1" => $resource, "resource-2" => $resource, "resource-3" => $resource]];
+    }
+
+    public static function arrays(): iterable
+    {
+        yield from self::listArrays();
+        yield from self::associativeArrays();
     }
 
     //
