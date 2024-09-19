@@ -824,6 +824,7 @@ JSON
         }
     }
 
+    /** Yield a data provider with modified dataset labels. */
     public static function relabel(iterable $data, string|array $newLabel, RelabelMode $mode): iterable
     {
         $changeLabel = match ($mode) {
@@ -868,6 +869,17 @@ JSON
         return $data[0];
     }
 
+    /**
+     * Apply a transformation to a given data provider and yield the result.
+     *
+     * The transformation function is called for each item in each dataset. Each dataset is yielded once all its items
+     * have been transformed, with the original label.
+     *
+     * @param iterable<int|string,mixed> $data The data provider's data.
+     * @param callable $transform The function to do the transformation.
+     *
+     * @return iterable<int|string,mixed> The transformed data provider.
+     */
     public static function transform(iterable $data, callable $transform): iterable
     {
         foreach ($data as $label => $args) {
