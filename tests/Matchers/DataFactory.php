@@ -9,6 +9,13 @@ use Mokkd\Utilities\IterableAlgorithms;
 use MokkdTests\TestCase;
 use stdClass;
 
+Enum RelabelMode
+{
+    case Prefix;
+    case Suffix; 
+    case Replace; 
+}
+
 // TODO use box() helper to wrap datasets
 class DataFactory
 {
@@ -104,6 +111,16 @@ class DataFactory
         yield "unequal-zero-float-string-and-false" => ["0.0", false];
     }
 
+    //
+    // null
+    //
+    
+    public static function nullValue(): iterable
+    {
+        yield "null" => [null];
+    }
+
+    
     //
     // arrays
     //
@@ -461,6 +478,9 @@ class DataFactory
         yield "string-multi-word-2" => ["eating final wellness"];
         yield "string-multi-word-3" => ["closing neptune"];
         yield "string-multi-word-4" => ["orchestrate yellow input finance glutton"];
+        yield "string-multi-word-double-quotes" => ["fundamental \"estrange guitar\" triumph yelling fortitude exasperated"];
+        yield "string-multi-word-single-quotes" => ["stretched 'wilting stable' menthol ingrown acute"];
+        yield "string-multi-word-punctuation" => ["porcupine = drench-quitter (build) junior+time, casket: opiate; rusting!! sparrow? drains & leash@brighter.info <notable/challenge> £fourteen twenty% \$fifty *annotation"];
     }
 
     public static function binaryStrings(): iterable
@@ -480,9 +500,117 @@ class DataFactory
         }
     }
 
-    public static function strings(): iterable
+    public static function jsonStrings(): iterable
     {
-        yield from self::emptyString();
+        // scalar literals
+        yield "json-null" => ["null"];
+        yield "json-true" => ["true"];
+        yield "json-false" => ["false"];
+        yield from self::relabel(self::integerStrings(), "json-", RelabelMode::Prefix);
+        yield from self::relabel(self::floatStrings(), "json-", RelabelMode::Prefix);
+
+        // arrays
+        yield "json-empty-array" => ["[]"];
+        yield "json-empty-array-leading-whitespace" => [" []"];
+        yield "json-empty-array-trailing-whitespace" => ["[] "];
+        yield "json-empty-array-embedded-whitespace" => ["[ ]"];
+        yield "json-empty-array-whitespace" => [" [ ] "];
+
+        yield "json-array-ints" => ["[" . IterableAlgorithms::reduce(
+            IterableAlgorithms::transform(self::integers(), [self::class, "unboxSingle"]),
+            static fn (string $carry, int $value): string => $carry . ("" === $carry ? "" : ", ") . $value,
+            "",
+        ) . "]"];
+
+        yield "json-array-floats" => ["[" . IterableAlgorithms::reduce(
+            IterableAlgorithms::transform(self::floats(), [self::class, "unboxSingle"]),
+            static fn (string $carry, float $value): string => $carry . ("" === $carry ? "" : ", ") . $value,
+            "",
+        ) . "]"];
+
+        yield "json-array-booleans" => ["[false, true, false, false, true, false, true, true, false, true, true]"];
+
+        yield "json-array-strings" => ["[" . IterableAlgorithms::reduce(
+            IterableAlgorithms::transform(
+                [...self::singleWordStrings(), ...self::multiWordStrings()],
+                [self::class, "unboxSingle"]
+            ),
+            static fn (string $carry, string $value): string => sprintf(("" === $carry ? "%s" : "%s, ") . "\"%s\"", $carry, str_replace("\"", "\\\"", $value)),
+            "",
+        ) . "]"];
+
+        yield "json-array-mixed" => ["[false, 1, \"mokkd\", 2, 3.1415927, true, 3, \"func\", 0.57721567]"];
+
+        // objects
+        yield "json-empty-object" => ["{}"];
+        yield "json-empty-object-leading-whitespace" => [" {}"];
+        yield "json-empty-object-trailing-whitespace" => ["{} "];
+        yield "json-empty-object-embedded-whitespace" => ["{ }"];
+        yield "json-empty-object-whitespace" => [" { } "];
+
+        // string property values
+        $transformString = static fn(string $value): string => "{\"mokkd\": \"" . str_replace("\"", "\\\"", $value) . "\"}";
+        yield from self::relabel(self::transform(self::singleWordStrings(), $transformString), "json-object-one-property-", RelabelMode::Prefix);
+        yield from self::relabel(self::transform(self::multiWordStrings(), $transformString), "json-object-one-property-", RelabelMode::Prefix);
+
+        // int and float property values
+        $transformNumeric = static fn(int|float $value): string => "{\"mokkd\": \"{$value}\"}";
+        yield from self::relabel(self::transform(self::integers(), $transformNumeric), "json-object-one-property-", RelabelMode::Prefix);
+        yield from self::relabel(self::transform(self::floats(), static fn(float $value): string => "{$value}"), "json-object-one-property-", RelabelMode::Prefix);
+
+        // boolean property values
+        yield "json-object-one-property-bool-true" => ["{\"mokkd\": true}"];
+        yield "json-object-one-property-bool-false" => ["{\"mokkd\": false}"];
+
+        yield "json-object-complex-unformatted" => ["{ \"mokkd\": \"func\", \"major-version\": 1, \"pi\": 3.1415927, \"tags\": { \"category\": \"development\", \"language\": \"PHP\", \"bead\": \"framework\" }, \"isDevelopment\": true, \"documents\": [ { \"id\": 1, \"author\": \"Spud\", \"metadata\": { \"version\": \"0.9.6\", \"date\": \"2024-09-19\" }, \"content\": { \"text/html\": \"<!DOCTYPE html><html lang=\\\"en\\\"><head><title>Spud&apos;s Doc</title><body><h1>Spud&apos;s Doc</h1></body></html>\", \"text/markdown\": \"#Spud's Doc\" } }, { \"id\": 2, \"author\": \"Tater\", \"metadata\": { \"version\": \"0.7.3\", \"date\": \"2024-09-18\" }, \"content\": { \"text/html\": \"<!DOCTYPE html><html lang=\\\"fr\\\"><head><title>Tater&apos;s Doc</title><body><h1>Tater&apos;s Doc</h1></body></html>\", \"text/markdown\": \"#Tater's Doc\", \"text/plain\": \"Tater's Doc\" } } ] }"];
+
+        yield "json-object-complex-formatted" => [
+            <<<JSON
+{
+    "mokkd": "func",
+    "major-version": 1,
+    "pi": 3.1415927,
+    "tags": {
+        "category": "development",
+        "language": "PHP",
+        "bead": "framework"
+    },
+    "isDevelopment": true,
+    "documents":
+    [
+        {
+            "id": 1,
+            "author": "Spud",
+            "metadata": {
+                "version": "0.9.6",
+                "date": "2024-09-19"
+            },
+            "content": {
+                "text/html": "<!DOCTYPE html><html lang=\\"en\\"><head><title>Spud&apos;s Doc</title><body><h1>Spud&apos;s Doc</h1></body></html>",
+                "text/markdown": "#Spud's Doc"
+            }
+        },
+        {
+            "id": 2,
+            "author": "Tater",
+            "metadata": {
+                "version": "0.7.3",
+                "date": "2024-09-18"
+            },
+            "content": {
+                "text/html": "<!DOCTYPE html><html lang=\\"en\\"><head><title>Tater&apos;s Doc</title><body><h1>Tater&apos;s Doc</h1></body></html>",
+                "text/markdown": "#Tater's Doc",
+                "text/plain": "Tater's Doc"
+            }
+        }
+    ]
+}
+JSON
+        ];
+    }
+
+    public static function nonEmptyStrings(): iterable
+    {
         yield from self::whitespaceString();
         yield from self::singleCharacterStrings();
         yield from self::singleWordStrings();
@@ -490,6 +618,13 @@ class DataFactory
         yield from self::binaryStrings();
         yield from self::integerStrings();
         yield from self::floatStrings();
+        yield from self::jsonStrings();
+    }
+
+    public static function strings(): iterable
+    {
+        yield from self::emptyString();
+        yield from self::nonEmptyStrings();
     }
 
     //
@@ -689,6 +824,22 @@ class DataFactory
         }
     }
 
+    public static function relabel(iterable $data, string|array $newLabel, RelabelMode $mode): iterable
+    {
+        $changeLabel = match ($mode) {
+            RelabelMode::Prefix => static fn (string|int $label): string => "{$newLabel}{$label}",
+            RelabelMode::Suffix => static fn (string|int $label): string => "{$newLabel}{$label}",
+            RelabelMode::Replace => static function (string|int $label) use (&$newLabel): string {
+                assert (is_array($newLabel) && 0 < count($newLabel));
+                return array_shift($newLabel);
+            },
+        };
+
+        foreach ($data as $label => $args) {
+            yield $changeLabel($label) => $args;
+        }
+    }
+    
     /** Helper to repeat a single value n times. */
     public static function repeat(int $count, mixed $value): iterable
     {
@@ -715,6 +866,13 @@ class DataFactory
         assert(1 === count($data));
         $data = array_values($data);
         return $data[0];
+    }
+
+    public static function transform(iterable $data, callable $transform): iterable
+    {
+        foreach ($data as $label => $args) {
+            yield $label => iterator_to_array(IterableAlgorithms::values(IterableAlgorithms::transform($args, $transform)));
+        }
     }
 
     /**

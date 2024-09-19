@@ -38,6 +38,14 @@ class IterableAlgorithms
         return true;
     }
 
+    /** Yield all the values in an iterable, discarding the keys. */
+    public static function values(iterable $values): iterable
+    {
+        foreach ($values as $value) {
+            yield $value;
+        }
+    }
+
     /**
      * @template T
      *
@@ -56,6 +64,32 @@ class IterableAlgorithms
         foreach ($values as $key => $value) {
             yield $key => $transform($value);
         }
+    }
+
+    /**
+     * TODO test
+     * @template T
+     *
+     * Reduce an iterable to a single value using successive calls to a callable.
+     *
+     * The callable receives the result of the previous call to the reducing function (or the initial value for the
+     * first call) - the carry - the value from the iterable, and the key of the value from the iterable, and returns
+     * the carry updated with the value and/or key provided. The result of the last call to the reducing function is
+     * returned.
+     *
+     * @param iterable<string|int,mixed> $values The values to reduce
+     * @param callable(T,mixed,string|int): T $reduce The function to do the reduction.
+     * @param T $initial The initial value to feed to the reducing function.
+     *
+     * @return T The values reduced to a single value.
+     */
+    public static function reduce(iterable $values, callable $reduce, mixed $initial): mixed
+    {
+        foreach ($values as $key => $value) {
+            $initial = $reduce($initial, $value, $key);
+        }
+
+        return $initial;
     }
 
     /** Cache an iterable in an array, and yield a fresh iterable with the same values. */

@@ -26,6 +26,6 @@ class IsJsonString implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A JSON string";
+        return "(string) {json}";
     }
 }
