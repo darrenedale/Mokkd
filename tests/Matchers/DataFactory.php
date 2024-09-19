@@ -223,9 +223,7 @@ class DataFactory
 
     public static function associativeArrays(): iterable
     {
-        foreach (self::emptyArray() as $label => $data) {
-            yield "associative-{$label}" => $data;
-        }
+        yield from self::relabel(self::emptyArray(), "associative-", RelabelMode::Prefix);
         yield from self::nonEmptyAssociativeArrays();
     }
 
@@ -730,11 +728,13 @@ JSON
 
     public static function closedResources(): iterable
     {
-        foreach ([...self::memoryStream(), ...self::temporaryStream()] as $label => $stream) {
-            $stream = self::unboxSingle($stream);
-            fclose($stream);
-            yield "closed-{$label}" => [$stream];
-        }
+        $closeResource = static function($resource) {
+            fclose($resource);
+            return $resource;
+        };
+
+        yield from self::relabel(self::transform(self::memoryStream(), $closeResource), "closed-", RelabelMode::Prefix);
+        yield from self::relabel(self::transform(self::temporaryStream(), $closeResource), "closed-", RelabelMode::Prefix);
     }
 
     public static function resources(): iterable
