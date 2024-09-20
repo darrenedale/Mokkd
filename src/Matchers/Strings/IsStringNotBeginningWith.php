@@ -31,6 +31,6 @@ class IsStringNotBeginningWith implements MatcherContract
     public function describe(Serialiser $serialiser): string
     {
         $prefix = str_replace("\"", "\\\"", $this->prefix);
-        return "A string not beginning with \"{$prefix}\"";
+        return "(string) !\"{$prefix}…\"";
     }
 }

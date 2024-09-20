@@ -19,6 +19,11 @@ class IsStringContaining implements MatcherContract
         $this->infix = $infix;
     }
 
+    public function infix(): string
+    {
+        return $this->infix;
+    }
+
     public function matches(mixed $actual): bool
     {
         if (!is_string($actual)) {
@@ -31,6 +36,6 @@ class IsStringContaining implements MatcherContract
     public function describe(Serialiser $serialiser): string
     {
         $infix = str_replace("\"", "\\\"", $this->infix);
-        return "A string containing \"{$infix}\"";
+        return "(string) \"…{$infix}…\"";
     }
 }

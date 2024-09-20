@@ -16,10 +16,20 @@ class IsStringLongerThan implements MatcherContract
 
     public function __construct(int $length, string $encoding = "UTF-8")
     {
-        // TODO assert encoding
         assert(0 <= $length, new LogicException("Expecting length >= 0, found {$length}"));
+        assert(in_array($encoding, mb_list_encodings(), true), new LogicException("Expected supported character encoding, found \"{$encoding}\""));
         $this->length = $length;
         $this->encoding = $encoding;
+    }
+
+    public function length(): int
+    {
+        return $this->length;
+    }
+
+    public function encoding(): string
+    {
+        return $this->encoding;
     }
 
     public function matches(mixed $actual): bool
@@ -29,6 +39,6 @@ class IsStringLongerThan implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A {$this->encoding} string of more than {$this->length} characters";
+        return "({$this->encoding}-string[>{$this->length}])";
     }
 }

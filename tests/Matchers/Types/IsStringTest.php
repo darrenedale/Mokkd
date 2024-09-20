@@ -19,7 +19,7 @@ class IsStringTest extends TestCase
         yield from DataFactory::strings();
     }
 
-    /** Ensure all strings (or a sensible approximation thereof) successfully match. */
+    /** Ensure all strings (or a reasonable approximation thereof) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(string $test): void
     {

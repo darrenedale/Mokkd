@@ -19,7 +19,7 @@ class IsNonEmptyArrayTest extends TestCase
         yield from DataFactory::nonEmptyArrays();
     }
 
-    /** Ensure all non-empty arrays (or a sensible approximation thereof) successfully match. */
+    /** Ensure all non-empty arrays (or a reasonable approximation thereof) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(array $test): void
     {

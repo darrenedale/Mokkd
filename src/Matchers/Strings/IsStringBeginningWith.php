@@ -19,6 +19,11 @@ class IsStringBeginningWith implements MatcherContract
         $this->prefix = $prefix;
     }
 
+    public function prefix(): string
+    {
+        return $this->prefix;
+    }
+
     public function matches(mixed $actual): bool
     {
         if (!is_string($actual)) {
@@ -31,6 +36,6 @@ class IsStringBeginningWith implements MatcherContract
     public function describe(Serialiser $serialiser): string
     {
         $prefix = str_replace("\"", "\\\"", $this->prefix);
-        return "A string beginning with \"{$prefix}\"";
+        return "(string) \"{$prefix}…\"";
     }
 }

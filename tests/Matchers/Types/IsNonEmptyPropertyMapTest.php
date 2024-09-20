@@ -19,7 +19,7 @@ class IsNonEmptyPropertyMapTest extends TestCase
         yield from DataFactory::nonEmptyPropertyMaps();
     }
 
-    /** Ensure all non-empty property maps (or a sensible approximation thereof) successfully match. */
+    /** Ensure all non-empty property maps (or a reasonable approximation thereof) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(array $test): void
     {

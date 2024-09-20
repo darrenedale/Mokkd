@@ -46,7 +46,7 @@ class AnyTest extends TestCase
         yield "no-arguments" => [];
     }
 
-    /** Ensure (or a sensible approximation thereof) that anything matches. */
+    /** Ensure (or a reasonable approximation thereof) that anything matches. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(mixed ...$args): void
     {

@@ -9,13 +9,6 @@ use Mokkd\Utilities\IterableAlgorithms;
 use MokkdTests\TestCase;
 use stdClass;
 
-Enum RelabelMode
-{
-    case Prefix;
-    case Suffix; 
-    case Replace; 
-}
-
 // TODO use box() helper to wrap datasets
 class DataFactory
 {
@@ -329,9 +322,10 @@ class DataFactory
     public static function negativeIntegers(int $min = -100): iterable
     {
         TestCase::assertLessThan(0, $min);
+        $min = -$min;
 
-        for ($value = -1; $value >= $min; --$value) {
-            yield "integer-{$value}" => [$value];
+        for ($value = 1; $value <= $min; ++$value) {
+            yield "integer-minus-{$value}" => [-$value];
         }
     }
 
@@ -462,12 +456,77 @@ class DataFactory
         yield from self::negativeFloatStrings();
     }
 
+    public static function singleWordLowerCaseStrings(): iterable
+    {
+        yield "string-word-lower-none" => ["none"];
+        yield "string-word-lower-mokkd" => ["mokkd"];
+        yield "string-word-lower-function" => ["function"];
+        yield "string-word-lower-test" => ["test"];
+        yield "string-word-lower-fresh" => ["fresh"];
+        yield "string-word-lower-double" => ["double"];
+        yield "string-word-lower-cattle" => ["cattle"];
+        yield "string-word-lower-limp" => ["limp"];
+        yield "string-word-lower-weather" => ["weather"];
+        yield "string-word-lower-trombone" => ["trombone"];
+        yield "string-word-lower-zoological" => ["zoological"];
+        yield "string-word-lower-trite" => ["trite"];
+        yield "string-word-lower-remember" => ["remember"];
+        yield "string-word-lower-quintessential" => ["quintessential"];
+        yield "string-word-lower-lockers" => ["lockers"];
+        yield "string-word-lower-brink" => ["brink"];
+        yield "string-word-lower-jester" => ["jester"];
+        yield "string-word-lower-alpine" => ["alpine"];
+    }
+
+    public static function singleWordUpperCaseStrings(): iterable
+    {
+        yield "string-word-upper-none" => ["NONE"];
+        yield "string-word-upper-mokkd" => ["MOKKD"];
+        yield "string-word-upper-function" => ["FUNCTION"];
+        yield "string-word-upper-test" => ["TEST"];
+        yield "string-word-upper-fresh" => ["FRESH"];
+        yield "string-word-upper-double" => ["DOUBLE"];
+        yield "string-word-upper-cattle" => ["CATTLE"];
+        yield "string-word-upper-limp" => ["LIMP"];
+        yield "string-word-upper-weather" => ["WEATHER"];
+        yield "string-word-upper-trombone" => ["TROMBONE"];
+        yield "string-word-upper-zoological" => ["ZOOLOGICAL"];
+        yield "string-word-upper-trite" => ["TRITE"];
+        yield "string-word-upper-remember" => ["REMEMBER"];
+        yield "string-word-upper-quintessential" => ["QUINTESSENTIAL"];
+        yield "string-word-upper-lockers" => ["LOCKERS"];
+        yield "string-word-upper-brink" => ["BRINK"];
+        yield "string-word-upper-jester" => ["JESTER"];
+        yield "string-word-upper-alpine" => ["ALPINE"];
+    }
+
+    public static function singleWordTitleCaseStrings(): iterable
+    {
+        yield "string-word-title-none" => ["None"];
+        yield "string-word-title-mokkd" => ["Mokkd"];
+        yield "string-word-title-function" => ["Function"];
+        yield "string-word-title-test" => ["Test"];
+        yield "string-word-title-fresh" => ["Fresh"];
+        yield "string-word-title-double" => ["Double"];
+        yield "string-word-title-cattle" => ["Cattle"];
+        yield "string-word-title-limp" => ["Limp"];
+        yield "string-word-title-weather" => ["Weather"];
+        yield "string-word-title-trombone" => ["Trombone"];
+        yield "string-word-title-zoological" => ["Zoological"];
+        yield "string-word-title-trite" => ["Trite"];
+        yield "string-word-title-remember" => ["Remember"];
+        yield "string-word-title-quintessential" => ["Quintessential"];
+        yield "string-word-title-lockers" => ["Lockers"];
+        yield "string-word-title-brink" => ["Brink"];
+        yield "string-word-title-jester" => ["Jester"];
+        yield "string-word-title-alpine" => ["Alpine"];
+    }
+
     public static function singleWordStrings(): iterable
     {
-        yield "string-word-none" => ["none"];
-        yield "string-word-mokkd" => ["mokkd"];
-        yield "string-word-function" => ["function"];
-        yield "string-word-test" => ["test"];
+        yield from self::singleWordLowerCaseStrings();
+        yield from self::singleWordUpperCaseStrings();
+        yield from self::singleWordTitleCaseStrings();
     }
 
     public static function multiWordStrings(): iterable
@@ -487,15 +546,26 @@ class DataFactory
         yield "string-binary-jpeg" => ["\xff\xd8\xff\xe0\x00\x10\x4a\x46\x49\x46\x00\x01\x01\x01\x00\x60\x00\x60\x00\x00\xff\xdb\x00\x43\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\x09\x09\x08\x0a\x0c\x14\x0d\x0c\x0b\x0b\x0c\x19\x12\x13\x0f\x14\x1d\x1a\x1f\x1e\x1d\x1a\x1c\x1c\x20\x24\x2e\x27\x20\x22\x2c\x23\x1c\x1c\x28\x37\x29\x2c\x30\x31\x34\x34\x34\x1f\x27\x39\x3d\x38\x32\x3c\x2e\x33\x34\x32\xff\xdb\x00\x43\x01\x09\x09\x09\x0c\x0b\x0c\x18\x0d\x0d\x18\x32\x21\x1c\x21\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\x32\xff\xc0\x00\x11\x08\x00\x0d\x00\x0c\x03\x01\x22\x00\x02\x11\x01\x03\x11\x01\xff\xc4\x00\x1f\x00\x00\x01\x05\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\xff\xc4\x00\xb5\x10\x00\x02\x01\x03\x03\x02\x04\x03\x05\x05\x04\x04\x00\x00\x01\x7d\x01\x02\x03\x00\x04\x11\x05\x12\x21\x31\x41\x06\x13\x51\x61\x07\x22\x71\x14\x32\x81\x91\xa1\x08\x23\x42\xb1\xc1\x15\x52\xd1\xf0\x24\x33\x62\x72\x82\x09\x0a\x16\x17\x18\x19\x1a\x25\x26\x27\x28\x29\x2a\x34\x35\x36\x37\x38\x39\x3a\x43\x44\x45\x46\x47\x48\x49\x4a\x53\x54\x55\x56\x57\x58\x59\x5a\x63\x64\x65\x66\x67\x68\x69\x6a\x73\x74\x75\x76\x77\x78\x79\x7a\x83\x84\x85\x86\x87\x88\x89\x8a\x92\x93\x94\x95\x96\x97\x98\x99\x9a\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xff\xc4\x00\x1f\x01\x00\x03\x01\x01\x01\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\xff\xc4\x00\xb5\x11\x00\x02\x01\x02\x04\x04\x03\x04\x07\x05\x04\x04\x00\x01\x02\x77\x00\x01\x02\x03\x11\x04\x05\x21\x31\x06\x12\x41\x51\x07\x61\x71\x13\x22\x32\x81\x08\x14\x42\x91\xa1\xb1\xc1\x09\x23\x33\x52\xf0\x15\x62\x72\xd1\x0a\x16\x24\x34\xe1\x25\xf1\x17\x18\x19\x1a\x26\x27\x28\x29\x2a\x35\x36\x37\x38\x39\x3a\x43\x44\x45\x46\x47\x48\x49\x4a\x53\x54\x55\x56\x57\x58\x59\x5a\x63\x64\x65\x66\x67\x68\x69\x6a\x73\x74\x75\x76\x77\x78\x79\x7a\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x92\x93\x94\x95\x96\x97\x98\x99\x9a\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xff\xda\x00\x0c\x03\x01\x00\x02\x11\x03\x11\x00\x3f\x00\xf9\xfe\x8a\x28\xa0\x0f\xff\xd9"];
     }
 
-    public static function singleCharacterStrings(): iterable
+    /** @return iterable<string,string[]> */
+    public static function singleCharacterLowerCaseStrings(): iterable
     {
         foreach (range("a", "z") as $char) {
-            yield "string-char-{$char}" => [$char];
+            yield "string-char-lower-{$char}" => [$char];
         }
+    }
 
+    /** @return iterable<string,string[]> */
+    public static function singleCharacterUpperCaseStrings(): iterable
+    {
         foreach (range("A", "Z") as $char) {
-            yield "string-char-{$char}" => [$char];
+            yield "string-char-upper-{$char}" => [$char];
         }
+    }
+
+    public static function singleCharacterStrings(): iterable
+    {
+        yield from self::singleCharacterLowerCaseStrings();
+        yield from self::singleCharacterUpperCaseStrings();
     }
 
     public static function jsonStrings(): iterable
@@ -891,9 +961,11 @@ JSON
      * Combine two or more data providers into a single data provider covering all combinations of the source providers'
      * datasets.
      */
-    public static function combine(iterable $data1, iterable $data2, iterable ...$otherData): iterable
+    public static function matrix(iterable $data1, iterable $data2, iterable ...$otherData): iterable
     {
         $generator = static function() use ($data1, $data2): iterable {
+            $data2 = iterator_to_array($data2);
+
             foreach ($data1 as $label1 => $args1) {
                 foreach ($data2 as $label2 => $args2) {
                     yield "{$label1}-{$label2}" => [...$args1, ...$args2];
@@ -904,7 +976,10 @@ JSON
         if (0 === count($otherData)) {
             yield from $generator();
         } else {
-            yield from DataFactory::combine($generator(), ...$otherData);
+            yield from DataFactory::matrix($generator(), ...$otherData);
         }
     }
+
+    // TODO combine (two or more iterables of same length, yield the first from all in a single dataset, then the second
+    //  from all in the next dataset, and so on)
 }

@@ -19,7 +19,7 @@ class IsAssociativeArrayTest extends TestCase
         yield from DataFactory::associativeArrays();
     }
 
-    /** Ensure all associative arrays (or a sensible approximation thereof) successfully match. */
+    /** Ensure all associative arrays (or a reasonable approximation thereof) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(array $test): void
     {

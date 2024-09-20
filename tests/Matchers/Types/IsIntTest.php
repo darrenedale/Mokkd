@@ -19,7 +19,7 @@ class IsIntTest extends TestCase
         yield from DataFactory::integers();
     }
 
-    /** Ensure all ints (or a sensible approximation of the set of ints) successfully match. */
+    /** Ensure all ints (or a reasonable approximation of the set of ints) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(int $test): void
     {

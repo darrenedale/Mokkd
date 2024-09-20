@@ -20,7 +20,7 @@ class IsNonEmptyAssociativeArrayTest extends TestCase
         yield from DataFactory::nonEmptyPropertyMaps();
     }
 
-    /** Ensure all non-empty associative arrays (or a sensible approximation thereof) successfully match. */
+    /** Ensure all non-empty associative arrays (or a reasonable approximation thereof) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(array $test): void
     {

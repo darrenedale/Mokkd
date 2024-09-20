@@ -19,7 +19,7 @@ class IsFloatTest extends TestCase
         yield from DataFactory::floats();
     }
 
-    /** Ensure all ints (or a sensible approximation of the set of floats) successfully match. */
+    /** Ensure all ints (or a reasonable approximation of the set of floats) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(float $test): void
     {

@@ -19,7 +19,7 @@ class IsPropertyMapTest extends TestCase
         yield from DataFactory::propertyMaps();
     }
 
-    /** Ensure all property-maps (or a sensible approximation thereof) successfully match. */
+    /** Ensure all property-maps (or a reasonable approximation thereof) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(array $test): void
     {

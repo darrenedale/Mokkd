@@ -19,7 +19,7 @@ class IsOpenResourceTest extends TestCase
         yield from DataFactory::openResources();
     }
 
-    /** Ensure all open resources (or a sensible approximation of the set of resources) successfully match. */
+    /** Ensure all open resources (or a reasonable approximation of the set of resources) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(mixed $test): void
     {

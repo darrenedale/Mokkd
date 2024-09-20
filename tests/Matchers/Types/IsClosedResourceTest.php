@@ -19,7 +19,7 @@ class IsClosedResourceTest extends TestCase
         yield from DataFactory::closedResources();
     }
 
-    /** Ensure all closed resources (or a sensible approximation of the set of resources) successfully match. */
+    /** Ensure all closed resources (or a reasonable approximation of the set of resources) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(mixed $test): void
     {

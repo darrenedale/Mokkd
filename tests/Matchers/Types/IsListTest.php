@@ -19,7 +19,7 @@ class IsListTest extends TestCase
         yield from DataFactory::listArrays();
     }
 
-    /** Ensure all lists (or a sensible approximation thereof) successfully match. */
+    /** Ensure all lists (or a reasonable approximation thereof) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(array $test): void
     {

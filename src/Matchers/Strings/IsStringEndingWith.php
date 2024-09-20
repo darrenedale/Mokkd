@@ -19,6 +19,11 @@ class IsStringEndingWith implements MatcherContract
         $this->suffix = $suffix;
     }
 
+    public function suffix(): string
+    {
+        return $this->suffix;
+    }
+
     public function matches(mixed $actual): bool
     {
         if (!is_string($actual)) {
@@ -31,6 +36,6 @@ class IsStringEndingWith implements MatcherContract
     public function describe(Serialiser $serialiser): string
     {
         $suffix = str_replace("\"", "\\\"", $this->suffix);
-        return "A string ending with \"{$suffix}\"";
+        return "(string) \"…{$suffix}\"";
     }
 }

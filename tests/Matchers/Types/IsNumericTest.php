@@ -20,7 +20,7 @@ class IsNumericTest extends TestCase
         yield from DataFactory::floats();
     }
 
-    /** Ensure all ints and floats (or a sensible approximation of the set of ints and floats) successfully match. */
+    /** Ensure all ints and floats (or a reasonable approximation of the set of ints and floats) successfully match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(int|float $test): void
     {

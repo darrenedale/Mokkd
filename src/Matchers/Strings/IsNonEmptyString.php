@@ -17,6 +17,6 @@ class IsNonEmptyString implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A non-empty string";
+        return "(string) {non-empty}";
     }
 }
