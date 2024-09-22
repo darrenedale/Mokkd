@@ -310,6 +310,7 @@ class DataFactory
         yield "integer-max" => [PHP_INT_MAX];
     }
 
+    /** @return iterable<int[]> */
     public static function positiveIntegers(int $max = 100): iterable
     {
         TestCase::assertGreaterThan(0, $max);
@@ -319,6 +320,7 @@ class DataFactory
         }
     }
 
+    /** @return iterable<int[]> */
     public static function negativeIntegers(int $min = -100): iterable
     {
         TestCase::assertLessThan(0, $min);
@@ -329,6 +331,7 @@ class DataFactory
         }
     }
 
+    /** @return iterable<int[]> */
     public static function integers(int $min = -100, int $max = 100): iterable
     {
         yield from self::integerZero();
@@ -911,7 +914,16 @@ JSON
         }
     }
     
-    /** Helper to repeat a single value n times. */
+    /**
+     * @template T
+     *
+     * Helper to repeat a single value n times.
+     *
+     * @param int $count How many repetitions.
+     * @param T $value The value to repeat.
+     *
+     * @return iterable<T>
+     */
     public static function repeat(int $count, mixed $value): iterable
     {
         assert(0 <= $count, new LogicException("Expected int >= 0, found {$count}"));
@@ -921,13 +933,19 @@ JSON
         }
     }
 
-    /** Helper to unwrap the dataset yielded by a factory method that returns a single dataset. */
+    /** Helper to wrap a set of values as a dataset. */
     public static function box(mixed $value, mixed ...$values): array
     {
         return [$value, ...$values];
     }
 
-    /** Helper to unwrap the dataset yielded by a factory method that returns a single dataset. */
+    /**
+     * @template T
+     * Helper to unwrap the dataset yielded by a factory method that returns a single dataset.
+     *
+     * @param $data iterable<T>
+     * @return T
+     */
     public static function unboxSingle(iterable $data): mixed
     {
         if (!is_array($data)) {

@@ -18,6 +18,11 @@ class IsStringOfByteLength implements MatcherContract
         $this->length = $length;
     }
 
+    public function length(): int
+    {
+        return $this->length;
+    }
+
     public function matches(mixed $actual): bool
     {
         return is_string($actual) && $this->length === strlen($actual);
@@ -25,6 +30,6 @@ class IsStringOfByteLength implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A string of exactly {$this->length} bytes";
+        return "(string[{$this->length}])";
     }
 }

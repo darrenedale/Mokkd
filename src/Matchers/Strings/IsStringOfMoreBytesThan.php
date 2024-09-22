@@ -14,9 +14,13 @@ class IsStringOfMoreBytesThan implements MatcherContract
 
     public function __construct(int $length)
     {
-        // TODO assert encoding
         assert(0 <= $length, new LogicException("Expecting length >= 0, found {$length}"));
         $this->length = $length;
+    }
+
+    public function length(): int
+    {
+        return $this->length;
     }
 
     public function matches(mixed $actual): bool
@@ -26,6 +30,6 @@ class IsStringOfMoreBytesThan implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A string of more than {$this->length} bytes";
+        return "(string[>{$this->length}])";
     }
 }
