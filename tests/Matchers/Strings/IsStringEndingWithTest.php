@@ -24,6 +24,17 @@ class IsStringEndingWithTest extends TestCase
         "suffix-mixed" => [" 1Mok!"],
     ];
 
+    public static function dataForTestSuffix1(): iterable
+    {
+        yield from self::Suffixes;
+    }
+
+    #[DataProvider("dataForTestSuffix1")]
+    public function testPrefix1(string $suffix): void
+    {
+        self::assertSame($suffix, (new IsStringEndingWith($suffix))->suffix());
+    }
+
     public static function dataForTestMatches1(): iterable
     {
         yield "string-ends-with-empty-string-empty-string" => ["", ""];

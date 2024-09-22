@@ -24,6 +24,17 @@ class IsStringContainingTest extends TestCase
         "infix-mixed" => [" 1Mok!"],
     ];
 
+    public static function dataForTestInfix1(): iterable
+    {
+        yield from self::Infixes;
+    }
+
+    #[DataProvider("dataForTestInfix1")]
+    public function testInfix1(string $infix): void
+    {
+        self::assertSame($infix, (new IsStringContaining($infix))->infix());
+    }
+
     public static function dataForTestMatches1(): iterable
     {
         yield "string-contains-empty-string-empty-string" => ["", ""];

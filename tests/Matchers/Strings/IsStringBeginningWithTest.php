@@ -24,6 +24,17 @@ class IsStringBeginningWithTest extends TestCase
         "prefix-mixed" => [" 1Mok!"],
     ];
 
+    public static function dataForTestPrefix1(): iterable
+    {
+        yield from self::Prefixes;
+    }
+
+    #[DataProvider("dataForTestPrefix1")]
+    public function testPrefix1(string $prefix): void
+    {
+        self::assertSame($prefix, (new IsStringBeginningWith($prefix))->prefix());
+    }
+
     public static function dataForTestMatches1(): iterable
     {
         yield "string-begins-with-empty-string-empty-string" => ["", ""];

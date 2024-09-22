@@ -8,7 +8,7 @@ use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
-class IsStringShorterThan implements MatcherContract
+class IsStringNoLongerThan implements MatcherContract
 {
     private int $length;
 
@@ -16,7 +16,7 @@ class IsStringShorterThan implements MatcherContract
 
     public function __construct(int $length, string $encoding = "UTF-8")
     {
-        assert(0 < $length, new LogicException("Expecting length > 0, found {$length}"));
+        assert(0 <= $length, new LogicException("Expecting length >= 0, found {$length}"));
         assert(in_array($encoding, mb_list_encodings(), true), new LogicException("Expected supported character encoding, found \"{$encoding}\""));
         $this->length = $length;
         $this->encoding = $encoding;
@@ -34,11 +34,11 @@ class IsStringShorterThan implements MatcherContract
 
     public function matches(mixed $actual): bool
     {
-        return is_string($actual) && $this->length > mb_strlen($actual, $this->encoding);
+        return is_string($actual) && $this->length >= mb_strlen($actual, $this->encoding);
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "({$this->encoding}-string[<{$this->length}])";
+        return "({$this->encoding}-string[<={$this->length}])";
     }
 }
