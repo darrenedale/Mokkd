@@ -211,8 +211,7 @@ class IsStringLongerThanTest extends TestCase
     {
         // U+00e9 (é)
         yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf8" => [10, "UTF-8", str_repeat("\xc3\xa9", 6)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf16-ordered-le" => [10, "UTF-16", str_repeat("\xe9\x00", 6)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf16-ordered-be" => [10, "UTF-16", str_repeat("\x00\xe9", 6)];
+        yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf16-ordered" => [10, "UTF-16", str_repeat("\x00\xe9", 6)];
         yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf16le" => [10, "UTF-16LE", str_repeat("\xe9\x00", 6)];
         yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf16be" => [10, "UTF-16BE", str_repeat("\x00\xe9", 6)];
         yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf32le" => [10, "UTF-32LE", str_repeat("\x00\x00\xe9\x00", 6)];
@@ -220,8 +219,7 @@ class IsStringLongerThanTest extends TestCase
 
         // U+10437 (𐐷)
         yield "string-longer-than-6-more-bytes-fewer-characters-u+10437-utf8" => [10, "UTF-8", str_repeat("\xf0\x90\x90\xb7", 3)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf16-ordered-le" => [10, "UTF-16", str_repeat("\x01\xd8\x37\xdc", 3)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf16-ordered-be" => [10, "UTF-16", str_repeat("\xd8\x01\xdc\x37", 3)];
+        yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf16-ordered" => [10, "UTF-16", str_repeat("\xd8\x01\xdc\x37", 3)];
         yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf16le" => [10, "UTF-16LE", str_repeat("\x01\xd8\x37\xdc", 3)];
         yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf16be" => [10, "UTF-16BE", str_repeat("\xd8\x01\xdc\x37", 3)];
         yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf31le" => [10, "UTF-32LE", str_repeat("\x01\x00\x37\x04", 3)];
