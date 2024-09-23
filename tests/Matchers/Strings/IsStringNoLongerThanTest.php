@@ -130,7 +130,7 @@ class IsStringNoLongerThanTest extends TestCase
     {
         self::skipIfAssertionsDisabled();
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage("Expecting length > 0, found {$length}");
+        $this->expectExceptionMessage("Expecting length >= 0, found {$length}");
         new IsStringNoLongerThan($length);
     }
 
