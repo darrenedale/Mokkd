@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Mokkd\Contracts\ExpectationBuilder;
+use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\MockFactory as MockFactoryContract;
 use Mokkd\Contracts\MockFunction as MockFunctionContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
@@ -23,7 +24,11 @@ class Mokkd
     /**
      * Fetch a mock for a function.
      *
-     * TODO Functions in namespaces don't currently work - need to check UOPZ for why.
+     * To mock a function in a namespace, provide the namespace and function name exactly as you would with an import:
+     *
+     *     use function MyNamespace\myFunction;
+     *
+     *     Mokkd::func("MyNamespace\\myFunction");
      *
      * @param string $functionName The name of the function to mock.
      */
@@ -42,7 +47,7 @@ class Mokkd
     public static function factory(): MockFactoryContract
     {
         if (!self::$mockFactory) {
-            self::$mockFactory = new MockFactory();
+            self::$mockFactory = new MockFactory(self::serialiser());
         }
 
         return self::$mockFactory;
@@ -87,5 +92,25 @@ class Mokkd
         foreach (self::$mocks as $mock) {
             $mock->verifyExpectations();
         }
+    }
+
+    public static function __callStatic(string $functionName, array $arguments): MatcherContract
+    {
+        // we want the call isZero to look for a class named IsZero, but we don't want the function IsZero to match
+        if (strtoupper($functionName)[0] === $functionName[0]) {
+            throw new BadMethodCallException("Static method {$functionName} does not exist");
+        }
+
+        $functionName = strtoupper($functionName[0]) . substr($functionName, 1);
+
+        foreach (["Comparisons", "Dates", "Numeric", "Strings", "Type"] as $namespace) {
+            $fqClass = "Mokkd\\Matchers\\{$namespace}\\{$functionName}";
+
+            if (class_exists($fqClass)) {
+                return new $fqClass(...$arguments);
+            }
+        }
+
+        throw new BadMethodCallException("Static method {$functionName} does not exist");
     }
 }

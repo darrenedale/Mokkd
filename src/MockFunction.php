@@ -11,6 +11,7 @@ use Mokkd\Contracts\ExpectationBuilder as ExpectationBuilderContract;
 use Mokkd\Contracts\KeyMapper as KeyMapperContract;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\MockFunction as MockFunctionContract;
+use Mokkd\Contracts\Serialiser as SerialiserContract;
 use Mokkd\Exceptions\ExpectationException;
 use Mokkd\Exceptions\FunctionException;
 use Mokkd\Exceptions\UnexpectedFunctionCallException;
@@ -22,6 +23,7 @@ use Mokkd\Utilities\Guard;
 use ReflectionException;
 use ReflectionFunction;
 use SplFileInfo;
+
 use function uopz_get_return;
 use function uopz_set_return;
 use function uopz_unset_return;
@@ -39,6 +41,9 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
 {
     /** @var string $functionName The mocked function. */
     private string $functionName;
+
+    /** @var SerialiserContract The serialiser to use when reporting on expectations. */
+    private SerialiserContract $serialiser;
 
     /** @var Closure The function with which to replace the mocked function. */
     private Closure $fn;
@@ -80,15 +85,24 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
      *
      * @param string $functionName The function to mock.
      */
-    public function __construct(string $functionName)
+    public function __construct(string $functionName, SerialiserContract $serialiser)
     {
+        // functions in namespaces should be provided without the leading \\ (as it would be in an import statement)
+        // uopz will accept the leading \\ but won't actually intercept the function calls. Requiring the same syntax as
+        // an import and throwing here surfaces this fact quickly
+        if ("\\" === $functionName[0]) {
+            throw new FunctionException($functionName, "Expected valid function name, found \"{$functionName}\"");
+        }
+
         $this->functionName = $functionName;
 
         try {
             $this->reflector = new ReflectionFunction($functionName);
         } catch (ReflectionException $err) {
-            throw new FunctionException($functionName, "Expected valid function name, found '{$functionName}'", previous: $err);
+            throw new FunctionException($functionName, "Expected valid function name, found \"{$functionName}\"", previous: $err);
         }
+
+        $this->serialiser = $serialiser;
 
         // UOPZ requires a Closure, not just an invokable
         $mock = $this;
@@ -209,6 +223,11 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
         return $this->functionName;
     }
 
+    public function serialiser(): SerialiserContract
+    {
+        return $this->serialiser;
+    }
+
     /**
      * Start building a new expectation.
      *
@@ -224,7 +243,7 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
      */
     public function expects(mixed ...$args): self
     {
-        $this->currentExpectation = new Expectation(...array_map([self::class, 'createMatcher'], $args));
+        $this->currentExpectation = new Expectation(...array_map([self::class, "createMatcher"], $args));
         $this->expectations[] = $this->currentExpectation;
         return $this;
     }
@@ -403,7 +422,7 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
     {
         foreach ($this->expectations() as $expectation) {
             if (!$expectation->isSatisfied()) {
-                throw new ExpectationException($expectation, "{$this->functionName()}{$expectation->message()}");
+                throw new ExpectationException($expectation, "{$this->functionName()}{$expectation->message($this->serialiser())}");
             }
         }
     }

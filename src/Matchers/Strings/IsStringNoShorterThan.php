@@ -27,6 +27,11 @@ class IsStringNoShorterThan implements MatcherContract
         return $this->length;
     }
 
+    public function encoding(): string
+    {
+        return $this->encoding;
+    }
+
     public function matches(mixed $actual): bool
     {
         return is_string($actual) && $this->length <= mb_strlen($actual, $this->encoding);
@@ -34,6 +39,6 @@ class IsStringNoShorterThan implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "({$this->encoding}-string[<{$this->length}])";
+        return "({$this->encoding}-string[>={$this->length}])";
     }
 }

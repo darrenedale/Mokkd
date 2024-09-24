@@ -161,7 +161,7 @@ class IsStringLongerThanTest extends TestCase
         yield from self::MultiByteEncodings;
     }
 
-    /** Ensure the constructor sets the length and we can retrieve it. */
+    /** Ensure the constructor sets the encoding and we can retrieve it. */
     #[DataProvider("dataForTestEncoding1")]
     public function testEncoding1(string $encoding): void
     {
