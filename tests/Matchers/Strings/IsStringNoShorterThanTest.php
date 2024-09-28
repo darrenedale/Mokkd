@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers\Strings;
 
 use LogicException;
-use Mokkd\Matchers\Strings\IsStringNoShorterThan;
+use Mokkd\Matchers\Strings\IsNoShorterThan;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\Matchers\RelabelMode;
@@ -132,13 +132,13 @@ class IsStringNoShorterThanTest extends TestCase
         self::skipIfAssertionsDisabled();
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage("Expecting length >= 0, found {$length}");
-        new IsStringNoShorterThan($length);
+        new IsNoShorterThan($length);
     }
 
     /** Ensure encoding is UTF-8 by default. */
     public function testConstructor2(): void
     {
-        self::assertSame("UTF-8", (new IsStringNoShorterThan(10))->encoding());
+        self::assertSame("UTF-8", (new IsNoShorterThan(10))->encoding());
     }
 
     public static function dataForTestLength1(): iterable
@@ -152,7 +152,7 @@ class IsStringNoShorterThanTest extends TestCase
     #[DataProvider("dataForTestLength1")]
     public function testLength1(int $length): void
     {
-        self::assertSame($length, (new IsStringNoShorterThan($length))->length());
+        self::assertSame($length, (new IsNoShorterThan($length))->length());
     }
 
     public static function dataForTestEncoding1(): iterable
@@ -165,7 +165,7 @@ class IsStringNoShorterThanTest extends TestCase
     #[DataProvider("dataForTestEncoding1")]
     public function testEncoding1(string $encoding): void
     {
-        self::assertSame($encoding, (new IsStringNoShorterThan(10, $encoding))->encoding());
+        self::assertSame($encoding, (new IsNoShorterThan(10, $encoding))->encoding());
     }
 
     public static function dataForTestMatches1(): iterable
@@ -187,7 +187,7 @@ class IsStringNoShorterThanTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(int $length, string $string): void
     {
-        self::assertTrue((new IsStringNoShorterThan($length))->matches($string));
+        self::assertTrue((new IsNoShorterThan($length))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -203,7 +203,7 @@ class IsStringNoShorterThanTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(int $length, string $string): void
     {
-        self::assertFalse((new IsStringNoShorterThan($length))->matches($string));
+        self::assertFalse((new IsNoShorterThan($length))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -230,7 +230,7 @@ class IsStringNoShorterThanTest extends TestCase
     public function testMatches3(int $length, string $encoding, string $encodedString): void
     {
         self::assertGreaterThan($length, strlen($encodedString));
-        self::assertFalse((new IsStringNoShorterThan($length, $encoding))->matches($encodedString));
+        self::assertFalse((new IsNoShorterThan($length, $encoding))->matches($encodedString));
     }
 
     public static function dataForTestMatches4(): iterable
@@ -252,7 +252,7 @@ class IsStringNoShorterThanTest extends TestCase
     #[DataProvider("dataForTestMatches4")]
     public function testMatches4(int $length, string $encoding, string $encodedString, bool $expected): void
     {
-        self::assertSame($expected, (new IsStringNoShorterThan($length, $encoding))->matches($encodedString));
+        self::assertSame($expected, (new IsNoShorterThan($length, $encoding))->matches($encodedString));
     }
 
     public static function dataForTestMatches5(): iterable
@@ -270,7 +270,7 @@ class IsStringNoShorterThanTest extends TestCase
     #[DataProvider("dataForTestMatches5")]
     public function testMatches5(int $length, mixed $string): void
     {
-        self::assertFalse((new IsStringNoShorterThan($length))->matches($string));
+        self::assertFalse((new IsNoShorterThan($length))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -282,12 +282,12 @@ class IsStringNoShorterThanTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(int $length, string $encoding): void
     {
-        self::assertSame("({$encoding}-string[>={$length}])", (new IsStringNoShorterThan($length, $encoding))->describe(self::nullSerialiser()));
+        self::assertSame("({$encoding}-string[>={$length}])", (new IsNoShorterThan($length, $encoding))->describe(self::nullSerialiser()));
     }
 
     /** Ensure the matcher describes itself with UTF-8 encoding by default. */
     public static function testDescribe2(): void
     {
-        self::assertSame("(UTF-8-string[>=10])", (new IsStringNoShorterThan(10))->describe(self::nullSerialiser()));
+        self::assertSame("(UTF-8-string[>=10])", (new IsNoShorterThan(10))->describe(self::nullSerialiser()));
     }
 }

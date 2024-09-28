@@ -7,11 +7,221 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\MockFactory as MockFactoryContract;
 use Mokkd\Contracts\MockFunction as MockFunctionContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
+use Mokkd\Matchers\Comparisons\IsEqualTo;
+use Mokkd\Matchers\Comparisons\IsEqualToAnyOf;
+use Mokkd\Matchers\Comparisons\IsEqualToNoneOf;
+use Mokkd\Matchers\Comparisons\IsIdenticalTo;
+use Mokkd\Matchers\Comparisons\IsIdenticalToAnyOf;
+use Mokkd\Matchers\Comparisons\IsIdenticalToNoneOf;
+use Mokkd\Matchers\Comparisons\IsNotEqualTo;
+use Mokkd\Matchers\Comparisons\IsNotIdenticalTo;
+use Mokkd\Matchers\Composite\MatchesAllOf;
+use Mokkd\Matchers\Composite\MatchesAnyOf;
+use Mokkd\Matchers\Composite\MatchesNoneOf;
+use Mokkd\Matchers\Dates\IsAfter as IsDateAfter;
+use Mokkd\Matchers\Dates\IsBefore as IsDateBefore;
+use Mokkd\Matchers\Dates\IsBetween as IsDateBetween;
+use Mokkd\Matchers\Dates\IsInMonth as IsDateInMonth;
+use Mokkd\Matchers\Dates\IsInYear as IsDateInYear;
+use Mokkd\Matchers\Dates\IsNotInMonth as IsDateNotInMonth;
+use Mokkd\Matchers\Dates\IsNotInYear as IsDateNotInYear;
+use Mokkd\Matchers\Dates\IsOnOrAfter as IsDateOnOrAfter;
+use Mokkd\Matchers\Dates\IsOnOrBefore as IsDateOnOrBefore;
+use Mokkd\Matchers\Dates\IsWithin as IsDateWithin;
+use Mokkd\Matchers\Floats\IsFloatBetween;
+use Mokkd\Matchers\Floats\IsFloatEqualTo;
+use Mokkd\Matchers\Floats\IsFloatGreaterThan;
+use Mokkd\Matchers\Floats\IsFloatGreaterThanOrEqualTo;
+use Mokkd\Matchers\Floats\IsFloatLessThan;
+use Mokkd\Matchers\Floats\IsFloatLessThanOrEqualTo;
+use Mokkd\Matchers\Floats\IsFloatMultipleOf;
+use Mokkd\Matchers\Floats\IsFloatNotEqualTo;
+use Mokkd\Matchers\Floats\IsFloatWithin;
+use Mokkd\Matchers\Integers\IsIntBetween;
+use Mokkd\Matchers\Integers\IsIntEqualTo;
+use Mokkd\Matchers\Integers\IsIntGreaterThan;
+use Mokkd\Matchers\Integers\IsIntGreaterThanOrEqualTo;
+use Mokkd\Matchers\Integers\IsIntLessThan;
+use Mokkd\Matchers\Integers\IsIntLessThanOrEqualTo;
+use Mokkd\Matchers\Integers\IsIntMultipleOf;
+use Mokkd\Matchers\Integers\IsIntNotEqualTo;
+use Mokkd\Matchers\Integers\IsIntWithin;
+use Mokkd\Matchers\Numerics\IsNotZero;
+use Mokkd\Matchers\Numerics\IsNumericBetween;
+use Mokkd\Matchers\Numerics\IsNumericEqualTo;
+use Mokkd\Matchers\Numerics\IsNumericGreaterThan;
+use Mokkd\Matchers\Numerics\IsNumericGreaterThanOrEqualTo;
+use Mokkd\Matchers\Numerics\IsNumericLessThan;
+use Mokkd\Matchers\Numerics\IsNumericLessThanOrEqualTo;
+use Mokkd\Matchers\Numerics\IsNumericMultipleOf;
+use Mokkd\Matchers\Numerics\IsNumericNotEqualTo;
+use Mokkd\Matchers\Numerics\IsNumericWithin;
+use Mokkd\Matchers\Numerics\IsZero;
+use Mokkd\Matchers\Strings\BeginsWith as IsStringBeginningWith;
+use Mokkd\Matchers\Strings\Contains as IsStringContaining;
+use Mokkd\Matchers\Strings\DoesNotBeginWith as IsStringNotBeginningWith;
+use Mokkd\Matchers\Strings\DoesNotContain as IsStringNotContaining;
+use Mokkd\Matchers\Strings\DoesNotEndWith as IsStringNotEndingWith;
+use Mokkd\Matchers\Strings\DoesNotMatch as IsStringNotMatching;
+use Mokkd\Matchers\Strings\EndsWith as IsStringEndingWith;
+use Mokkd\Matchers\Strings\IsEmpty as IsEmptyString;
+use Mokkd\Matchers\Strings\IsJson as IsJsonString;
+use Mokkd\Matchers\Strings\IsLongerThan as IsStringLongerThan;
+use Mokkd\Matchers\Strings\IsNoLongerThan as IsStringNoLongerThan;
+use Mokkd\Matchers\Strings\IsNonEmpty as IsNonEmptyString;
+use Mokkd\Matchers\Strings\IsNoShorterThan as IsStringNoShorterThan;
+use Mokkd\Matchers\Strings\IsOfByteLength as IsStringOfByteLength;
+use Mokkd\Matchers\Strings\IsOfFewerBytesThan as IsStringOfFewerBytesThan;
+use Mokkd\Matchers\Strings\IsOfLength as IsStringOfLength;
+use Mokkd\Matchers\Strings\IsOfMoreBytesThan as IsStringOfMoreBytesThan;
+use Mokkd\Matchers\Strings\IsOfNoFewerBytesThan as IsStringOfNoFewerBytesThan;
+use Mokkd\Matchers\Strings\IsOfNoMoreBytesThan as IsStringOfNoMoreBytesThan;
+use Mokkd\Matchers\Strings\IsShorterThan as IsStringShorterThan;
+use Mokkd\Matchers\Strings\MatchingPattern as IsStringMatching;
+use Mokkd\Matchers\Times\IsAfter as IsTimeAfter;
+use Mokkd\Matchers\Times\IsBefore as IsTimeBefore;
+use Mokkd\Matchers\Times\IsBetween as IsTimeBetween;
+use Mokkd\Matchers\Times\IsOnOrAfter as IsTimeOnOrAfter;
+use Mokkd\Matchers\Times\IsOnOrBefore as IsTimeOnOrBefore;
+use Mokkd\Matchers\Times\IsWithin as IsTimeWithin;
+use Mokkd\Matchers\Traversables\IsEmptyArray;
+use Mokkd\Matchers\Traversables\IsNonEmptyArray;
+use Mokkd\Matchers\Traversables\IsNonEmptyAssociativeArray;
+use Mokkd\Matchers\Traversables\IsNonEmptyList;
+use Mokkd\Matchers\Traversables\IsNonEmptyPropertyMap;
+use Mokkd\Matchers\Types\IsArray;
+use Mokkd\Matchers\Types\IsAssociativeArray;
+use Mokkd\Matchers\Types\IsBool;
+use Mokkd\Matchers\Types\IsClosedResource;
+use Mokkd\Matchers\Types\IsFalse;
+use Mokkd\Matchers\Types\IsFloat;
+use Mokkd\Matchers\Types\IsInstanceOf;
+use Mokkd\Matchers\Types\IsInt;
+use Mokkd\Matchers\Types\IsList;
+use Mokkd\Matchers\Types\IsNull;
+use Mokkd\Matchers\Types\IsNumeric;
+use Mokkd\Matchers\Types\IsObject;
+use Mokkd\Matchers\Types\IsOpenResource;
+use Mokkd\Matchers\Types\IsPropertyMap;
+use Mokkd\Matchers\Types\IsResource;
+use Mokkd\Matchers\Types\IsResourceOfType;
+use Mokkd\Matchers\Types\IsString;
+use Mokkd\Matchers\Types\IsTrue;
 use Mokkd\MockFactory;
+use Mokkd\Month;
 use Mokkd\Utilities\Guard;
 use Mokkd\Utilities\Serialiser;
 
-/** Static factory class for generating function mocks. */
+/**
+ * Static factory class for generating function mocks and matchers.
+ * 
+ * @method static IsEqualTo isEqualTo(mixed $expected)
+ * @method static IsNotEqualTo isNotEqualTo(mixed $expected)
+ * @method static IsIdenticalTo isIdenticalTo(mixed $expected)
+ * @method static IsNotIdenticalTo isNotIdenticalTo(mixed $expected)
+ * @method static IsEqualToAnyOf isEqualToOneOf(mixed $expected, mixed ...$otherExpected)
+ * @method static IsIdenticalToAnyOf isIdenticalToOneOf(mixed $expected, mixed ...$otherExpected)
+ * @method static IsEqualToNoneOf isNotEqualToAnyOf(mixed $expected, mixed ...$otherExpected)
+ * @method static IsIdenticalToNoneOf isNotIdenticalToAnyOf(mixed $expected, mixed ...$otherExpected)
+ *
+ * @method static MatchesAllOf matchesAllOf(MatcherContract $expected, MatcherContract ...$otherExpected)
+ * @method static MatchesAnyOf matchesAnyOf(MatcherContract $expected, MatcherContract ...$otherExpected)
+ * @method static MatchesNoneOf matchesNoneOf(MatcherContract $expected, MatcherContract ...$otherExpected)
+ *
+ * @method static IsInt isInt()
+ * @method static IsFloat isFloat()
+ * @method static IsNumeric isNumeric()
+ * @method static IsString isString()
+ * @method static IsBool isBool()
+ * @method static IsTrue isTrue()
+ * @method static IsFalse isFalse()
+ * @method static IsNull isNull()
+ * @method static IsObject isObject()
+ * @method static IsInstanceOf isInstanceOf(string $className)
+ * @method static IsResource isResource()
+ * @method static IsOpenResource isOpenResource()
+ * @method static IsClosedResource isClosedResource()
+ * @method static IsResourceOfType isResourceOfType(string $type)
+ * @method static IsArray isArray()
+ * @method static IsList isList()
+ * @method static IsAssociativeArray isAssociativeArray()
+ * @method static IsPropertyMap isPropertyMap()
+ * 
+ * @method static IsIntEqualTo isIntEqualTo(int $expected)
+ * @method static IsIntNotEqualTo isIntNotEqualTo(int $expected)
+ * @method static IsIntGreaterThan isIntGreaterThan(int $lowerBound)
+ * @method static IsIntGreaterThanOrEqualTo isIntGreaterThanOrEqualTo(int $lowerBound)
+ * @method static IsIntLessThan isIntLessThan(int $upperBound)
+ * @method static IsIntLessThanOrEqualTo isIntLessThanOrEqualTo(int $upperBound)
+ * @method static IsIntBetween isIntBetween(int $lowerBound, int $upperBound)
+ * @method static IsIntWithin isIntWithin(int $lowerBound, int $upperBound)
+ * @method static IsIntMultipleOf isIntMultipleOf(int $factor)
+ * @method static IsFloatEqualTo isFloatEqualTo(float $expected)
+ * @method static IsFloatNotEqualTo isFloatNotEqualTo(float $expected)
+ * @method static IsFloatGreaterThan isFloatGreaterThan(float $lowerBound)
+ * @method static IsFloatGreaterThanOrEqualTo isFloatGreaterThanOrEqualTo(float $lowerBound)
+ * @method static IsFloatLessThan isFloatLessThan(float $upperBound)
+ * @method static IsFloatLessThanOrEqualTo isFloatLessThanOrEqualTo(float $upperBound)
+ * @method static IsFloatBetween isFloatBetween(float $lowerBound, float $upperBound)
+ * @method static IsFloatWithin isFloatWithin(float $lowerBound, float $upperBound)
+ * @method static IsFloatMultipleOf isFloatMultipleOf(float $factor)
+ * @method static IsNumericEqualTo isNumericEqualTo(int|float $expected)
+ * @method static IsNumericNotEqualTo isNumericNotEqualTo(int|float $expected)
+ * @method static IsNumericGreaterThan isNumericGreaterThan(int|float $lowerBound)
+ * @method static IsNumericGreaterThanOrEqualTo isNumericGreaterThanOrEqualTo(int|float $lowerBound)
+ * @method static IsNumericLessThan isNumericLessThan(int|float $upperBound)
+ * @method static IsNumericLessThanOrEqualTo isNumericLessThanOrEqualTo(int|float $upperBound)
+ * @method static IsNumericBetween isNumericBetween(int|float $lowerBound, int|float $upperBound)
+ * @method static IsNumericWithin isNumericWithin(int|float $lowerBound, int|float $upperBound)
+ * @method static IsNumericMultipleOf isNumericMultipleOf(int|float $factor)
+ * @method static IsZero isZero()
+ * @method static IsNotZero isNotZero()
+ *
+ * @method static IsEmptyString isEmptyString()
+ * @method static IsNonEmptyString isNonEmptyString()
+ * @method static IsStringBeginningWith isStringBeginningWith(string $prefix)
+ * @method static IsStringNotBeginningWith isStringNotBeginningWith(string $prefix)
+ * @method static IsStringEndingWith isStringEndingWith(string $suffix)
+ * @method static IsStringNotEndingWith isStringNotEndingWith(string $suffix)
+ * @method static IsStringContaining isStringContaining(string $infix)
+ * @method static IsStringNotContaining isStringNotContaining(string $infix)
+ * @method static IsStringMatching isStringMatching(string $pattern)
+ * @method static IsStringNotMatching isStringNotMatching(string $pattern)
+ * @method static IsStringOfLength isStringLongerThan(int $length)
+ * @method static IsStringLongerThan isStringOfLength(int $length)
+ * @method static IsStringShorterThan isStringShorterThan(int $length)
+ * @method static IsStringNoLongerThan isStringNoLongerThan(int $length)
+ * @method static IsStringNoShorterThan isStringNoShorterThan(int $length)
+ * @method static IsStringOfByteLength isStringOfByteLength(int $length)
+ * @method static IsStringOfMoreBytesThan isStringOfMoreBytesThan(int $length)
+ * @method static IsStringOfFewerBytesThan isStringOfFewerBytesThan(int $length)
+ * @method static IsStringOfNoMoreBytesThan isStringOfNoMoreBytesThan(int $length)
+ * @method static IsStringOfNoFewerBytesThan isStringOfNoFewerBytesThan(int $length)
+ * @method static IsJsonString isJsonString()
+ *
+ * @method static IsEmptyArray isEmptyArray()
+ * @method static IsNonEmptyArray isNonEmptyArray()
+ * @method static IsNonEmptyList isNonEmptyList()
+ * @method static IsNonEmptyAssociativeArray isNonEmptyAssociativeArray()
+ * @method static IsNonEmptyPropertyMap isNonEmptyPropertyMap()
+ *
+ * @method static IsDateBefore isDateBefore(DateTimeInterface $upperBound)
+ * @method static IsDateOnOrBefore isDateOnOrBefore(DateTimeInterface $upperBound)
+ * @method static IsDateAfter isDateAfter(DateTimeInterface $lowerBound)
+ * @method static IsDateOnOrAfter isDateOnOrAfter(DateTimeInterface $lowerBound)
+ * @method static IsDateBetween isDateBetween(DateTimeInterface $lowerBound, DateTimeInterface $upperBound)
+ * @method static IsDateWithin isDateWithin(DateTimeInterface $lowerBound, DateTimeInterface $upperBound)
+ * @method static IsDateInMonth isInMonth(int|Month $month, ?int $year = null)
+ * @method static IsDateNotInMonth isNoInMonth(int|Month $month, ?int $year = null)
+ * @method static IsDateInYear isInYear(int $year)
+ * @method static IsDateNotInYear isNotInYear(int $year)
+ * @method static IsTimeBefore isTimeBefore(DateTimeInterface $upperBound)
+ * @method static IsTimeOnOrBefore isTimeOnOrBefore(DateTimeInterface $upperBound)
+ * @method static IsTimeAfter isTimeAfter(DateTimeInterface $lowerBound)
+ * @method static IsTimeOnOrAfter isTimeOnOrAfter(DateTimeInterface $lowerBound)
+ * @method static IsTimeBetween isTimeBetween(DateTimeInterface $lowerBound, DateTimeInterface $upperBound)
+ * @method static IsTimeWithin isTimeWithin(DateTimeInterface $lowerBound, DateTimeInterface $upperBound)
+ */
 class Mokkd
 {
     /** @var MockFunctionContract[] */

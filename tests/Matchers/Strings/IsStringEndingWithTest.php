@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers\Strings;
 
-use Mokkd\Matchers\Strings\IsStringEndingWith;
+use Mokkd\Matchers\Strings\EndsWith;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
@@ -32,7 +32,7 @@ class IsStringEndingWithTest extends TestCase
     #[DataProvider("dataForTestSuffix1")]
     public function testPrefix1(string $suffix): void
     {
-        self::assertSame($suffix, (new IsStringEndingWith($suffix))->suffix());
+        self::assertSame($suffix, (new EndsWith($suffix))->suffix());
     }
 
     public static function dataForTestMatches1(): iterable
@@ -51,7 +51,7 @@ class IsStringEndingWithTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(string $suffix, string $string): void
     {
-        self::assertTrue((new IsStringEndingWith($suffix))->matches($string));
+        self::assertTrue((new EndsWith($suffix))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -71,7 +71,7 @@ class IsStringEndingWithTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(string $suffix, string $string): void
     {
-        self::assertFalse((new IsStringEndingWith($suffix))->matches($string));
+        self::assertFalse((new EndsWith($suffix))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -89,7 +89,7 @@ class IsStringEndingWithTest extends TestCase
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(string $suffix, mixed $string): void
     {
-        self::assertFalse((new IsStringEndingWith($suffix))->matches($string));
+        self::assertFalse((new EndsWith($suffix))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -101,12 +101,12 @@ class IsStringEndingWithTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(string $suffix): void
     {
-        self::assertSame("(string) \"…{$suffix}\"", (new IsStringEndingWith($suffix))->describe(self::nullSerialiser()));
+        self::assertSame("(string) \"…{$suffix}\"", (new EndsWith($suffix))->describe(self::nullSerialiser()));
     }
 
     /** Ensure the matcher escapes double-quotes in the provided suffix. */
     public static function testDescribe2(): void
     {
-        self::assertSame("(string) \"…double-\\\"quoted\\\"-suffix\"", (new IsStringEndingWith("double-\"quoted\"-suffix"))->describe(self::nullSerialiser()));
+        self::assertSame("(string) \"…double-\\\"quoted\\\"-suffix\"", (new EndsWith("double-\"quoted\"-suffix"))->describe(self::nullSerialiser()));
     }
 }

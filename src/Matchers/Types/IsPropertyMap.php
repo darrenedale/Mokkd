@@ -8,7 +8,11 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 use Mokkd\Utilities\IterableAlgorithms;
 
-/** Matcher that requires any string-keyed associative array. */
+/**
+ * Matcher that requires any associative array whose keys are all strings.
+ *
+ * Note that an empty array qualifies as a property map.
+ */
 class IsPropertyMap implements MatcherContract
 {
     public function matches(mixed $actual): bool

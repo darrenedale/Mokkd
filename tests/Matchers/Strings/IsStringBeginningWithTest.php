@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers\Strings;
 
-use Mokkd\Matchers\Strings\IsStringBeginningWith;
+use Mokkd\Matchers\Strings\BeginsWith;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
@@ -32,7 +32,7 @@ class IsStringBeginningWithTest extends TestCase
     #[DataProvider("dataForTestPrefix1")]
     public function testPrefix1(string $prefix): void
     {
-        self::assertSame($prefix, (new IsStringBeginningWith($prefix))->prefix());
+        self::assertSame($prefix, (new BeginsWith($prefix))->prefix());
     }
 
     public static function dataForTestMatches1(): iterable
@@ -51,7 +51,7 @@ class IsStringBeginningWithTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(string $prefix, string $string): void
     {
-        self::assertTrue((new IsStringBeginningWith($prefix))->matches($string));
+        self::assertTrue((new BeginsWith($prefix))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -71,7 +71,7 @@ class IsStringBeginningWithTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(string $prefix, string $string): void
     {
-        self::assertFalse((new IsStringBeginningWith($prefix))->matches($string));
+        self::assertFalse((new BeginsWith($prefix))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -89,7 +89,7 @@ class IsStringBeginningWithTest extends TestCase
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(string $prefix, mixed $string): void
     {
-        self::assertFalse((new IsStringBeginningWith($prefix))->matches($string));
+        self::assertFalse((new BeginsWith($prefix))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -101,12 +101,12 @@ class IsStringBeginningWithTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(string $prefix): void
     {
-        self::assertSame("(string) \"{$prefix}…\"", (new IsStringBeginningWith($prefix))->describe(self::nullSerialiser()));
+        self::assertSame("(string) \"{$prefix}…\"", (new BeginsWith($prefix))->describe(self::nullSerialiser()));
     }
 
     /** Ensure the matcher escapes double-quotes in the provided prefix. */
     public static function testDescribe2(): void
     {
-        self::assertSame("(string) \"double-\\\"quoted\\\"-prefix…\"", (new IsStringBeginningWith("double-\"quoted\"-prefix"))->describe(self::nullSerialiser()));
+        self::assertSame("(string) \"double-\\\"quoted\\\"-prefix…\"", (new BeginsWith("double-\"quoted\"-prefix"))->describe(self::nullSerialiser()));
     }
 }

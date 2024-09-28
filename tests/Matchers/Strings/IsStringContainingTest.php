@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers\Strings;
 
-use Mokkd\Matchers\Strings\IsStringContaining;
+use Mokkd\Matchers\Strings\Contains;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
@@ -32,7 +32,7 @@ class IsStringContainingTest extends TestCase
     #[DataProvider("dataForTestInfix1")]
     public function testInfix1(string $infix): void
     {
-        self::assertSame($infix, (new IsStringContaining($infix))->infix());
+        self::assertSame($infix, (new Contains($infix))->infix());
     }
 
     public static function dataForTestMatches1(): iterable
@@ -63,7 +63,7 @@ class IsStringContainingTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(string $infix, string $string): void
     {
-        self::assertTrue((new IsStringContaining($infix))->matches($string));
+        self::assertTrue((new Contains($infix))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -88,7 +88,7 @@ class IsStringContainingTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(string $infix, string $string): void
     {
-        self::assertFalse((new IsStringContaining($infix))->matches($string));
+        self::assertFalse((new Contains($infix))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -106,7 +106,7 @@ class IsStringContainingTest extends TestCase
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(string $infix, mixed $string): void
     {
-        self::assertFalse((new IsStringContaining($infix))->matches($string));
+        self::assertFalse((new Contains($infix))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -118,12 +118,12 @@ class IsStringContainingTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(string $infix): void
     {
-        self::assertSame("(string) \"…{$infix}…\"", (new IsStringContaining($infix))->describe(self::nullSerialiser()));
+        self::assertSame("(string) \"…{$infix}…\"", (new Contains($infix))->describe(self::nullSerialiser()));
     }
 
     /** Ensure the matcher escapes double-quotes in the provided infix. */
     public static function testDescribe2(): void
     {
-        self::assertSame("(string) \"…double-\\\"quoted\\\"-infix…\"", (new IsStringContaining("double-\"quoted\"-infix"))->describe(self::nullSerialiser()));
+        self::assertSame("(string) \"…double-\\\"quoted\\\"-infix…\"", (new Contains("double-\"quoted\"-infix"))->describe(self::nullSerialiser()));
     }
 }

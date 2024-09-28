@@ -31,6 +31,6 @@ class IsEqualTo implements MatcherContract
 
     public function describe(SerialiserContract $serialiser): string
     {
-        return $serialiser->serialise($this->expected);
+        return "== {$serialiser->serialise($this->expected)}";
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers\Types;
 
-use Mokkd\Matchers\Types\IsNonEmptyAssociativeArray;
+use Mokkd\Matchers\Traversables\IsNonEmptyAssociativeArray;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;

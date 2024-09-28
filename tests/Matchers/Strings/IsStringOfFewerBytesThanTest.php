@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers\Strings;
 
 use LogicException;
-use Mokkd\Matchers\Strings\IsStringOfFewerBytesThan;
+use Mokkd\Matchers\Strings\IsOfFewerBytesThan;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
@@ -29,7 +29,7 @@ class IsStringOfFewerBytesThanTest extends TestCase
         self::skipIfAssertionsDisabled();
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage("Expecting length > 0, found {$length}");
-        new IsStringOfFewerBytesThan($length);
+        new IsOfFewerBytesThan($length);
     }
 
     public static function dataForTestLength1(): iterable
@@ -42,7 +42,7 @@ class IsStringOfFewerBytesThanTest extends TestCase
     #[DataProvider("dataForTestLength1")]
     public function testLength1(int $length): void
     {
-        self::assertSame($length, (new IsStringOfFewerBytesThan($length))->length());
+        self::assertSame($length, (new IsOfFewerBytesThan($length))->length());
     }
 
     public static function dataForTestMatches1(): iterable
@@ -61,7 +61,7 @@ class IsStringOfFewerBytesThanTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(int $length, string $string): void
     {
-        self::assertTrue((new IsStringOfFewerBytesThan($length))->matches($string));
+        self::assertTrue((new IsOfFewerBytesThan($length))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -85,7 +85,7 @@ class IsStringOfFewerBytesThanTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(int $length, string $string): void
     {
-        self::assertFalse((new IsStringOfFewerBytesThan($length))->matches($string));
+        self::assertFalse((new IsOfFewerBytesThan($length))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -108,7 +108,7 @@ class IsStringOfFewerBytesThanTest extends TestCase
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(int $length, string $string): void
     {
-        self::assertFalse((new IsStringOfFewerBytesThan($length))->matches($string));
+        self::assertFalse((new IsOfFewerBytesThan($length))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -120,6 +120,6 @@ class IsStringOfFewerBytesThanTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(int $length): void
     {
-        self::assertSame("(string[<{$length}])", (new IsStringOfFewerBytesThan($length))->describe(self::nullSerialiser()));
+        self::assertSame("(string[<{$length}])", (new IsOfFewerBytesThan($length))->describe(self::nullSerialiser()));
     }
 }

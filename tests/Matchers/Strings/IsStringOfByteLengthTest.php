@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers\Strings;
 
 use LogicException;
-use Mokkd\Matchers\Strings\IsStringOfByteLength;
+use Mokkd\Matchers\Strings\IsOfByteLength;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
@@ -35,14 +35,14 @@ class IsStringOfByteLengthTest extends TestCase
         self::skipIfAssertionsDisabled();
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage("Expecting length >= 0, found {$length}");
-        new IsStringOfByteLength($length);
+        new IsOfByteLength($length);
     }
 
     /** Ensure the constructor sets the length and we can retrieve it. */
     #[DataProvider("dataForTestLength1")]
     public function testLength1(int $length): void
     {
-        self::assertSame($length, (new IsStringOfByteLength($length))->length());
+        self::assertSame($length, (new IsOfByteLength($length))->length());
     }
 
     public static function dataForTestMatches1(): iterable
@@ -61,7 +61,7 @@ class IsStringOfByteLengthTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(int $length, string $string): void
     {
-        self::assertFalse((new IsStringOfByteLength($length))->matches($string));
+        self::assertFalse((new IsOfByteLength($length))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -85,7 +85,7 @@ class IsStringOfByteLengthTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(int $length, string $string): void
     {
-        self::assertFalse((new IsStringOfByteLength($length))->matches($string));
+        self::assertFalse((new IsOfByteLength($length))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -110,7 +110,7 @@ class IsStringOfByteLengthTest extends TestCase
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(int $length, string $string): void
     {
-        self::assertTrue((new IsStringOfByteLength($length))->matches($string));
+        self::assertTrue((new IsOfByteLength($length))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -123,6 +123,6 @@ class IsStringOfByteLengthTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(int $length): void
     {
-        self::assertSame("(string[{$length}])", (new IsStringOfByteLength($length))->describe(self::nullSerialiser()));
+        self::assertSame("(string[{$length}])", (new IsOfByteLength($length))->describe(self::nullSerialiser()));
     }
 }

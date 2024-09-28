@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers\Strings;
 
-use Mokkd\Matchers\Strings\IsStringNotBeginningWith;
+use Mokkd\Matchers\Strings\DoesNotBeginWith;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
@@ -63,7 +63,7 @@ class IsStringNotBeginningWithTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(string $prefix, string $string): void
     {
-        self::assertTrue((new IsStringNotBeginningWith($prefix))->matches($string));
+        self::assertTrue((new DoesNotBeginWith($prefix))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -95,7 +95,7 @@ class IsStringNotBeginningWithTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(string $prefix, string $string): void
     {
-        self::assertFalse((new IsStringNotBeginningWith($prefix))->matches($string));
+        self::assertFalse((new DoesNotBeginWith($prefix))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -113,7 +113,7 @@ class IsStringNotBeginningWithTest extends TestCase
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(mixed $string): void
     {
-        self::assertFalse((new IsStringNotBeginningWith(""))->matches($string));
+        self::assertFalse((new DoesNotBeginWith(""))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -125,12 +125,12 @@ class IsStringNotBeginningWithTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(string $prefix): void
     {
-        self::assertSame("(string) !\"{$prefix}…\"", (new IsStringNotBeginningWith($prefix))->describe(self::nullSerialiser()));
+        self::assertSame("(string) !\"{$prefix}…\"", (new DoesNotBeginWith($prefix))->describe(self::nullSerialiser()));
     }
 
     /** Ensure the matcher escapes double-quotes in the provided prefix. */
     public static function testDescribe2(): void
     {
-        self::assertSame("(string) !\"double-\\\"quoted\\\"-prefix…\"", (new IsStringNotBeginningWith("double-\"quoted\"-prefix"))->describe(self::nullSerialiser()));
+        self::assertSame("(string) !\"double-\\\"quoted\\\"-prefix…\"", (new DoesNotBeginWith("double-\"quoted\"-prefix"))->describe(self::nullSerialiser()));
     }
 }

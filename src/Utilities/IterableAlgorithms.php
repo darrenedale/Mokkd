@@ -38,6 +38,38 @@ class IterableAlgorithms
         return true;
     }
 
+    /**
+     * Check that all values in an iterable satisfy a predicate.
+     *
+     * @return true if the predicate returns true for all values, false otherwise.
+     */
+    public static function any(iterable $values, callable $predicate): bool
+    {
+        foreach ($values as $value) {
+            if ($predicate($value)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check that all values in an iterable fail to satisfy a predicate.
+     *
+     * @return true if the predicate returns false for all values, false otherwise.
+     */
+    public static function none(iterable $values, callable $predicate): bool
+    {
+        foreach ($values as $value) {
+            if ($predicate($value)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /** Yield all the values in an iterable, discarding the keys. */
     public static function values(iterable $values): iterable
     {

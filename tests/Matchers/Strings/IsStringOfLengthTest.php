@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers\Strings;
 
 use LogicException;
-use Mokkd\Matchers\Strings\IsStringOfLength;
+use Mokkd\Matchers\Strings\IsOfLength;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\Matchers\RelabelMode;
@@ -132,13 +132,13 @@ class IsStringOfLengthTest extends TestCase
         self::skipIfAssertionsDisabled();
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage("Expecting length >= 0, found {$length}");
-        new IsStringOfLength($length);
+        new IsOfLength($length);
     }
 
     /** Ensure encoding is UTF-8 by default. */
     public function testConstructor2(): void
     {
-        self::assertSame("UTF-8", (new IsStringOfLength(10))->encoding());
+        self::assertSame("UTF-8", (new IsOfLength(10))->encoding());
     }
 
     public static function dataForTestLength1(): iterable
@@ -152,7 +152,7 @@ class IsStringOfLengthTest extends TestCase
     #[DataProvider("dataForTestLength1")]
     public function testLength1(int $length): void
     {
-        self::assertSame($length, (new IsStringOfLength($length))->length());
+        self::assertSame($length, (new IsOfLength($length))->length());
     }
 
     public static function dataForTestEncoding1(): iterable
@@ -165,7 +165,7 @@ class IsStringOfLengthTest extends TestCase
     #[DataProvider("dataForTestEncoding1")]
     public function testEncoding1(string $encoding): void
     {
-        self::assertSame($encoding, (new IsStringOfLength(10, $encoding))->encoding());
+        self::assertSame($encoding, (new IsOfLength(10, $encoding))->encoding());
     }
 
     public static function dataForTestMatches1(): iterable
@@ -185,7 +185,7 @@ class IsStringOfLengthTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(int $length, string $string): void
     {
-        self::assertFalse((new IsStringOfLength($length))->matches($string));
+        self::assertFalse((new IsOfLength($length))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -201,7 +201,7 @@ class IsStringOfLengthTest extends TestCase
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(int $length, string $string): void
     {
-        self::assertFalse((new IsStringOfLength($length))->matches($string));
+        self::assertFalse((new IsOfLength($length))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -216,7 +216,7 @@ class IsStringOfLengthTest extends TestCase
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(int $length, string $string): void
     {
-        self::assertTrue((new IsStringOfLength($length))->matches($string));
+        self::assertTrue((new IsOfLength($length))->matches($string));
     }
 
     public static function dataForTestMatches4(): iterable
@@ -243,7 +243,7 @@ class IsStringOfLengthTest extends TestCase
     public function testMatches4(int $length, string $encoding, string $encodedString): void
     {
         self::assertGreaterThan($length, strlen($encodedString));
-        self::assertTrue((new IsStringOfLength($length, $encoding))->matches($encodedString));
+        self::assertTrue((new IsOfLength($length, $encoding))->matches($encodedString));
     }
 
     public static function dataForTestMatches5(): iterable
@@ -265,7 +265,7 @@ class IsStringOfLengthTest extends TestCase
     #[DataProvider("dataForTestMatches5")]
     public function testMatches5(int $length, string $encoding, string $encodedString, bool $expected): void
     {
-        self::assertSame($expected, (new IsStringOfLength($length, $encoding))->matches($encodedString));
+        self::assertSame($expected, (new IsOfLength($length, $encoding))->matches($encodedString));
     }
 
     public static function dataForTestMatches6(): iterable
@@ -283,7 +283,7 @@ class IsStringOfLengthTest extends TestCase
     #[DataProvider("dataForTestMatches6")]
     public function testMatches6(int $length, mixed $string): void
     {
-        self::assertFalse((new IsStringOfLength($length))->matches($string));
+        self::assertFalse((new IsOfLength($length))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -295,12 +295,12 @@ class IsStringOfLengthTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(int $length, string $encoding): void
     {
-        self::assertSame("({$encoding}-string[{$length}])", (new IsStringOfLength($length, $encoding))->describe(self::nullSerialiser()));
+        self::assertSame("({$encoding}-string[{$length}])", (new IsOfLength($length, $encoding))->describe(self::nullSerialiser()));
     }
 
     /** Ensure the matcher describes itself with UTF-8 encoding by default. */
     public static function testDescribe2(): void
     {
-        self::assertSame("(UTF-8-string[10])", (new IsStringOfLength(10))->describe(self::nullSerialiser()));
+        self::assertSame("(UTF-8-string[10])", (new IsOfLength(10))->describe(self::nullSerialiser()));
     }
 }
