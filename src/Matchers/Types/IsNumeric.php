@@ -8,7 +8,7 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
 /**
- * Matcher that requires any float or int value.
+ * Matcher that requires the test value to be any float or int.
  *
  * This is type-safe - values that can ordinarily be coerced to ints/floats (e.g. strings containing int or float
  * values) *do not match*.

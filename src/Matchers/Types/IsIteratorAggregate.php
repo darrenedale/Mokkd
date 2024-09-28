@@ -6,7 +6,9 @@ namespace Mokkd\Matchers\Types;
 
 use IteratorAggregate;
 
-/** Matcher that requires any IteratorAggregate. */
+/**
+ * Matcher that requires the test value to be any object implementing IteratorAggregate.
+ */
 class IsIteratorAggregate extends IsInstanceOf
 {
     public function __construct()

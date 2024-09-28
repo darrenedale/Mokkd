@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers\Types;
 
-use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
-use Mokkd\Utilities\IterableAlgorithms;
+use Mokkd\Matchers\Composite\MatchesAnyOf;
 
 /**
- * Matcher that requires null or any associative array whose keys are all strings.
+ * Matcher that requires the test value to be null or any associative array whose keys are all strings.
  *
  * Note that an empty array qualifies as a property map.
  */
-class IsPropertyMapOrNull implements MatcherContract
+class IsPropertyMapOrNull extends MatchesAnyOf
 {
-    public function matches(mixed $actual): bool
+    public function __construct()
     {
-        return null === $actual || (is_array($actual) && IterableAlgorithms::allKeys($actual, "is_string"));
+        parent::__construct(new IsNull(), new IsPropertyMap());
     }
 
     public function describe(SerialiserContract $serialiser): string

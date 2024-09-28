@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers\Types;
 
-use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
+use Mokkd\Matchers\Composite\MatchesAnyOf;
 
-/** Matcher that requires any object or null. */
-class IsObjectOrNull implements MatcherContract
+/**
+ * Matcher that requires the test value to be any object or null.
+ */
+class IsObjectOrNull extends MatchesAnyOf
 {
-    public function matches(mixed $actual): bool
+    public function __construct()
     {
-        return null === $actual || is_object($actual);
+        parent::__construct(new IsNull(), new IsObject());
     }
 
     public function describe(SerialiserContract $serialiser): string

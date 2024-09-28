@@ -8,7 +8,7 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
 /**
- * Matcher that requires a non-object or an object not of a given class.
+ * Matcher that requires the test value to be any non-object or any object not of a given class.
  */
 class IsNotInstanceOf implements MatcherContract
 {

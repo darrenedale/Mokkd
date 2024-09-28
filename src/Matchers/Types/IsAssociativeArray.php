@@ -9,7 +9,7 @@ use Mokkd\Contracts\Serialiser as SerialiserContract;
 use Mokkd\Utilities\IterableAlgorithms;
 
 /**
- * Matcher that requires the test value to be an associative array.
+ * Matcher that requires the test value to be any associative array.
  *
  * An associative array has keys that are:
  * - strings; or

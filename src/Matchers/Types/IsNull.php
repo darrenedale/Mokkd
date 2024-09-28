@@ -6,7 +6,9 @@ namespace Mokkd\Matchers\Types;
 
 use Mokkd\Matchers\Comparisons\IsIdenticalTo;
 
-/** Matcher that requires a null value. */
+/**
+ * Matcher that requires the test value to be null.
+ */
 class IsNull extends IsIdenticalTo
 {
     public function __construct()

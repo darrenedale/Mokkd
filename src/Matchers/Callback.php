@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers;
 
-use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
 /**
  * @template T
- * An argument matcher that feeds the actual value to a callback to determine whether it matches.
+ * An argument matcher that feeds the test value to a callback to determine whether it matches.
  */
 class Callback implements MatcherContract
 {

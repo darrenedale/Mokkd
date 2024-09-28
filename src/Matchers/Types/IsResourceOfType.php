@@ -8,7 +8,7 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
 /**
- * Matcher that requires an open resource of a specified type.
+ * Matcher that requires the test value to be an open resource of a specified type.
  *
  * Closed resources lose their type information, so it's not possible to match a closed resource of a specified type.
  */

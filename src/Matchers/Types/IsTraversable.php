@@ -6,7 +6,9 @@ namespace Mokkd\Matchers\Types;
 
 use Traversable;
 
-/** Matcher that requires any IteratorAggregate. */
+/**
+ * Matcher that requires the test value to be any Traversable.
+ */
 class IsTraversable extends IsInstanceOf
 {
     public function __construct()

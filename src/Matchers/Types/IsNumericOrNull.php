@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers\Types;
 
-use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
+use Mokkd\Matchers\Composite\MatchesAnyOf;
 
 /**
- * Matcher that requires any float or int value or null.
+ * Matcher that requires the test value to be any float or int, or null.
  *
  * This is type-safe - values that can ordinarily be coerced to ints/floats (e.g. strings containing int or float
  * values) *do not match*.
  */
-class IsNumericOrNull implements MatcherContract
+class IsNumericOrNull extends MatchesAnyOf
 {
-    public function matches(mixed $actual): bool
+    public function __construct()
     {
-        return null === $actual || is_float($actual) || is_int($actual);
+        parent::__construct(new IsNull(), new IsNumeric());
     }
 
     public function describe(SerialiserContract $serialiser): string

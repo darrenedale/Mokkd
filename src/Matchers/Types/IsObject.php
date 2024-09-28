@@ -7,7 +7,9 @@ namespace Mokkd\Matchers\Types;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
-/** Matcher that requires any object. */
+/**
+ * Matcher that requires the test value to be any object.
+ */
 class IsObject implements MatcherContract
 {
     public function matches(mixed $actual): bool

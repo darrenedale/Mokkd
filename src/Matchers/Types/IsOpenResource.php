@@ -7,7 +7,9 @@ namespace Mokkd\Matchers\Types;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
-/** Matcher that requires any open resource. */
+/**
+ * Matcher that requires the test value to be any open resource.
+ */
 class IsOpenResource implements MatcherContract
 {
     public function matches(mixed $actual): bool

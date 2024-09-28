@@ -8,17 +8,17 @@ use Mokkd\Contracts\Serialiser as SerialiserContract;
 use Mokkd\Matchers\Composite\MatchesAnyOf;
 
 /**
- * Matcher that requires the test value to be any int or null.
+ * Matcher that requires the test value to be any Closure or null.
  */
-class IsIntOrNull extends MatchesAnyOf
+class IsClosureOrNull extends MatchesAnyOf
 {
     public function __construct()
     {
-        parent::__construct(new IsNull(), new IsInt());
+        parent::__construct(new IsNull(), New IsClosure());
     }
 
     public function describe(SerialiserContract $serialiser): string
     {
-        return "(?int) {any}";
+        return "(?Closure) {any}";
     }
 }

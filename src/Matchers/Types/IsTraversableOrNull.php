@@ -8,19 +8,19 @@ use Mokkd\Contracts\Serialiser as SerialiserContract;
 use Mokkd\Matchers\Composite\MatchesAnyOf;
 
 /**
- * Matcher that requires the test value to be any list array (numeric keys ascending in units from 0) or null.
+ * Matcher that requires the test value to be a callable or null.
  *
- * Note that an empty array qualifies as a list array.
+ * The callable is required to be only syntactically callable, it need not actually exist.
  */
-class IsListOrNull extends MatchesAnyOf
+class IsTraversableOrNull extends MatchesAnyOf
 {
     public function __construct()
     {
-        parent::__construct(new IsNull(), new IsList());
+        parent::__construct(new IsNull(), New IsTraversable());
     }
 
     public function describe(SerialiserContract $serialiser): string
     {
-        return "(?array) {list}";
+        return "(?Traversable) {any}";
     }
 }

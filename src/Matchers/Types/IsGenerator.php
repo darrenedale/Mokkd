@@ -6,7 +6,9 @@ namespace Mokkd\Matchers\Types;
 
 use Generator;
 
-/** Matcher that requires any Generator. */
+/**
+ * Matcher that requires the test value to be any Generator.
+ */
 class IsGenerator extends IsInstanceOf
 {
     public function __construct()

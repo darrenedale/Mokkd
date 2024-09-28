@@ -7,7 +7,9 @@ namespace Mokkd\Matchers\Types;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
-/** Matcher that requires an object not of a given class. */
+/**
+ * Matcher that requires the test value to be an object not of a given class.
+ */
 class IsObjectNotInstanceOf implements MatcherContract
 {
     /** @var class-string  */
@@ -21,11 +23,11 @@ class IsObjectNotInstanceOf implements MatcherContract
 
     public function matches(mixed $actual): bool
     {
-        return is_object($actual) && !($actual instanceof $this->className);
+        return is_object($actual) && !is_a($actual, $this->className, false);
     }
 
     public function describe(SerialiserContract $serialiser): string
     {
-        return "(!{$this->className}) {any}";
+        return "(object && !{$this->className}) {any}";
     }
 }

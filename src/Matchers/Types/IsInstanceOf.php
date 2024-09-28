@@ -7,7 +7,9 @@ namespace Mokkd\Matchers\Types;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
-/** Matcher that requires an object of a given class. */
+/**
+ * Matcher that requires the test value to be an object of a given class.
+ */
 class IsInstanceOf implements MatcherContract
 {
     /** @var class-string  */

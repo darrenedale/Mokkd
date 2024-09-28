@@ -6,7 +6,9 @@ namespace Mokkd\Matchers\Types;
 
 use Mokkd\Matchers\Comparisons\IsIdenticalTo;
 
-/** Matcher that requires a true value. */
+/**
+ * Matcher that requires the test value to be true.
+ */
 class IsFalse extends IsIdenticalTo
 {
     public function __construct()

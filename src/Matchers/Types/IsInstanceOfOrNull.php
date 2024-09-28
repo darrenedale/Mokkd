@@ -6,22 +6,19 @@ namespace Mokkd\Matchers\Types;
 
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
+use Mokkd\Matchers\Composite\MatchesAnyOf;
 
-/** Matcher that requires an object of a given class or null. */
-class IsInstanceOfOrNull implements MatcherContract
+/**
+ * Matcher that requires the test value to be an object of a given class or null.
+ */
+class IsInstanceOfOrNull extends MatchesAnyOf
 {
-    /** @var class-string  */
     private string $className;
 
-    /** @param class-string $className */
     public function __construct(string $className)
     {
+        parent::__construct(new IsNull(), new IsInstanceOf($className));
         $this->className = $className;
-    }
-
-    public function matches(mixed $actual): bool
-    {
-        return null === $actual || is_a($actual, $this->className, false);
     }
 
     public function describe(SerialiserContract $serialiser): string

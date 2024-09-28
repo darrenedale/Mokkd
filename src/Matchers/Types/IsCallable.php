@@ -8,19 +8,19 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 
 /**
- * Matcher that requires the test value to be any list array (numeric keys ascending in units from 0).
+ * Matcher that requires the test value to be any callable.
  *
- * Note that an empty array qualifies as a list array.
+ * The callable must exist.
  */
-class IsList implements MatcherContract
+class IsCallable implements MatcherContract
 {
     public function matches(mixed $actual): bool
     {
-        return is_array($actual) && array_is_list($actual);
+        return is_callable($actual, false);
     }
 
     public function describe(SerialiserContract $serialiser): string
     {
-        return "(array) {list}";
+        return "(callable) {any}";
     }
 }

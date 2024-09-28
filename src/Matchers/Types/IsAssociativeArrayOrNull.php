@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers\Types;
 
-use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
 use Mokkd\Matchers\Composite\MatchesAnyOf;
-use Mokkd\Utilities\IterableAlgorithms;
 
 /**
  * Matcher that requires the test value to be an associative array or null.

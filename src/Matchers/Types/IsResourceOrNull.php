@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers\Types;
 
-use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser as SerialiserContract;
+use Mokkd\Matchers\Composite\MatchesAnyOf;
 
-/** Matcher that requires any resource or null. */
-class IsResourceOrNull implements MatcherContract
+/**
+ * Matcher that requires the test value to be any resource or null.
+ */
+class IsResourceOrNull extends MatchesAnyOf
 {
-    public function matches(mixed $actual): bool
+    public function __construct()
     {
-        return null === $actual || is_resource($actual) || "resource (closed)" === get_debug_type($actual);
+        parent::__construct(new IsNull(), new IsResource());
     }
 
     public function describe(SerialiserContract $serialiser): string
