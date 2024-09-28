@@ -9,11 +9,11 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
 /**
- * The bounds are exclusive.
+ * The bounds are inclusive.
  *
  * TODO consider removing Numeric from the name as it's in the namespace
  */
-class IsNumericWithin implements MatcherContract
+class IsBetween implements MatcherContract
 {
     private int|float $lowerBound;
 
@@ -23,7 +23,7 @@ class IsNumericWithin implements MatcherContract
 
     public function __construct(int|float $lowerBound, int|float $upperBound)
     {
-        assert($lowerBound < $upperBound, new LogicException("Expected upper bound > lower bound, found {$lowerBound} and {$upperBound}"));
+        assert($lowerBound <= $upperBound, new LogicException("Expected upper bound >= lower bound, found {$lowerBound} and {$upperBound}"));
         $this->lowerBound = $lowerBound;
         $this->upperBound = $upperBound;
         $this->canUseIntegralComparison = is_int($lowerBound) && is_int($upperBound);
@@ -36,15 +36,15 @@ class IsNumericWithin implements MatcherContract
         }
 
         if (is_int($actual) && $this->canUseIntegralComparison) {
-            return $this->lowerBound < $actual && $actual < $this->upperBound;
+            return $this->lowerBound <= $actual && $actual <= $this->upperBound;
         }
 
         $actual = (float) $actual;
-        return (float) $this->lowerBound < $actual && $actual < (float) $this->upperBound;
+        return (float) $this->lowerBound <= $actual && $actual <= (float) $this->upperBound;
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A numeric value between (but not equal to) {$serialiser->serialise($this->lowerBound)} and {$serialiser->serialise($this->upperBound)}";
+        return "A numeric value between {$serialiser->serialise($this->lowerBound)} and {$serialiser->serialise($this->upperBound)} inclusive";
     }
 }

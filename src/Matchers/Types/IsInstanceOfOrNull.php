@@ -21,7 +21,7 @@ class IsInstanceOfOrNull implements MatcherContract
 
     public function matches(mixed $actual): bool
     {
-        return null === $actual || $actual instanceof $this->className;
+        return null === $actual || is_a($actual, $this->className, false);
     }
 
     public function describe(SerialiserContract $serialiser): string

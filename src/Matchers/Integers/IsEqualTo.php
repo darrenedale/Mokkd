@@ -7,7 +7,7 @@ namespace Mokkd\Matchers\Integers;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
-class IsIntNotEqualTo implements MatcherContract
+class IsEqualTo implements MatcherContract
 {
     private int $expected;
 
@@ -18,11 +18,11 @@ class IsIntNotEqualTo implements MatcherContract
 
     public function matches(mixed $actual): bool
     {
-        return is_int($actual) && $this->expected != $actual;
+        return $this->expected === $actual;
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int not equal to {$this->expected}";
+        return "A int equal to {$this->expected}";
     }
 }

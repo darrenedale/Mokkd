@@ -7,7 +7,7 @@ namespace Mokkd\Matchers\Floats;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
-class IsFloatMultipleOf implements MatcherContract
+class IsMultipleOf implements MatcherContract
 {
     private float $expected;
 

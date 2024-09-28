@@ -7,8 +7,7 @@ namespace Mokkd\Matchers\Floats;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
-/** Comparing floating point values for equality is subject to precision errors. */
-class IsFloatEqualTo implements MatcherContract
+class IsNotEqualTo implements MatcherContract
 {
     private float $expected;
 
@@ -19,11 +18,11 @@ class IsFloatEqualTo implements MatcherContract
 
     public function matches(mixed $actual): bool
     {
-        return $this->expected === $actual;
+        return is_float($actual) && $this->expected != $actual;
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A float equal to {$this->expected}";
+        return "A float not equal to {$this->expected}";
     }
 }

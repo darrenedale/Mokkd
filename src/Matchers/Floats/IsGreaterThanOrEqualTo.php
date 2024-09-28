@@ -8,7 +8,7 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
 /** The bounds are inclusive. */
-class IsFloatGreaterThan implements MatcherContract
+class IsGreaterThanOrEqualTo implements MatcherContract
 {
     private float $lowerBound;
 
@@ -19,11 +19,11 @@ class IsFloatGreaterThan implements MatcherContract
 
     public function matches(mixed $actual): bool
     {
-        return is_float($actual) && $this->lowerBound < $actual;
+        return is_float($actual) && $this->lowerBound <= $actual;
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A float greater than {$this->lowerBound}";
+        return "A float greater than or equal to {$this->lowerBound}";
     }
 }

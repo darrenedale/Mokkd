@@ -7,7 +7,7 @@ namespace Mokkd\Matchers\Integers;
 /**
  * Matches any int that is not 0.
  */
-class IsNotZero extends IsIntNotEqualTo
+class IsNotZero extends IsNotEqualTo
 {
     public function __construct()
     {

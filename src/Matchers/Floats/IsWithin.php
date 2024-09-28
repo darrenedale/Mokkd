@@ -9,7 +9,7 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
 /** The bounds are exclusive. */
-class IsFloatWithin implements MatcherContract
+class IsWithin implements MatcherContract
 {
     private float $lowerBound;
 

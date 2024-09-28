@@ -13,7 +13,7 @@ use Mokkd\Contracts\Serialiser;
  *
  * TODO consider removing Numeric from the name as it's in the namespace
  */
-class IsNumericGreaterThan implements MatcherContract
+class IsGreaterThan implements MatcherContract
 {
     private int|float $lowerBound;
 

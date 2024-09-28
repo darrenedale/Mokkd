@@ -8,7 +8,7 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
 /** The bounds are inclusive. */
-class IsIntGreaterThanOrEqualTo implements MatcherContract
+class IsGreaterThanOrEqualTo implements MatcherContract
 {
     private int $lowerBound;
 

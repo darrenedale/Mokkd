@@ -8,8 +8,8 @@ use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
-/** The bounds are exclusive. */
-class IsIntWithin implements MatcherContract
+/** The bounds are inclusive. */
+class IsBetween implements MatcherContract
 {
     private int $lowerBound;
 
@@ -24,11 +24,11 @@ class IsIntWithin implements MatcherContract
 
     public function matches(mixed $actual): bool
     {
-        return is_int($actual) && $this->lowerBound < $actual && $actual < $this->upperBound;
+        return is_int($actual) && $this->lowerBound <= $actual && $actual <= $this->upperBound;
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int between {$this->lowerBound} and {$this->upperBound} exclusive";
+        return "A int between {$this->lowerBound} and {$this->upperBound} inclusive";
     }
 }

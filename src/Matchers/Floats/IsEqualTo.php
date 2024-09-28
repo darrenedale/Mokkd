@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Mokkd\Matchers\Integers;
+namespace Mokkd\Matchers\Floats;
 
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
-class IsIntEqualTo implements MatcherContract
+/** Comparing floating point values for equality is subject to precision errors. */
+class IsEqualTo implements MatcherContract
 {
-    private int $expected;
+    private float $expected;
 
-    public function __construct(int $expected)
+    public function __construct(float $expected)
     {
         $this->expected = $expected;
     }
@@ -23,6 +24,6 @@ class IsIntEqualTo implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int equal to {$this->expected}";
+        return "A float equal to {$this->expected}";
     }
 }

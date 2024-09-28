@@ -8,22 +8,22 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
 /** The bounds are inclusive. */
-class IsIntGreaterThan implements MatcherContract
+class IsLessThan implements MatcherContract
 {
-    private int $lowerBound;
+    private int $upperBound;
 
-    public function __construct(int $lowerBound)
+    public function __construct(int $upperBound)
     {
-        $this->lowerBound = $lowerBound;
+        $this->upperBound = $upperBound;
     }
 
     public function matches(mixed $actual): bool
     {
-        return is_int($actual) && $this->lowerBound < $actual;
+        return is_int($actual) && $this->upperBound > $actual;
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int greater than {$this->lowerBound}";
+        return "A int less than {$this->upperBound}";
     }
 }

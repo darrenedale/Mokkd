@@ -7,7 +7,7 @@ namespace Mokkd\Matchers\Floats;
 /**
  * Matches any float that is not 0.
  */
-class IsNotZero extends IsFloatNotEqualTo
+class IsNotZero extends IsNotEqualTo
 {
     public function __construct()
     {

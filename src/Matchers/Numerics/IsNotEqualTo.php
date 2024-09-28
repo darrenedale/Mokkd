@@ -9,7 +9,7 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
 /** TODO consider removing Numeric from the name as it's in the namespace */
-class IsNumericNotEqualTo implements MatcherContract
+class IsNotEqualTo implements MatcherContract
 {
     private int|float $expected;
 

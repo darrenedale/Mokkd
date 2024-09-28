@@ -21,7 +21,7 @@ class IsInstanceOf implements MatcherContract
 
     public function matches(mixed $actual): bool
     {
-        return $actual instanceof $this->className;
+        return is_a($actual, $this->className, false);
     }
 
     public function describe(SerialiserContract $serialiser): string

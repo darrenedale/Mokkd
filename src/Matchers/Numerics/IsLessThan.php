@@ -9,11 +9,11 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
 /**
- * The bound is inclusive.
+ * The bound is exclusive.
  *
  * TODO consider removing Numeric from the name as it's in the namespace
  */
-class IsNumericLessThanOrEqualTo implements MatcherContract
+class IsLessThan implements MatcherContract
 {
     private int|float $upperBound;
 
@@ -29,14 +29,14 @@ class IsNumericLessThanOrEqualTo implements MatcherContract
         }
 
         if (is_int($actual) && is_int($this->upperBound)) {
-            return $this->upperBound >= $actual;
+            return $this->upperBound > $actual;
         }
 
-        return (float) $this->upperBound >= (float) $actual;
+        return (float) $this->upperBound > (float) $actual;
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A numeric value less than or equal to {$serialiser->serialise($this->upperBound)}";
+        return "A numeric value less than {$serialiser->serialise($this->upperBound)}";
     }
 }

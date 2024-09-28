@@ -28,35 +28,37 @@ use Mokkd\Matchers\Dates\IsNotInYear as IsDateNotInYear;
 use Mokkd\Matchers\Dates\IsOnOrAfter as IsDateOnOrAfter;
 use Mokkd\Matchers\Dates\IsOnOrBefore as IsDateOnOrBefore;
 use Mokkd\Matchers\Dates\IsWithin as IsDateWithin;
-use Mokkd\Matchers\Floats\IsFloatBetween;
-use Mokkd\Matchers\Floats\IsFloatEqualTo;
-use Mokkd\Matchers\Floats\IsFloatGreaterThan;
-use Mokkd\Matchers\Floats\IsFloatGreaterThanOrEqualTo;
-use Mokkd\Matchers\Floats\IsFloatLessThan;
-use Mokkd\Matchers\Floats\IsFloatLessThanOrEqualTo;
-use Mokkd\Matchers\Floats\IsFloatMultipleOf;
-use Mokkd\Matchers\Floats\IsFloatNotEqualTo;
-use Mokkd\Matchers\Floats\IsFloatWithin;
-use Mokkd\Matchers\Integers\IsIntBetween;
-use Mokkd\Matchers\Integers\IsIntEqualTo;
-use Mokkd\Matchers\Integers\IsIntGreaterThan;
-use Mokkd\Matchers\Integers\IsIntGreaterThanOrEqualTo;
-use Mokkd\Matchers\Integers\IsIntLessThan;
-use Mokkd\Matchers\Integers\IsIntLessThanOrEqualTo;
-use Mokkd\Matchers\Integers\IsIntMultipleOf;
-use Mokkd\Matchers\Integers\IsIntNotEqualTo;
-use Mokkd\Matchers\Integers\IsIntWithin;
-use Mokkd\Matchers\Numerics\IsNotZero;
-use Mokkd\Matchers\Numerics\IsNumericBetween;
-use Mokkd\Matchers\Numerics\IsNumericEqualTo;
-use Mokkd\Matchers\Numerics\IsNumericGreaterThan;
-use Mokkd\Matchers\Numerics\IsNumericGreaterThanOrEqualTo;
-use Mokkd\Matchers\Numerics\IsNumericLessThan;
-use Mokkd\Matchers\Numerics\IsNumericLessThanOrEqualTo;
-use Mokkd\Matchers\Numerics\IsNumericMultipleOf;
-use Mokkd\Matchers\Numerics\IsNumericNotEqualTo;
-use Mokkd\Matchers\Numerics\IsNumericWithin;
-use Mokkd\Matchers\Numerics\IsZero;
+use Mokkd\Matchers\Floats\IsBetween as IsFloatBetween;
+use Mokkd\Matchers\Floats\IsEqualTo as IsFloatEqualTo;
+use Mokkd\Matchers\Floats\IsGreaterThan as IsFloatGreaterThan;
+use Mokkd\Matchers\Floats\IsGreaterThanOrEqualTo as IsFloatGreaterThanOrEqualTo;
+use Mokkd\Matchers\Floats\IsLessThan as IsFloatLessThan;
+use Mokkd\Matchers\Floats\IsLessThanOrEqualTo as IsFloatLessThanOrEqualTo;
+use Mokkd\Matchers\Floats\IsMultipleOf as IsFloatMultipleOf;
+use Mokkd\Matchers\Floats\IsNotEqualTo as IsFloatNotEqualTo;
+use Mokkd\Matchers\Floats\IsWithin as IsFloatWithin;
+use Mokkd\Matchers\Integers\IsBetween as IsIntBetween;
+use Mokkd\Matchers\Integers\IsEqualTo as IsIntEqualTo;
+use Mokkd\Matchers\Integers\IsGreaterThan as IsIntGreaterThan;
+use Mokkd\Matchers\Integers\IsGreaterThanOrEqualTo as IsIntGreaterThanOrEqualTo;
+use Mokkd\Matchers\Integers\IsLessThan as IsIntLessThan;
+use Mokkd\Matchers\Integers\IsLessThanOrEqualTo as IsIntLessThanOrEqualTo;
+use Mokkd\Matchers\Integers\IsMultipleOf as IsIntMultipleOf;
+use Mokkd\Matchers\Integers\IsNotEqualTo as IsIntNotEqualTo;
+use Mokkd\Matchers\Integers\IsWithin as IsIntWithin;
+use Mokkd\Matchers\Integers\IsZero as IsIntZero;
+use Mokkd\Matchers\Integers\IsNotZero as IsNonZeroInt;
+use Mokkd\Matchers\Numerics\IsNotZero as IsNonZeroNumeric;
+use Mokkd\Matchers\Numerics\IsBetween as IsNumericBetween;
+use Mokkd\Matchers\Numerics\IsEqualTo as IsNumericEqualTo;
+use Mokkd\Matchers\Numerics\IsGreaterThan as IsNumericGreaterThan;
+use Mokkd\Matchers\Numerics\IsGreaterThanOrEqualTo as IsNumericGreaterThanOrEqualTo;
+use Mokkd\Matchers\Numerics\IsLessThan as IsNumericLessThan;
+use Mokkd\Matchers\Numerics\IsLessThanOrEqualTo as IsNumericLessThanOrEqualTo;
+use Mokkd\Matchers\Numerics\IsMultipleOf as IsNumericMultipleOf;
+use Mokkd\Matchers\Numerics\IsNotEqualTo as IsNumericNotEqualTo;
+use Mokkd\Matchers\Numerics\IsWithin as IsNumericWithin;
+use Mokkd\Matchers\Numerics\IsZero as IsNumericZero;
 use Mokkd\Matchers\Strings\BeginsWith as IsStringBeginningWith;
 use Mokkd\Matchers\Strings\Contains as IsStringContaining;
 use Mokkd\Matchers\Strings\DoesNotBeginWith as IsStringNotBeginningWith;
@@ -156,6 +158,9 @@ use Mokkd\Utilities\Serialiser;
  * @method static IsIntBetween isIntBetween(int $lowerBound, int $upperBound)
  * @method static IsIntWithin isIntWithin(int $lowerBound, int $upperBound)
  * @method static IsIntMultipleOf isIntMultipleOf(int $factor)
+ * @method static IsIntZero isIntZero()
+ * @method static IsNonZeroInt isNonZeroInt()
+ *
  * @method static IsFloatEqualTo isFloatEqualTo(float $expected)
  * @method static IsFloatNotEqualTo isFloatNotEqualTo(float $expected)
  * @method static IsFloatGreaterThan isFloatGreaterThan(float $lowerBound)
@@ -165,6 +170,7 @@ use Mokkd\Utilities\Serialiser;
  * @method static IsFloatBetween isFloatBetween(float $lowerBound, float $upperBound)
  * @method static IsFloatWithin isFloatWithin(float $lowerBound, float $upperBound)
  * @method static IsFloatMultipleOf isFloatMultipleOf(float $factor)
+ *
  * @method static IsNumericEqualTo isNumericEqualTo(int|float $expected)
  * @method static IsNumericNotEqualTo isNumericNotEqualTo(int|float $expected)
  * @method static IsNumericGreaterThan isNumericGreaterThan(int|float $lowerBound)
@@ -174,8 +180,8 @@ use Mokkd\Utilities\Serialiser;
  * @method static IsNumericBetween isNumericBetween(int|float $lowerBound, int|float $upperBound)
  * @method static IsNumericWithin isNumericWithin(int|float $lowerBound, int|float $upperBound)
  * @method static IsNumericMultipleOf isNumericMultipleOf(int|float $factor)
- * @method static IsZero isZero()
- * @method static IsNotZero isNotZero()
+ * @method static IsNumericZero isZero()
+ * @method static IsNonZeroNumeric isNotZero()
  *
  * @method static IsEmptyString isEmptyString()
  * @method static IsNonEmptyString isNonEmptyString()
@@ -224,6 +230,10 @@ use Mokkd\Utilities\Serialiser;
  */
 class Mokkd
 {
+    private const MatcherFactories = [
+        'isEqualTo' => IsEqualTo::class,
+    ];
+
     /** @var MockFunctionContract[] */
     private static array $mocks = [];
 
@@ -306,19 +316,10 @@ class Mokkd
 
     public static function __callStatic(string $functionName, array $arguments): MatcherContract
     {
-        // we want the call isZero to look for a class named IsZero, but we don't want the function IsZero to match
-        if (strtoupper($functionName)[0] === $functionName[0]) {
-            throw new BadMethodCallException("Static method {$functionName} does not exist");
-        }
+        $matcherClass = self::MatcherFactories[$functionName] ?? null;
 
-        $functionName = strtoupper($functionName[0]) . substr($functionName, 1);
-
-        foreach (["Comparisons", "Dates", "Numeric", "Strings", "Type"] as $namespace) {
-            $fqClass = "Mokkd\\Matchers\\{$namespace}\\{$functionName}";
-
-            if (class_exists($fqClass)) {
-                return new $fqClass(...$arguments);
-            }
+        if (null !== $matcherClass) {
+            return new $matcherClass(...$arguments);
         }
 
         throw new BadMethodCallException("Static method {$functionName} does not exist");

@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Mokkd\Matchers\Integers;
+namespace Mokkd\Matchers\Floats;
 
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
 /** The bounds are inclusive. */
-class IsIntLessThan implements MatcherContract
+class IsLessThanOrEqualTo implements MatcherContract
 {
-    private int $upperBound;
+    private float $upperBound;
 
-    public function __construct(int $upperBound)
+    public function __construct(float $upperBound)
     {
         $this->upperBound = $upperBound;
     }
 
     public function matches(mixed $actual): bool
     {
-        return is_int($actual) && $this->upperBound > $actual;
+        return is_float($actual) && $this->upperBound >= $actual;
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int less than {$this->upperBound}";
+        return "A float less than or equal to {$this->upperBound}";
     }
 }

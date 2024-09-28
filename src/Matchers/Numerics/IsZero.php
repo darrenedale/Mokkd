@@ -7,7 +7,7 @@ namespace Mokkd\Matchers\Numerics;
 /**
  * Match a numeric value of any type that is 0.
  */
-class IsZero extends IsNumericEqualTo
+class IsZero extends IsEqualTo
 {
     public function __construct()
     {
