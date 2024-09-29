@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Mokkd\Contracts;
 
+/**
+ * Contract for test expectations set on mock functions.
+ */
 interface Expectation
 {
     /** @var int Indicates an expectation expected to match any number of times (including 0) */

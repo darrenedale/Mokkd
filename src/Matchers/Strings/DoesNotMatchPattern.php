@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Mokkd\Matchers\Strings;
 
 use Closure;
+use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 use Mokkd\Utilities\Guard;
 
-class MatchingPattern implements MatcherContract
+class DoesNotMatchPattern implements MatcherContract
 {
+    use ValidatesRegularExpressions;
+
     private string $pattern;
 
     private string $encoding;
@@ -23,14 +26,16 @@ class MatchingPattern implements MatcherContract
      */
     public function __construct(string $pattern, string $encoding = "UTF-8", bool $caseSensitive = true)
     {
-        // TODO assert valid pattern and encoding
+        assert(in_array($encoding, mb_list_encodings(), true), new LogicException("Expected character encoding supported by the mbstring extension, found {$encoding}"));
+        assert(self::isValidRegularExpression($pattern), new LogicException("Expected valid ereg regular expression, found {$pattern}"));
+
         $this->pattern = $pattern;
         $this->encoding = $encoding;
 
         if ($caseSensitive) {
-            $this->compare = static fn(string $pattern, string $subject): bool => mb_ereg($pattern, $subject);
+            $this->compare = static fn(string $pattern, string $subject): bool => !mb_ereg($pattern, $subject);
         } else {
-            $this->compare = static fn(string $pattern, string $subject): bool => mb_eregi($pattern, $subject);
+            $this->compare = static fn(string $pattern, string $subject): bool => !mb_eregi($pattern, $subject);
         }
     }
 
@@ -49,11 +54,11 @@ class MatchingPattern implements MatcherContract
             mb_regex_encoding($this->encoding);
         }
 
-        return ($this->compare)($this->pattern, $actual);
+        return !($this->compare)($this->pattern, $actual);
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A {$this->encoding} string matching the regular expression {$this->pattern}";
+        return "({$this->encoding}-string) !~= {$this->pattern}";
     }
 }

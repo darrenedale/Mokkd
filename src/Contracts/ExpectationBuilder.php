@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Mokkd\Contracts;
 
+/**
+ * Contract for classes that fluently build expectations for mock functions.
+ */
 interface ExpectationBuilder
 {
     /** Add an expectation. */

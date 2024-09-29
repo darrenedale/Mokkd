@@ -11,7 +11,7 @@ use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class IsStringOfNoFewerBytesThanTest extends TestCase
+class IsOfNoFewerBytesThanTest extends TestCase
 {
     use CreatesNullSerialiser;
 

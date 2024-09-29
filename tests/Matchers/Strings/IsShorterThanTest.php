@@ -18,7 +18,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
  * and Windows code pages 1251 and 1252 are tested. This should cover the vast majority of use-cases. KOI8-*, EUC-* and
  * BIG-5 may follow after some research.
  */
-class IsStringShorterThanTest extends TestCase
+class IsShorterThanTest extends TestCase
 {
     use CreatesNullSerialiser;
 

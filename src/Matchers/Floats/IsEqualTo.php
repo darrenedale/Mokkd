@@ -10,6 +10,8 @@ use Mokkd\Contracts\Serialiser;
 /** Comparing floating point values for equality is subject to precision errors. */
 class IsEqualTo implements MatcherContract
 {
+    use FormatsFloats;
+
     private float $expected;
 
     public function __construct(float $expected)
@@ -24,6 +26,6 @@ class IsEqualTo implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A float equal to {$this->expected}";
+        return "(float) == " . self::formatFloat($this->expected);
     }
 }

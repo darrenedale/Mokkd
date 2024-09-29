@@ -10,7 +10,7 @@ use MokkdTests\Matchers\DataFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class IsJsonStringTest extends TestCase
+class IsJsonTest extends TestCase
 {
     use CreatesNullSerialiser;
 

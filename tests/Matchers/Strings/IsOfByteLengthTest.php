@@ -5,15 +5,22 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers\Strings;
 
 use LogicException;
-use Mokkd\Matchers\Strings\IsOfMoreBytesThan;
+use Mokkd\Matchers\Strings\IsOfByteLength;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class IsStringOfMoreBytesThanTest extends TestCase
+class IsOfByteLengthTest extends TestCase
 {
     use CreatesNullSerialiser;
+
+    public static function dataForTestLength1(): iterable
+    {
+        yield from DataFactory::integerZero();
+        yield from DataFactory::positiveIntegers();
+        yield from DataFactory::maxInteger();
+    }
 
     public static function dataForTestConstructor1(): iterable
     {
@@ -28,21 +35,14 @@ class IsStringOfMoreBytesThanTest extends TestCase
         self::skipIfAssertionsDisabled();
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage("Expecting length >= 0, found {$length}");
-        new IsOfMoreBytesThan($length);
-    }
-
-    public static function dataForTestLength1(): iterable
-    {
-        yield from DataFactory::integerZero();
-        yield from DataFactory::positiveIntegers();
-        yield from DataFactory::maxInteger();
+        new IsOfByteLength($length);
     }
 
     /** Ensure the constructor sets the length and we can retrieve it. */
     #[DataProvider("dataForTestLength1")]
     public function testLength1(int $length): void
     {
-        self::assertSame($length, (new IsOfMoreBytesThan($length))->length());
+        self::assertSame($length, (new IsOfByteLength($length))->length());
     }
 
     public static function dataForTestMatches1(): iterable
@@ -61,7 +61,7 @@ class IsStringOfMoreBytesThanTest extends TestCase
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(int $length, string $string): void
     {
-        self::assertFalse((new IsOfMoreBytesThan($length))->matches($string));
+        self::assertFalse((new IsOfByteLength($length))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -81,11 +81,11 @@ class IsStringOfMoreBytesThanTest extends TestCase
         }
     }
 
-    /** Ensure a reasonable subset of longer strings match. */
+    /** Ensure a reasonable subset of longer strings fail to match. */
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(int $length, string $string): void
     {
-        self::assertTrue((new IsOfMoreBytesThan($length))->matches($string));
+        self::assertFalse((new IsOfByteLength($length))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -106,11 +106,11 @@ class IsStringOfMoreBytesThanTest extends TestCase
         }
     }
 
-    /** Ensure a reasonable subset of strings of exactly the length fail to match. */
+    /** Ensure a reasonable subset of strings of exactly the correct length match. */
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(int $length, string $string): void
     {
-        self::assertFalse((new IsOfMoreBytesThan($length))->matches($string));
+        self::assertTrue((new IsOfByteLength($length))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -123,6 +123,6 @@ class IsStringOfMoreBytesThanTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(int $length): void
     {
-        self::assertSame("(string[>{$length}])", (new IsOfMoreBytesThan($length))->describe(self::nullSerialiser()));
+        self::assertSame("(string[{$length}])", (new IsOfByteLength($length))->describe(self::nullSerialiser()));
     }
 }

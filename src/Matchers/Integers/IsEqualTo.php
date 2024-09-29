@@ -23,6 +23,6 @@ class IsEqualTo implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int equal to {$this->expected}";
+        return "(int) === {$this->expected}";
     }
 }

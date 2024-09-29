@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers\Strings;
 
 use LogicException;
-use Mokkd\Matchers\Strings\IsLongerThan;
+use Mokkd\Matchers\Strings\IsNoLongerThan;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\Matchers\RelabelMode;
@@ -13,27 +13,16 @@ use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
- * Tests IsStringLongerThan matcher with various character encodings. Of those that the mbstring extension supports,
+ * Tests IsStringNoLongerThan matcher with various character encodings. Of those that the mbstring extension supports,
  * ASCII, all the ISO-8859 encodings, UTF-8, UTF-16 (BE, LE and auto-detected) and UTF-32 (BE, LE and auto-detected),
  * and Windows code pages 1251 and 1252 are tested. This should cover the vast majority of use-cases. KOI8-*, EUC-* and
  * BIG-5 may follow after some research.
  */
-class IsStringLongerThanTest extends TestCase
+class IsNoLongerThanTest extends TestCase
 {
     use CreatesNullSerialiser;
 
-    private const MultiByteEncodings = [
-        "utf-8" => ["UTF-8"],
-        "utf-16" => ["UTF-16"],
-        "utf-16le" => ["UTF-16LE"],
-        "utf-16be" => ["UTF-16BE"],
-        "utf-32" => ["UTF-32"],
-        "utf-32le" => ["UTF-32LE"],
-        "utf-32be" => ["UTF-32BE"],
-    ];
-
     private const Lengths = [
-        "zero" => [0],
         "one" => [1],
         "two" => [2],
         "hundred" => [100],
@@ -59,6 +48,16 @@ class IsStringLongerThanTest extends TestCase
         "ascii" => ["ASCII"],
         "Windows-1251" => ["Windows-1251"],
         "Windows-1252" => ["Windows-1252"],
+    ];
+
+    private const MultiByteEncodings = [
+        "utf-8" => ["UTF-8"],
+        "utf-16" => ["UTF-16"],
+        "utf-16le" => ["UTF-16LE"],
+        "utf-16be" => ["UTF-16BE"],
+        "utf-32" => ["UTF-32"],
+        "utf-32le" => ["UTF-32LE"],
+        "utf-32be" => ["UTF-32BE"],
     ];
 
     private const SingleByteEncodingStrings = [
@@ -132,13 +131,13 @@ class IsStringLongerThanTest extends TestCase
         self::skipIfAssertionsDisabled();
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage("Expecting length >= 0, found {$length}");
-        new IsLongerThan($length);
+        new IsNoLongerThan($length);
     }
 
     /** Ensure encoding is UTF-8 by default. */
     public function testConstructor2(): void
     {
-        self::assertSame("UTF-8", (new IsLongerThan(10))->encoding());
+        self::assertSame("UTF-8", (new IsNoLongerThan(10))->encoding());
     }
 
     public static function dataForTestLength1(): iterable
@@ -152,7 +151,7 @@ class IsStringLongerThanTest extends TestCase
     #[DataProvider("dataForTestLength1")]
     public function testLength1(int $length): void
     {
-        self::assertSame($length, (new IsLongerThan($length))->length());
+        self::assertSame($length, (new IsNoLongerThan($length))->length());
     }
 
     public static function dataForTestEncoding1(): iterable
@@ -165,73 +164,71 @@ class IsStringLongerThanTest extends TestCase
     #[DataProvider("dataForTestEncoding1")]
     public function testEncoding1(string $encoding): void
     {
-        self::assertSame($encoding, (new IsLongerThan(10, $encoding))->encoding());
+        self::assertSame($encoding, (new IsNoLongerThan(10, $encoding))->encoding());
     }
 
     public static function dataForTestMatches1(): iterable
     {
-        yield "string-longer-than-zero-character" => [0, "a"];
-        yield "string-longer-than-zero-string" => [0, "mokkd"];
-
         foreach (DataFactory::positiveIntegers() as $length) {
             $length = DataFactory::unboxSingle($length);
-            yield "string-longer-than-{$length}-string-plus-one" => [$length, str_repeat("m", $length + 1)];
-            yield "string-longer-than-{$length}-string-plus-10" => [$length, str_repeat("k", $length + 10)];
-            yield "string-longer-than-{$length}-multibyte-utf8-characters" => [$length, str_repeat("\xc3\xa9", $length + 10)];
+            yield "string-no-longer-than-{$length}-string-equal-length" => [$length, str_repeat("m", $length)];
+            yield "string-no-longer-than-{$length}-string-minus-one" => [$length, str_repeat("m", $length - 1)];
+            yield "string-no-longer-than-{$length}-string-0" => [$length, ""];
+
+            if (1 < $length) {
+                yield "string-no-longer-than-{$length}-multibyte-utf8-characters" => [$length, str_repeat("\xc3\xa9", $length - 1)];
+            }
         }
     }
 
-    /** Ensure a reasonable subset of longer strings match successfully. */
+    /** Ensure a reasonable subset of shorter strings match successfully. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(int $length, string $string): void
     {
-        self::assertTrue((new IsLongerThan($length))->matches($string));
+        self::assertTrue((new IsNoLongerThan($length))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
     {
-        yield "string-longer-than-zero-empty" => [0, ""];
-
         foreach (DataFactory::positiveIntegers() as $length) {
             $length = DataFactory::unboxSingle($length);
-            yield "string-longer-than-{$length}-string-equal-length" => [$length, str_repeat("m", $length)];
-            yield "string-longer-than-{$length}-string-minus-one" => [$length, str_repeat("m", $length - 1)];
-            yield "string-longer-than-{$length}-empty" => [$length, ""];
+            yield "string-no-longer-than-{$length}-string-plus-one" => [$length, str_repeat("k", $length + 1)];
+            yield "string-no-longer-than-{$length}-string-plus-more" => [$length, str_repeat("d", $length + 10)];
         }
     }
 
-    /** Ensure a reasonable subset of shorter (or same length) strings fail to match. */
+    /** Ensure a reasonable subset of longer strings fail to match. */
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(int $length, string $string): void
     {
-        self::assertFalse((new IsLongerThan($length))->matches($string));
+        self::assertFalse((new IsNoLongerThan($length))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
     {
         // U+00e9 (é)
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf8" => [10, "UTF-8", str_repeat("\xc3\xa9", 6)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf16-ordered" => [10, "UTF-16", str_repeat("\x00\xe9", 6)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf16le" => [10, "UTF-16LE", str_repeat("\xe9\x00", 6)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf16be" => [10, "UTF-16BE", str_repeat("\x00\xe9", 6)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf32le" => [10, "UTF-32LE", str_repeat("\x00\x00\xe9\x00", 6)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+00e9-utf32be" => [10, "UTF-32BE", str_repeat("\x00\x00\x00\xe9", 6)];
+        yield "string-no-longer-than-6-more-bytes-fewer-characters-u+00e9-utf8" => [6, "UTF-8", str_repeat("\xc3\xa9", 6)];
+        yield "string-no-longer-than-6-more-bytes-fewer-characters-u+00e9-utf16" => [6, "UTF-16", str_repeat("\x00\xe9", 6)];
+        yield "string-no-longer-than-6-more-bytes-fewer-characters-u+00e9-utf16le" => [6, "UTF-16LE", str_repeat("\xe9\x00", 6)];
+        yield "string-no-longer-than-6-more-bytes-fewer-characters-u+00e9-utf16be" => [6, "UTF-16BE", str_repeat("\x00\xe9", 6)];
+        yield "string-no-longer-than-6-more-bytes-fewer-characters-u+00e9-utf32le" => [6, "UTF-32LE", str_repeat("\x00\x00\xe9\x00", 6)];
+        yield "string-no-longer-than-6-more-bytes-fewer-characters-u+00e9-utf32be" => [6, "UTF-32BE", str_repeat("\x00\x00\x00\xe9", 6)];
 
         // U+10437 (𐐷)
-        yield "string-longer-than-6-more-bytes-fewer-characters-u+10437-utf8" => [10, "UTF-8", str_repeat("\xf0\x90\x90\xb7", 3)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf16-ordered" => [10, "UTF-16", str_repeat("\xd8\x01\xdc\x37", 3)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf16le" => [10, "UTF-16LE", str_repeat("\x01\xd8\x37\xdc", 3)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf16be" => [10, "UTF-16BE", str_repeat("\xd8\x01\xdc\x37", 3)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf31le" => [10, "UTF-32LE", str_repeat("\x01\x00\x37\x04", 3)];
-        yield "string-longer-than-10-more-bytes-fewer-characters-u+10437-utf31be" => [10, "UTF-32BE", str_repeat("\x00\x01\x04\x37", 3)];
+        yield "string-no-longer-than-3-more-bytes-fewer-characters-u+10437-utf8" => [3, "UTF-8", str_repeat("\xf0\x90\x90\xb7", 3)];
+        yield "string-no-longer-than-3-more-bytes-fewer-characters-u+10437-utf16" => [3, "UTF-16", str_repeat("\xd8\x01\xdc\x37", 3)];
+        yield "string-no-longer-than-3-more-bytes-fewer-characters-u+10437-utf16le" => [3, "UTF-16LE", str_repeat("\x01\xd8\x37\xdc", 3)];
+        yield "string-no-longer-than-3-more-bytes-fewer-characters-u+10437-utf16be" => [3, "UTF-16BE", str_repeat("\xd8\x01\xdc\x37", 3)];
+        yield "string-no-longer-than-3-more-bytes-fewer-characters-u+10437-utf31le" => [3, "UTF-32LE", str_repeat("\x01\x00\x37\x04", 3)];
+        yield "string-no-longer-than-3-more-bytes-fewer-characters-u+10437-utf31be" => [3, "UTF-32BE", str_repeat("\x00\x01\x04\x37", 3)];
     }
 
-    /** Ensure strings of more than length bytes but fewer than length characters in the required encoding don't match */
+    /** Ensure strings of more than length bytes but length characters in the required encoding match. */
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(int $length, string $encoding, string $encodedString): void
     {
-        self::assertGreaterThan($length, strlen($encodedString));
-        self::assertFalse((new IsLongerThan($length, $encoding))->matches($encodedString));
+        self::assertGreaterThanOrEqual($length, strlen($encodedString));
+        self::assertTrue((new IsNoLongerThan($length, $encoding))->matches($encodedString));
     }
 
     public static function dataForTestMatches4(): iterable
@@ -243,9 +240,9 @@ class IsStringLongerThanTest extends TestCase
 
             $encoding = DataFactory::unboxSingle($encoding);
             $value = DataFactory::unboxSingle(self::SingleByteEncodingStrings[$label]);
-            yield "string-longer-than-9-same-{$label}" => [9, $encoding, $value, false];
-            yield "string-longer-than-8-longer-{$label}" => [8, $encoding, $value, true];
-            yield "string-longer-than-10-shorter-{$label}" => [10, $encoding, $value, false];
+            yield "string-no-longer-than-9-same-{$label}" => [9, $encoding, $value, true];
+            yield "string-no-longer-than-8-longer-{$label}" => [8, $encoding, $value, false];
+            yield "string-no-longer-than-10-shorter-{$label}" => [10, $encoding, $value, true];
         }
     }
 
@@ -253,7 +250,7 @@ class IsStringLongerThanTest extends TestCase
     #[DataProvider("dataForTestMatches4")]
     public function testMatches4(int $length, string $encoding, string $encodedString, bool $expected): void
     {
-        self::assertSame($expected, (new IsLongerThan($length, $encoding))->matches($encodedString));
+        self::assertSame($expected, (new IsNoLongerThan($length, $encoding))->matches($encodedString));
     }
 
     public static function dataForTestMatches5(): iterable
@@ -271,24 +268,24 @@ class IsStringLongerThanTest extends TestCase
     #[DataProvider("dataForTestMatches5")]
     public function testMatches5(int $length, mixed $string): void
     {
-        self::assertFalse((new IsLongerThan($length))->matches($string));
+        self::assertFalse((new IsNoLongerThan($length))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
     {
-        yield from DataFactory::relabel(DataFactory::matrix(self::Lengths, [...self::SingleByteEncodings, ...self::MultiByteEncodings]), "string-longer-than-", RelabelMode::Prefix);
+        yield from DataFactory::relabel(DataFactory::matrix(self::Lengths, [...self::SingleByteEncodings, ...self::MultiByteEncodings]), "string-no-longer-than-", RelabelMode::Prefix);
     }
 
     /** Ensure the matcher describes itself correctly according to the length and encoding. */
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(int $length, string $encoding): void
     {
-        self::assertSame("({$encoding}-string[>{$length}])", (new IsLongerThan($length, $encoding))->describe(self::nullSerialiser()));
+        self::assertSame("({$encoding}-string[<={$length}])", (new IsNoLongerThan($length, $encoding))->describe(self::nullSerialiser()));
     }
 
     /** Ensure the matcher describes itself with UTF-8 encoding by default. */
     public static function testDescribe2(): void
     {
-        self::assertSame("(UTF-8-string[>10])", (new IsLongerThan(10))->describe(self::nullSerialiser()));
+        self::assertSame("(UTF-8-string[<=10])", (new IsNoLongerThan(10))->describe(self::nullSerialiser()));
     }
 }

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers\Strings;
 
 use LogicException;
-use Mokkd\Matchers\Strings\IsOfNoMoreBytesThan;
+use Mokkd\Matchers\Strings\IsOfMoreBytesThan;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class IsStringOfNoMoreBytesThanTest extends TestCase
+class IsOfMoreBytesThanTest extends TestCase
 {
     use CreatesNullSerialiser;
 
@@ -28,7 +28,7 @@ class IsStringOfNoMoreBytesThanTest extends TestCase
         self::skipIfAssertionsDisabled();
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage("Expecting length >= 0, found {$length}");
-        new IsOfNoMoreBytesThan($length);
+        new IsOfMoreBytesThan($length);
     }
 
     public static function dataForTestLength1(): iterable
@@ -42,7 +42,7 @@ class IsStringOfNoMoreBytesThanTest extends TestCase
     #[DataProvider("dataForTestLength1")]
     public function testLength1(int $length): void
     {
-        self::assertSame($length, (new IsOfNoMoreBytesThan($length))->length());
+        self::assertSame($length, (new IsOfMoreBytesThan($length))->length());
     }
 
     public static function dataForTestMatches1(): iterable
@@ -57,16 +57,16 @@ class IsStringOfNoMoreBytesThanTest extends TestCase
         yield "empty-string-shorter-than-int-max-bytes" => [PHP_INT_MAX, ""];
     }
 
-    /** Ensure a reasonable subset of shorter strings match. */
+    /** Ensure a reasonable subset of shorter strings fail to match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(int $length, string $string): void
     {
-        self::assertTrue((new IsOfNoMoreBytesThan($length))->matches($string));
+        self::assertFalse((new IsOfMoreBytesThan($length))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
     {
-        foreach (DataFactory::positiveIntegers() as $length) {
+        foreach ([...DataFactory::integerZero(), ...DataFactory::positiveIntegers()] as $length) {
             $length = DataFactory::unboxSingle($length);
             yield "string-just-longer-than-{$length}-bytes" => [$length, str_repeat(chr(0x40 + ($length % 79)), $length + 1)];
             yield "string-much-longer-than-{$length}-bytes" => [$length, str_repeat(chr(0x40 + ($length % 79)), $length + 100)];
@@ -74,15 +74,18 @@ class IsStringOfNoMoreBytesThanTest extends TestCase
             yield "string-trailing-whitespace-longer-than-{$length}-bytes" => [$length, str_repeat(chr(0x40 + ($length % 79)), $length) . " "];
             yield "string-whitespace-longer-than-{$length}-bytes" => [$length, str_repeat(" ", $length + 1)];
             yield "string-null-byte-longer-than-{$length}-bytes" => [$length, str_repeat(chr(0x40 + ($length % 79)), $length) . "\0"];
-            yield "string-surrounding-whitespace-longer-than-{$length}-bytes" => [$length, " " . str_repeat(chr(0x40 + ($length % 79)), $length - 1) . " "];
+
+            if (0 < $length) {
+                yield "string-surrounding-whitespace-longer-than-{$length}-bytes" => [$length, " " . str_repeat(chr(0x40 + ($length % 79)), $length - 1) . " "];
+            }
         }
     }
 
-    /** Ensure a reasonable subset of longer strings don't match. */
+    /** Ensure a reasonable subset of longer strings match. */
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(int $length, string $string): void
     {
-        self::assertFalse((new IsOfNoMoreBytesThan($length))->matches($string));
+        self::assertTrue((new IsOfMoreBytesThan($length))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -103,11 +106,11 @@ class IsStringOfNoMoreBytesThanTest extends TestCase
         }
     }
 
-    /** Ensure a reasonable subset of strings of exactly the length match. */
+    /** Ensure a reasonable subset of strings of exactly the length fail to match. */
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(int $length, string $string): void
     {
-        self::assertTrue((new IsOfNoMoreBytesThan($length))->matches($string));
+        self::assertFalse((new IsOfMoreBytesThan($length))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -120,6 +123,6 @@ class IsStringOfNoMoreBytesThanTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(int $length): void
     {
-        self::assertSame("(string[<={$length}])", (new IsOfNoMoreBytesThan($length))->describe(self::nullSerialiser()));
+        self::assertSame("(string[>{$length}])", (new IsOfMoreBytesThan($length))->describe(self::nullSerialiser()));
     }
 }

@@ -7,9 +7,11 @@ namespace Mokkd\Matchers\Floats;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
-/** The bounds are inclusive. */
+/** The bound is exclusive. */
 class IsLessThan implements MatcherContract
 {
+    use FormatsFloats;
+
     private float $upperBound;
 
     public function __construct(float $upperBound)
@@ -24,6 +26,6 @@ class IsLessThan implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A float less than {$this->upperBound}";
+        return "(float) < " . self::formatFloat($this->upperBound);
     }
 }

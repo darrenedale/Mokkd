@@ -10,7 +10,7 @@ use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class IsStringEndingWithTest extends TestCase
+class EndsWithTest extends TestCase
 {
     use CreatesNullSerialiser;
 

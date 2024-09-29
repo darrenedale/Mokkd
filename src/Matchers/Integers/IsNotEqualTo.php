@@ -7,6 +7,9 @@ namespace Mokkd\Matchers\Integers;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
+/**
+ * Matcher that requires an int not equal to 0.
+ */
 class IsNotEqualTo implements MatcherContract
 {
     private int $expected;
@@ -23,6 +26,6 @@ class IsNotEqualTo implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int not equal to {$this->expected}";
+        return "(int) !== {$this->expected}";
     }
 }

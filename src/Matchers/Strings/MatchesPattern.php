@@ -5,12 +5,22 @@ declare(strict_types=1);
 namespace Mokkd\Matchers\Strings;
 
 use Closure;
+use Error;
+use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 use Mokkd\Utilities\Guard;
 
-class DoesNotMatch implements MatcherContract
+/**
+ * Matcher that requires the test value to be a string matching a regular expression.
+ *
+ * The constraint pattern is multibyte-aware. You can specify the encoding in the constructor, along with whether
+ * pattern matching should be case-sensitive or -insensitive.
+ */
+class MatchesPattern implements MatcherContract
 {
+    use ValidatesRegularExpressions;
+
     private string $pattern;
 
     private string $encoding;
@@ -23,7 +33,9 @@ class DoesNotMatch implements MatcherContract
      */
     public function __construct(string $pattern, string $encoding = "UTF-8", bool $caseSensitive = true)
     {
-        // TODO assert valid pattern and encoding
+        assert(in_array($encoding, mb_list_encodings(), true), new LogicException("Expected character encoding supported by the mbstring extension, found {$encoding}"));
+        assert(self::isValidRegularExpression($pattern), new LogicException("Expected valid ereg regular expression, found {$pattern}"));
+
         $this->pattern = $pattern;
         $this->encoding = $encoding;
 
@@ -49,11 +61,11 @@ class DoesNotMatch implements MatcherContract
             mb_regex_encoding($this->encoding);
         }
 
-        return !($this->compare)($this->pattern, $actual);
+        return ($this->compare)($this->pattern, $actual);
     }
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A {$this->encoding} string not matching the regular expression {$this->pattern}";
+        return "({$this->encoding}-string) ~= {$this->pattern}";
     }
 }

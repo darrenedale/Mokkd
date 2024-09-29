@@ -7,8 +7,13 @@ namespace Mokkd\Matchers\Floats;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
+/**
+ * Matcher that requires a float not equal to 0.0.
+ */
 class IsNotEqualTo implements MatcherContract
 {
+    use FormatsFloats;
+
     private float $expected;
 
     public function __construct(float $expected)
@@ -23,6 +28,6 @@ class IsNotEqualTo implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A float not equal to {$this->expected}";
+        return "(float) != " . self::formatFloat($this->expected);
     }
 }

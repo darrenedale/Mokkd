@@ -4,38 +4,38 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers\Strings;
 
-use Mokkd\Matchers\Strings\IsEmpty;
+use Mokkd\Matchers\Strings\IsNonEmpty;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class IsEmptyStringTest extends TestCase
+class IsNonEmptyTest extends TestCase
 {
     use CreatesNullSerialiser;
 
     public static function dataForTestMatches1(): iterable
     {
-        yield from DataFactory::emptyString();
+        yield from DataFactory::nonEmptyStrings();
     }
 
-    /** Ensure an empty string matches successfully. */
+    /** Ensure a reasonable subset of non-empty strings match successfully. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(string $string): void
     {
-        self::assertTrue((new IsEmpty())->matches($string));
+        self::assertTrue((new IsNonEmpty())->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
     {
-        yield from DataFactory::nonEmptyStrings();
+        yield from DataFactory::emptyString();
     }
 
-    /** Ensure a reasonable subset of non-empty strings don't match. */
+    /** Ensure an empty string doesn't match. */
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(string $string): void
     {
-        self::assertFalse((new IsEmpty())->matches($string));
+        self::assertFalse((new IsNonEmpty())->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -53,12 +53,12 @@ class IsEmptyStringTest extends TestCase
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(mixed $string): void
     {
-        self::assertFalse((new IsEmpty())->matches($string));
+        self::assertFalse((new IsNonEmpty())->matches($string));
     }
 
     /** Ensure the matcher describes itself as expected. */
     public static function testDescribe1(): void
     {
-        self::assertSame("(string) {empty}", (new IsEmpty())->describe(self::nullSerialiser()));
+        self::assertSame("(string) {non-empty}", (new IsNonEmpty())->describe(self::nullSerialiser()));
     }
 }
