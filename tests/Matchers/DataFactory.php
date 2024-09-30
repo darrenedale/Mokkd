@@ -422,11 +422,11 @@ class DataFactory
         }
     }
 
-    public static function integerStrings(): iterable
+    public static function integerStrings(int $min = -100, int $max = 100): iterable
     {
         yield from self::zeroIntegerString();
-        yield from self::positiveIntegerStrings();
-        yield from self::negativeIntegerStrings();
+        yield from self::positiveIntegerStrings($max);
+        yield from self::negativeIntegerStrings($min);
         yield from self::minIntegerString();
         yield from self::maxIntegerString();
     }

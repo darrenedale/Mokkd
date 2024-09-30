@@ -7,6 +7,9 @@ namespace Mokkd\Matchers\Integers;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
+/**
+ * Matcher that requires an int test value that's equal to a constraint value.
+ */
 class IsEqualTo implements MatcherContract
 {
     private int $expected;
@@ -23,6 +26,6 @@ class IsEqualTo implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "(int) === {$this->expected}";
+        return "(int) == {$this->expected}";
     }
 }

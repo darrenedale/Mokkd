@@ -8,7 +8,8 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
 /**
- * Matcher that requires an int not equal to 0.
+ *  Matcher that requires an int test value that's not equal to a constraint value.
+ * /
  */
 class IsNotEqualTo implements MatcherContract
 {
@@ -26,6 +27,6 @@ class IsNotEqualTo implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "(int) !== {$this->expected}";
+        return "(int) != {$this->expected}";
     }
 }
