@@ -34,7 +34,6 @@ use Mokkd\Matchers\Floats\IsGreaterThan as IsFloatGreaterThan;
 use Mokkd\Matchers\Floats\IsGreaterThanOrEqualTo as IsFloatGreaterThanOrEqualTo;
 use Mokkd\Matchers\Floats\IsLessThan as IsFloatLessThan;
 use Mokkd\Matchers\Floats\IsLessThanOrEqualTo as IsFloatLessThanOrEqualTo;
-use Mokkd\Matchers\Floats\IsMultipleOf as IsFloatMultipleOf;
 use Mokkd\Matchers\Floats\IsNotEqualTo as IsFloatNotEqualTo;
 use Mokkd\Matchers\Floats\IsWithin as IsFloatWithin;
 use Mokkd\Matchers\Integers\IsBetween as IsIntBetween;
@@ -43,7 +42,6 @@ use Mokkd\Matchers\Integers\IsGreaterThan as IsIntGreaterThan;
 use Mokkd\Matchers\Integers\IsGreaterThanOrEqualTo as IsIntGreaterThanOrEqualTo;
 use Mokkd\Matchers\Integers\IsLessThan as IsIntLessThan;
 use Mokkd\Matchers\Integers\IsLessThanOrEqualTo as IsIntLessThanOrEqualTo;
-use Mokkd\Matchers\Integers\IsMultipleOf as IsIntMultipleOf;
 use Mokkd\Matchers\Integers\IsNotEqualTo as IsIntNotEqualTo;
 use Mokkd\Matchers\Integers\IsWithin as IsIntWithin;
 use Mokkd\Matchers\Integers\IsZero as IsIntZero;
@@ -55,7 +53,6 @@ use Mokkd\Matchers\Numerics\IsGreaterThan as IsNumericGreaterThan;
 use Mokkd\Matchers\Numerics\IsGreaterThanOrEqualTo as IsNumericGreaterThanOrEqualTo;
 use Mokkd\Matchers\Numerics\IsLessThan as IsNumericLessThan;
 use Mokkd\Matchers\Numerics\IsLessThanOrEqualTo as IsNumericLessThanOrEqualTo;
-use Mokkd\Matchers\Numerics\IsMultipleOf as IsNumericMultipleOf;
 use Mokkd\Matchers\Numerics\IsNotEqualTo as IsNumericNotEqualTo;
 use Mokkd\Matchers\Numerics\IsWithin as IsNumericWithin;
 use Mokkd\Matchers\Numerics\IsZero as IsNumericZero;
@@ -157,7 +154,6 @@ use Mokkd\Utilities\Serialiser;
  * @method static IsIntLessThanOrEqualTo isIntLessThanOrEqualTo(int $upperBound)
  * @method static IsIntBetween isIntBetween(int $lowerBound, int $upperBound)
  * @method static IsIntWithin isIntWithin(int $lowerBound, int $upperBound)
- * @method static IsIntMultipleOf isIntMultipleOf(int $factor)
  * @method static IsIntZero isIntZero()
  * @method static IsNonZeroInt isNonZeroInt()
  *
@@ -169,7 +165,6 @@ use Mokkd\Utilities\Serialiser;
  * @method static IsFloatLessThanOrEqualTo isFloatLessThanOrEqualTo(float $upperBound)
  * @method static IsFloatBetween isFloatBetween(float $lowerBound, float $upperBound)
  * @method static IsFloatWithin isFloatWithin(float $lowerBound, float $upperBound)
- * @method static IsFloatMultipleOf isFloatMultipleOf(float $factor)
  *
  * @method static IsNumericEqualTo isNumericEqualTo(int|float $expected)
  * @method static IsNumericNotEqualTo isNumericNotEqualTo(int|float $expected)
@@ -179,7 +174,6 @@ use Mokkd\Utilities\Serialiser;
  * @method static IsNumericLessThanOrEqualTo isNumericLessThanOrEqualTo(int|float $upperBound)
  * @method static IsNumericBetween isNumericBetween(int|float $lowerBound, int|float $upperBound)
  * @method static IsNumericWithin isNumericWithin(int|float $lowerBound, int|float $upperBound)
- * @method static IsNumericMultipleOf isNumericMultipleOf(int|float $factor)
  * @method static IsNumericZero isZero()
  * @method static IsNonZeroNumeric isNotZero()
  *

@@ -998,6 +998,30 @@ JSON
         }
     }
 
-    // TODO combine (two or more iterables of same length, yield the first from all in a single dataset, then the second
-    //  from all in the next dataset, and so on)
+    /**
+     * Combine two or more iterables into a single dataset.
+     *
+     * The first set of arguments from each dataset are combined for the first dataset, then all the second items, and
+     * so on. The number of datasets yielded is determined by the size of the first dataset. All datasets must have at
+     * least as many items as the first. If subsequent datasets contain more items, they are ignored.
+     */
+    public static function combine(iterable $data1, iterable $data2, iterable ...$otherData): iterable
+    {
+        $generator = static function() use ($data1, $data2): iterable {
+            $data2 = iterator_to_array($data2);
+            $labels2 = array_keys($data2);
+
+            foreach ($data1 as $label1 => $args1) {
+                $args2 = array_shift($data2);
+                $label2 = array_shift($labels2);
+                yield "{$label1}-{$label2}" => [...$args1, ...$args2];
+            }
+        };
+
+        if (0 === count($otherData)) {
+            yield from $generator();
+        } else {
+            yield from DataFactory::combine($generator(), ...$otherData);
+        }
+    }
 }

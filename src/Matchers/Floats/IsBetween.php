@@ -11,6 +11,8 @@ use Mokkd\Contracts\Serialiser;
 /** The bounds are inclusive. */
 class IsBetween implements MatcherContract
 {
+    use FormatsFloats;
+
     private float $lowerBound;
 
     private float $upperBound;
@@ -29,6 +31,6 @@ class IsBetween implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A float between {$this->lowerBound} and {$this->upperBound} inclusive";
+        return "(float) >= " . self::formatFloat($this->lowerBound) . " && <= " . self::formatFloat($this->upperBound);
     }
 }
