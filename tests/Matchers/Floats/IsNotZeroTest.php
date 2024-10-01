@@ -16,16 +16,10 @@ class IsNotZeroTest extends TestCase
 {
     use CreatesNullSerialiser;
 
-    public static function dataForTestMatches1(): iterable
-    {
-        yield from DataFactory::floatZero();
-    }
-
     /** Ensure a zero float does not match. */
-    #[DataProvider("dataForTestMatches1")]
-    public function testMatches1(float $value): void
+    public function testMatches1(): void
     {
-        self::assertFalse((new IsNotZero())->matches($value));
+        self::assertFalse((new IsNotZero())->matches(0.0));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -44,7 +38,9 @@ class IsNotZeroTest extends TestCase
     public static function dataForTestMatches3(): iterable
     {
         yield "null" => [null];
-        yield from DataFactory::strings();
+        yield from DataFactory::singleWordStrings();
+        yield from DataFactory::singleCharacterStrings();
+        yield from DataFactory::floatStrings();
         yield from DataFactory::arrays();
         yield from DataFactory::integers();
         yield from DataFactory::booleans();

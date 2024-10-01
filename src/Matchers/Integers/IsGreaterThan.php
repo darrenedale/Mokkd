@@ -24,6 +24,6 @@ class IsGreaterThan implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int greater than {$this->lowerBound}";
+        return "(int) > {$this->lowerBound}";
     }
 }

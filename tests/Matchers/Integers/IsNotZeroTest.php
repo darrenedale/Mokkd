@@ -2,43 +2,43 @@
 
 declare(strict_types=1);
 
-namespace MokkdTests\Matchers\Floats;
+namespace MokkdTests\Matchers\Integers;
 
-use Mokkd\Matchers\Floats\IsZero;
+use Mokkd\Matchers\Integers\IsNotZero;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(IsZero::class)]
-class IsZeroTest extends TestCase
+#[CoversClass(IsNotZero::class)]
+class IsNotZeroTest extends TestCase
 {
     use CreatesNullSerialiser;
 
-    /** Ensure a zero float matches successfully. */
+    /** Ensure a zero int does not match. */
     public function testMatches1(): void
     {
-        self::assertTrue((new IsZero())->matches(0.0));
+        self::assertFalse((new IsNotZero())->matches(0));
     }
 
     public static function dataForTestMatches2(): iterable
     {
-        yield from DataFactory::negativeFloats();
-        yield from DataFactory::positiveFloats();
+        yield from DataFactory::negativeIntegers();
+        yield from DataFactory::positiveIntegers();
     }
 
-    /** Ensure a reasonable subset of non-zero floats don't match. */
+    /** Ensure a reasonable subset of non-zero ints match successfully. */
     #[DataProvider("dataForTestMatches2")]
-    public function testMatches2(float $value): void
+    public function testMatches2(int $value): void
     {
-        self::assertFalse((new IsZero())->matches($value));
+        self::assertTrue((new IsNotZero())->matches($value));
     }
 
-    /** Ensure a zero int does not match. */
+    /** Ensure a zero float does not match. */
     public function testMatches3(): void
     {
-        self::assertFalse((new IsZero())->matches(0));
+        self::assertFalse((new IsNotZero())->matches(0.0));
     }
 
     public static function dataForTestMatches4(): iterable
@@ -46,25 +46,24 @@ class IsZeroTest extends TestCase
         yield "null" => [null];
         yield from DataFactory::singleWordStrings();
         yield from DataFactory::singleCharacterStrings();
-        yield from DataFactory::zeroFloatString();
+        yield from DataFactory::integerStrings(-20, 20);
         yield from DataFactory::arrays();
-        yield from DataFactory::positiveIntegers();
-        yield from DataFactory::negativeIntegers();
+        yield from DataFactory::floats();
         yield from DataFactory::booleans();
         yield from DataFactory::objects();
         yield from DataFactory::resources();
     }
 
-    /** Ensure a reasonable subset of non-floats don't match. */
+    /** Ensure a reasonable subset of non-ints don't match. */
     #[DataProvider("dataForTestMatches4")]
     public function testMatches4(mixed $value): void
     {
-        self::assertFalse((new IsZero())->matches($value));
+        self::assertFalse((new IsNotZero())->matches($value));
     }
 
     /** Ensure the matcher describes itself as expected. */
     public static function testDescribe1(): void
     {
-        self::assertSame("(float) == 0.0", (new IsZero())->describe(self::nullSerialiser()));
+        self::assertSame("(int) != 0", (new IsNotZero())->describe(self::nullSerialiser()));
     }
 }
