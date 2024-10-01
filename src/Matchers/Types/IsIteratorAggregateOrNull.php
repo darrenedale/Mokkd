@@ -8,17 +8,17 @@ use Mokkd\Contracts\Serialiser as SerialiserContract;
 use Mokkd\Matchers\Composite\MatchesAnyOf;
 
 /**
- * Matcher that requires the test value to be a Traversable or null.
+ * Matcher that requires the test value to be any Iterator or null.
  */
-class IsTraversableOrNull extends MatchesAnyOf
+class IsIteratorAggregateOrNull extends MatchesAnyOf
 {
     public function __construct()
     {
-        parent::__construct(new IsNull(), New IsTraversable());
+        parent::__construct(new IsNull(), New IsIteratorAggregate());
     }
 
     public function describe(SerialiserContract $serialiser): string
     {
-        return "(?Traversable) {any}";
+        return "(?IteratorAggregate) {any}";
     }
 }

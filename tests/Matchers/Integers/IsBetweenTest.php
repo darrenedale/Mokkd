@@ -172,7 +172,7 @@ class IsBetweenTest extends TestCase
         // first, prove that we're testing with a value consistent with the purpose of the test
         self::assertEquals((int) $testValue, $testValue, "{$testValue} != (int) {$testValue} (" . ((int) $testValue) . ")");
         $matcher = new IsBetween($lowerBound, $upperBound);
-        self::assertTrue($matcher->matches((int) $testValue), "Itegers\\IsBetween({$lowerBound}, {$upperBound}) does not match (int) {$testValue} (" . ((int) $testValue) . ")");
+        self::assertTrue($matcher->matches((int) $testValue), "Integers\\IsBetween({$lowerBound}, {$upperBound}) does not match (int) {$testValue} (" . ((int) $testValue) . ")");
 
         self::assertFalse($matcher->matches($testValue));
     }

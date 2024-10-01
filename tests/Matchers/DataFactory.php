@@ -953,8 +953,7 @@ JSON
         }
 
         assert(1 === count($data));
-        $data = array_values($data);
-        return $data[0];
+        return array_shift($data);
     }
 
     /**
@@ -972,6 +971,13 @@ JSON
     {
         foreach ($data as $label => $args) {
             yield $label => iterator_to_array(IterableAlgorithms::values(IterableAlgorithms::transform($args, $transform)));
+        }
+    }
+
+    public static function concatenate(iterable ...$datasets): iterable
+    {
+        foreach ($datasets as $dataset) {
+            yield from $dataset;
         }
     }
 

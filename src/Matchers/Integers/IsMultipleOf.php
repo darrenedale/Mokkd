@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers\Integers;
 
+use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 
@@ -13,6 +14,7 @@ class IsMultipleOf implements MatcherContract
 
     public function __construct(int $expected)
     {
+        assert(0 !== $expected, new LogicException("Expecting non-zero factor, found 0"));
         $this->expected = $expected;
     }
 
@@ -23,6 +25,6 @@ class IsMultipleOf implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int that's a multiple of {$this->expected}";
+        return "(int) {multiple of {$this->expected}}";
     }
 }
