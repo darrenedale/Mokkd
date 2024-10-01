@@ -29,6 +29,6 @@ class IsBetween implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int between {$this->lowerBound} and {$this->upperBound} inclusive";
+        return "(int) >= {$this->lowerBound} && <= {$this->upperBound}";
     }
 }

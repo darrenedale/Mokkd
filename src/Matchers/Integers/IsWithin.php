@@ -29,6 +29,6 @@ class IsWithin implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A int between {$this->lowerBound} and {$this->upperBound} exclusive";
+        return "(int) > {$this->lowerBound} && < {$this->upperBound}";
     }
 }

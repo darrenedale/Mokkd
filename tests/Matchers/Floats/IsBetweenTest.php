@@ -90,8 +90,8 @@ class IsBetweenTest extends TestCase
     {
         foreach (DataFactory::floats() as $label => $args) {
             $value = $args[0];
-            yield "{$label}-less-than-small-difference" => [$value, $value + self::SmallRange, $value - self::SmallDifference];
-            yield "{$label}-greater-than-small-difference" => [$value, $value + self::SmallRange, $value + self::SmallRange + self::SmallDifference];
+            yield "{$label}-less-than-lower-bound-small-difference" => [$value, $value + self::SmallRange, $value - self::SmallDifference];
+            yield "{$label}-greater-than-upper-bound-small-difference" => [$value, $value + self::SmallRange, $value + self::SmallRange + self::SmallDifference];
         }
     }
 
@@ -106,8 +106,8 @@ class IsBetweenTest extends TestCase
     {
         foreach (DataFactory::floats() as $label => $args) {
             $value = $args[0];
-            yield "{$label}-less-than-large-difference" => [$value, $value + self::LargeRange, $value - self::LargeDifference];
-            yield "{$label}-greater-than-large-difference" => [$value, $value + self::LargeRange, $value + self::LargeRange + self::LargeDifference];
+            yield "{$label}-less-than-lower-bound-large-difference" => [$value, $value + self::LargeRange, $value - self::LargeDifference];
+            yield "{$label}-greater-than-upper-bound-large-difference" => [$value, $value + self::LargeRange, $value + self::LargeRange + self::LargeDifference];
         }
     }
 
@@ -124,6 +124,7 @@ class IsBetweenTest extends TestCase
             foreach ([
                          DataFactory::singleWordStrings(),
                          DataFactory::singleCharacterStrings(),
+                         DataFactory::floatStrings(),
                          DataFactory::arrays(),
                          DataFactory::positiveIntegers(20),
                          DataFactory::negativeIntegers(-20),
