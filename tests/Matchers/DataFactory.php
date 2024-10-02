@@ -915,7 +915,7 @@ JSON
     {
         $changeLabel = match ($mode) {
             RelabelMode::Prefix => static fn (string|int $label): string => "{$newLabel}{$label}",
-            RelabelMode::Suffix => static fn (string|int $label): string => "{$newLabel}{$label}",
+            RelabelMode::Suffix => static fn (string|int $label): string => "{$label}{$newLabel}",
             RelabelMode::Replace => static function (string|int $label) use (&$newLabel): string {
                 assert (is_array($newLabel) && 0 < count($newLabel));
                 return array_shift($newLabel);
