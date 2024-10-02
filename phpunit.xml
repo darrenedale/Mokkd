@@ -19,6 +19,26 @@
         <testsuite name="matchers">
             <directory>tests/Matchers</directory>
         </testsuite>
+        <testsuite name="integer-matchers">
+            <directory>tests/Matchers/Integers</directory>
+        </testsuite>
+        <testsuite name="float-matchers">
+            <directory>tests/Matchers/Floats</directory>
+        </testsuite>
+        <testsuite name="numeric-matchers">
+            <directory>tests/Matchers/Numerics</directory>
+        </testsuite>
+        <testsuite name="string-matchers">
+            <directory>tests/Matchers/Strings</directory>
+        </testsuite>
+        <testsuite name="type-matchers">
+            <directory>tests/Matchers/Types</directory>
+        </testsuite>
+        <testsuite name="all-numeric-matchers">
+            <directory>tests/Matchers/Integers</directory>
+            <directory>tests/Matchers/Floats</directory>
+            <directory>tests/Matchers/Numerics</directory>
+        </testsuite>
         <testsuite name="utilities">
             <directory>tests/Utilities</directory>
         </testsuite>

@@ -6,6 +6,7 @@ namespace Mokkd\Matchers\Floats;
 
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
+use Mokkd\Matchers\FormatsFloats;
 
 /** Comparing floating point values for equality is subject to precision errors. */
 class IsEqualTo implements MatcherContract

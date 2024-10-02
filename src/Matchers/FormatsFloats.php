@@ -1,6 +1,8 @@
 <?php
 
-namespace Mokkd\Matchers\Floats;
+namespace Mokkd\Matchers;
+
+use function str_contains;
 
 trait FormatsFloats
 {

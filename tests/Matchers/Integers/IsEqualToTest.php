@@ -87,8 +87,6 @@ class IsEqualToTest extends TestCase
     public static function dataForTestDescribe1(): iterable
     {
         yield "zero" => [0, "(int) == 0"];
-        yield "negative-integral-int" => [-2, "(int) == -2"];
-        yield "positive-integral-int" => [5, "(int) == 5"];
         yield "negative-int" => [-7, "(int) == -7"];
         yield "positive-int" => [42, "(int) == 42"];
     }

@@ -7,6 +7,7 @@ namespace Mokkd\Matchers\Floats;
 use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
+use Mokkd\Matchers\FormatsFloats;
 
 /** The bounds are exclusive. */
 class IsWithin implements MatcherContract

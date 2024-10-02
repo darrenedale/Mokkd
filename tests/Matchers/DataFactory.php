@@ -9,7 +9,20 @@ use Mokkd\Utilities\IterableAlgorithms;
 use MokkdTests\TestCase;
 use stdClass;
 
-// TODO use box() helper to wrap datasets
+use function array_shift;
+use function assert;
+use function base64_encode;
+use function count;
+use function is_callable;
+use function is_array;
+use function fopen;
+use function iterator_to_array;
+use function range;
+use function str_replace;
+
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
+
 class DataFactory
 {
     public static function identicalValues(): iterable
@@ -972,6 +985,24 @@ JSON
         foreach ($data as $label => $args) {
             yield $label => iterator_to_array(IterableAlgorithms::values(IterableAlgorithms::transform($args, $transform)));
         }
+    }
+
+    /**
+     * Clone a dataset.
+     *
+     * A single copy of the dataset will be stored.
+     *
+     * @param iterable $data A reference to the dataset to clone. It will be traversed and replaced with an iterable
+     * copy of itself.
+     *
+     * @return iterable The clone of the dataset.
+     */
+    public static function clone(iterable & $data): iterable
+    {
+        $cache = iterator_to_array($data);
+        $generator = static fn() => yield from $cache;
+        $data = $generator();
+        return $generator();
     }
 
     public static function concatenate(iterable ...$datasets): iterable

@@ -6,6 +6,7 @@ namespace Mokkd\Matchers\Floats;
 
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
+use Mokkd\Matchers\FormatsFloats;
 
 /** The bound is exclusive. */
 class IsLessThan implements MatcherContract

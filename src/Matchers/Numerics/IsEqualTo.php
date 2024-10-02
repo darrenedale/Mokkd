@@ -7,14 +7,15 @@ namespace Mokkd\Matchers\Numerics;
 use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
+use Mokkd\Matchers\FormatsFloats;
 
 /**
  * Comparing floating point values for equality is subject to precision errors.
- *
- * TODO consider removing Numeric from the name as it's in the namespace
  */
 class IsEqualTo implements MatcherContract
 {
+    use FormatsFloats;
+
     private int|float $expected;
 
     public function __construct(int|float $expected)
@@ -37,6 +38,6 @@ class IsEqualTo implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A numeric value equal to {$serialiser->serialise($this->expected)}";
+        return "(int|float) == " . (is_float($this->expected) ? self::formatFloat($this->expected) : $this->expected);
     }
 }
