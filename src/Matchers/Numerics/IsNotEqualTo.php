@@ -8,7 +8,11 @@ use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 use Mokkd\Matchers\FormatsFloats;
 
-/** Matcher that requires a numeric value not equal to a constraint numeric value. */
+/**
+ * Matcher that requires a numeric value not equal to a constraint numeric value.
+ *
+ * Comparing floating point values for equality is subject to precision errors.
+ */
 class IsNotEqualTo implements MatcherContract
 {
     use FormatsFloats;
