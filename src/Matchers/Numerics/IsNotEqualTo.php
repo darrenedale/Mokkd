@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers\Numerics;
 
-use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
+use Mokkd\Matchers\FormatsFloats;
 
-/** TODO consider removing Numeric from the name as it's in the namespace */
+/** Matcher that requires a numeric value not equal to a constraint numeric value. */
 class IsNotEqualTo implements MatcherContract
 {
+    use FormatsFloats;
+
     private int|float $expected;
 
     public function __construct(int|float $expected)
@@ -33,6 +35,6 @@ class IsNotEqualTo implements MatcherContract
 
     public function describe(Serialiser $serialiser): string
     {
-        return "A numeric value not equal to {$serialiser->serialise($this->expected)}";
+        return "(int|float) != " . (is_float($this->expected) ? self::formatFloat($this->expected) : $this->expected);
     }
 }

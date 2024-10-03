@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Mokkd\Matchers\Numerics;
 
-use LogicException;
 use Mokkd\Contracts\Matcher as MatcherContract;
 use Mokkd\Contracts\Serialiser;
 use Mokkd\Matchers\FormatsFloats;
 
 /**
+ * Matcher that requires a numeric value equal to a constraint numeric value.
+ *
  * Comparing floating point values for equality is subject to precision errors.
  */
 class IsEqualTo implements MatcherContract
