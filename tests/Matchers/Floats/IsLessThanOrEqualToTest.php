@@ -70,7 +70,7 @@ class IsLessThanOrEqualToTest extends TestCase
     {
         foreach (DataFactory::floats() as $label => $args) {
             $value = $args[0];
-            yield "{$label}-greater-than-large-difference" => [$value, $value = self::LargeDifference];
+            yield "{$label}-greater-than-large-difference" => [$value, $value - self::LargeDifference];
         }
     }
 

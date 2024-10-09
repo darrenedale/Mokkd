@@ -48,8 +48,8 @@ class IsZeroTest extends TestCase
         yield from DataFactory::singleCharacterStrings();
         yield from DataFactory::zeroFloatString();
         yield from DataFactory::arrays();
-        yield from DataFactory::positiveIntegers();
-        yield from DataFactory::negativeIntegers();
+        yield from DataFactory::negativeIntegers(-20);
+        yield from DataFactory::positiveIntegers(20);
         yield from DataFactory::booleans();
         yield from DataFactory::objects();
         yield from DataFactory::resources();

@@ -98,8 +98,8 @@ class IsLessThanTest extends TestCase
         yield from DataFactory::matrix(DataFactory::floats(), DataFactory::nullValue());
         yield from DataFactory::matrix(DataFactory::floats(), DataFactory::strings());
         yield from DataFactory::matrix(DataFactory::floats(), DataFactory::arrays());
-        yield from DataFactory::matrix(DataFactory::floats(), DataFactory::positiveIntegers());
-        yield from DataFactory::matrix(DataFactory::floats(), DataFactory::negativeIntegers());
+        yield from DataFactory::matrix(DataFactory::floats(), DataFactory::negativeIntegers(-20));
+        yield from DataFactory::matrix(DataFactory::floats(), DataFactory::positiveIntegers(20));
         yield from DataFactory::matrix(DataFactory::floats(), DataFactory::booleans());
         yield from DataFactory::matrix(DataFactory::floats(), DataFactory::objects());
         yield from DataFactory::matrix(DataFactory::floats(), DataFactory::resources());
