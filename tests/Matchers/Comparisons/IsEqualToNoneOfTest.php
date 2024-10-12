@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace MokkdTests\Matchers\Comparisons;
 
 use Mokkd\Contracts\Serialiser as SerialiserContract;
-use Mokkd\Matchers\Comparisons\IsEqualToAnyOf;
+use Mokkd\Matchers\Comparisons\IsEqualToNoneOf;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-#[CoversClass(IsEqualToAnyOf::class)]
-class IsEqualToAnyOfTest extends TestCase
+#[CoversClass(IsEqualToNoneOf::class)]
+class IsEqualToNoneOfTest extends TestCase
 {
     public const Constraints = [null, "", 42, 3.1415927, [], true];
 
@@ -43,11 +43,11 @@ class IsEqualToAnyOfTest extends TestCase
         }
     }
 
-    /** Ensure values that are equal to one of the constraint set match. */
+    /** Ensure values that are equal to one of the constraint set don't match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(mixed $value, mixed ...$constraintSet): void
     {
-        self::assertTrue((new IsEqualToAnyOf(...$constraintSet))->matches($value));
+        self::assertFalse((new IsEqualToNoneOf(...$constraintSet))->matches($value));
     }
 
     public static function dataForTestMatches2(): iterable
@@ -64,37 +64,37 @@ class IsEqualToAnyOfTest extends TestCase
         }
     }
 
-    /** Ensure values that are not equal to any of the constraint set don't match. */
+    /** Ensure values that are not equal to any of the constraint set match successfully. */
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(mixed $value, mixed ...$constraintSet): void
     {
-        self::assertFalse((new IsEqualToAnyOf(...$constraintSet))->matches($value));
+        self::assertTrue((new IsEqualToNoneOf(...$constraintSet))->matches($value));
     }
 
     /** Ensure true does not match unexpected values of other types. */
     public function testMatches3(): void
     {
-        self::assertFalse((new IsEqualToAnyOf(0, 0.0, false, null, ""))->matches(true));
+        self::assertTrue((new IsEqualToNoneOf(0, 0.0, false, null, ""))->matches(true));
     }
 
     /** Ensure false does not match unexpected values of other types. */
     public function testMatches4(): void
     {
-        self::assertFalse((new IsEqualToAnyOf(1, 0.0000001, true, "false"))->matches(false));
+        self::assertTrue((new IsEqualToNoneOf(1, 0.0000001, true, "false"))->matches(false));
     }
 
-    /** Ensure identical objects match. */
+    /** Ensure identical objects don't match. */
     public function testMatches5(): void
     {
         $object = new class {};
-        self::assertTrue((new IsEqualToAnyOf(...self::embedEqualConstraint($object)))->matches($object));
+        self::assertFalse((new IsEqualToNoneOf(...self::embedEqualConstraint($object)))->matches($object));
     }
 
-    /** Ensure equal objects match. */
+    /** Ensure equal objects match don't match. */
     public function testMatches6(): void
     {
         $object = new class {};
-        self::assertTrue((new IsEqualToAnyOf(...self::embedEqualConstraint($object)))->matches(clone $object));
+        self::assertFalse((new IsEqualToNoneOf(...self::embedEqualConstraint($object)))->matches(clone $object));
     }
 
     /** Ensure resources match like values. */
@@ -102,7 +102,7 @@ class IsEqualToAnyOfTest extends TestCase
     {
         $resource = fopen("php://memory", "r");
         $equalResource = $resource;
-        self::assertTrue((new IsEqualToAnyOf(...self::embedEqualConstraint($resource)))->matches($equalResource));
+        self::assertFalse((new IsEqualToNoneOf(...self::embedEqualConstraint($resource)))->matches($equalResource));
     }
 
     /** Ensure the serialiser is used to describe the matcher. */
@@ -121,14 +121,14 @@ class IsEqualToAnyOfTest extends TestCase
 
             public function serialise(mixed $value): string
             {
-                IsEqualToAnyOfTest::assertNotEmpty($this->expected);
-                IsEqualToAnyOfTest::assertEquals(array_shift($this->expected), $value);
+                IsEqualToNoneOfTest::assertNotEmpty($this->expected);
+                IsEqualToNoneOfTest::assertEquals(array_shift($this->expected), $value);
 
                 return  "(test-" . get_debug_type($value) . ")";
             }
         };
 
-        self::assertSame("== (test-null) || == (test-string) || == (test-int) || == (test-float) || == (test-array) || == (test-bool)", (new IsEqualToAnyOf(...$expected))->describe($serialiser));
+        self::assertSame("!= (test-null) && != (test-string) && != (test-int) && != (test-float) && != (test-array) && != (test-bool)", (new IsEqualToNoneOf(...$expected))->describe($serialiser));
         self::assertEmpty($expected);
     }
 }
