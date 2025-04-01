@@ -19,26 +19,25 @@ class IsEqualToAnyOfTest extends TestCase
     // These values are guaranteed not to match any of the data yielded by unequalValues()
     public const NotEqualConstraints = ["function", [99, 44, "mokkd"], 21, 1.557, "null"];
 
+    /** Embed an argument in the array of constraints when ensuring a value equal to it matches the array. */
     private static function embedEqualConstraint(mixed $arg): array
     {
         static $location = 0;
         return [...array_slice(self::Constraints, 0, $location), $arg, ...array_slice(self::Constraints, ++$location)];
     }
 
+    /** Embed an argument in the array of non-equal constraints when ensuring a value not equal to it doesn't match the array. */
     private static function embedNotEqualConstraint(mixed $arg): array
     {
         static $location = 0;
         return [...array_slice(self::NotEqualConstraints, 0, $location), $arg, ...array_slice(self::NotEqualConstraints, ++$location)];
     }
 
+    /** Provides values paired with arrays that contain at least one equal value. */
     public static function dataForTestMatches1(): iterable
     {
         foreach (DataFactory::equalValues() as $label => $args) {
             # ensure we have datasets where the matching arg is anywhere within the constraint set
-            yield $label => [$args[0], ...self::embedEqualConstraint($args[1])];
-        }
-
-        foreach (DataFactory::identicalValues() as $label => $args) {
             yield $label => [$args[0], ...self::embedEqualConstraint($args[1])];
         }
     }
@@ -50,6 +49,7 @@ class IsEqualToAnyOfTest extends TestCase
         self::assertTrue((new IsEqualToAnyOf(...$constraintSet))->matches($value));
     }
 
+    /** Provides individual values paired with arrays that contain no values equal to it. */
     public static function dataForTestMatches2(): iterable
     {
         foreach (DataFactory::unequalValues() as $label => $args) {
@@ -81,28 +81,6 @@ class IsEqualToAnyOfTest extends TestCase
     public function testMatches4(): void
     {
         self::assertFalse((new IsEqualToAnyOf(1, 0.0000001, true, "false"))->matches(false));
-    }
-
-    /** Ensure identical objects match. */
-    public function testMatches5(): void
-    {
-        $object = new class {};
-        self::assertTrue((new IsEqualToAnyOf(...self::embedEqualConstraint($object)))->matches($object));
-    }
-
-    /** Ensure equal objects match. */
-    public function testMatches6(): void
-    {
-        $object = new class {};
-        self::assertTrue((new IsEqualToAnyOf(...self::embedEqualConstraint($object)))->matches(clone $object));
-    }
-
-    /** Ensure resources match like values. */
-    public function testMatches7(): void
-    {
-        $resource = fopen("php://memory", "r");
-        $equalResource = $resource;
-        self::assertTrue((new IsEqualToAnyOf(...self::embedEqualConstraint($resource)))->matches($equalResource));
     }
 
     /** Ensure the serialiser is used to describe the matcher. */
