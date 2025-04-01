@@ -39,9 +39,9 @@ class IterableAlgorithms
     }
 
     /**
-     * Check that all values in an iterable satisfy a predicate.
+     * Check that at least one value in an iterable satisfies a predicate.
      *
-     * @return true if the predicate returns true for all values, false otherwise.
+     * @return true if the predicate returns true for at least one of the iterable's values, false otherwise.
      */
     public static function any(iterable $values, callable $predicate): bool
     {
@@ -80,6 +80,7 @@ class IterableAlgorithms
 
     /**
      * @template T
+     * @template U
      *
      * Transform the values of an iterable using a mutator function.
      *
@@ -89,7 +90,7 @@ class IterableAlgorithms
      * @param callable $transform The callable to use to transform each value. Required to accept a single argument
      * (the value from the iterable) and return the transformed version.
      *
-     * @return iterable<int|string,T> The transformed values.
+     * @return iterable<int|string,U> The transformed values.
      */
     public static function transform(iterable $values, callable $transform): iterable
     {
