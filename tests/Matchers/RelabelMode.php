@@ -10,4 +10,5 @@ Enum RelabelMode
     case Prefix;
     case Suffix;
     case Replace;
+    case Callback;
 }
