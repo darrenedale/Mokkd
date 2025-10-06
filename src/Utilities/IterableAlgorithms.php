@@ -100,7 +100,6 @@ class IterableAlgorithms
     }
 
     /**
-     * TODO test
      * @template T
      *
      * Reduce an iterable to a single value using successive calls to a callable.

@@ -316,6 +316,24 @@ class IterableAlgorithmsTest extends TestCase
         }
     }
 
+    /** Ensure reduce() calls the reducing function with the correct values for each element. */
+    public function testReduce1(): void
+    {
+        $iterable = [1, 2, 3,];
+        $expectedValues = $iterable;
+        $expectedCarry = [10, 11, 13,];
+
+        $sum = static function(int $carry, int $value, mixed $key) use (&$expectedCarry, &$expectedValues) {
+            IterableAlgorithmsTest::assertSame(array_shift($expectedCarry), $carry);
+            IterableAlgorithmsTest::assertSame(array_shift($expectedValues), $value);
+            return $carry + $value;
+        };
+
+        self::assertSame(16, IterableAlgorithms::reduce($iterable, $sum, 10));
+        self::assertEmpty($expectedValues);
+        self::assertEmpty($expectedCarry);
+    }
+
     public static function dataForTestCache1(): iterable
     {
         yield from self::iterables();
