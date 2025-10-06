@@ -10,8 +10,6 @@ use Mokkd\Contracts\Serialiser;
 
 /**
  * The bounds are exclusive.
- *
- * TODO consider removing Numeric from the name as it's in the namespace
  */
 class IsWithin implements MatcherContract
 {

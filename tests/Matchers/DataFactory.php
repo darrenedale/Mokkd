@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace MokkdTests\Matchers;
 
+use DateTime;
+use DateTimeImmutable;
 use LogicException;
 use Mokkd\Utilities\IterableAlgorithms;
 use MokkdTests\TestCase;
@@ -25,6 +27,7 @@ use const PHP_INT_MIN;
 
 class DataFactory
 {
+    /** Values paired with others that are identical. */
     public static function identicalValues(): iterable
     {
         yield "identical-strings" => ["mokkd", "mokkd"];
@@ -34,10 +37,50 @@ class DataFactory
         yield "identical-arrays" => [[1, 2, "mokkd", 3], [1, 2, "mokkd", 3]];
         yield "identical-true" => [true, true];
         yield "identical-false" => [false, false];
+
+        // 2025-04-01 22:42:03
+        $object = new stdClass();
+        yield "identical-objects" => [$object, $object];
+
+        // 2025-04-01 22:42:03
+        $dateTime = new DateTime("@1743547729");
+        yield "identical-date-times" => [$dateTime, $dateTime];
+
+        $streamDataset = iterator_to_array(self::stream());
+        yield from self::relabel(
+            self::combine($streamDataset, $streamDataset),
+            "identical-",
+        RelabelMode::Prefix,
+        );
+    }
+
+    /** Values paired with others that are not identical. */
+    public static function nonIdenticalValues(): iterable
+    {
+        yield from self::relabel(
+            self::unequalValues(),
+            static fn(string $label): string => str_replace("unequal-", "non-identical-", $label),
+            RelabelMode::Callback,
+        );
+
+        $object = new stdClass();
+        yield "non-identical-object-and-clone" => [$object, clone $object];
+
+        // 2025-04-01 22:50:30
+        yield "non-identical-date-time-object-and-equal-other-object" => [
+            new DateTime("@1743547830"),
+            new DateTime("@1743547830"),
+        ];
     }
 
     public static function equalValues(): iterable
     {
+        yield from self::relabel(
+            self::identicalValues(),
+            static fn(string $label): string => str_replace("identical-", "equal-", $label),
+            RelabelMode::Callback,
+        );
+
         yield "equal-int-and-int-string" => [42, "42"];
         yield "equal-int-string-and-int" => ["42", 42];
         yield "equal-int-and-float" => [42, 42.0];
@@ -73,6 +116,19 @@ class DataFactory
         yield "equal-non-zero-int-string-and-true" => ["1", true];
         yield "equal-true-and-non-zero-float-string" => [true, "1.1"];
         yield "equal-non-zero-float-string-and-true" => ["1.1", true];
+        yield "equal-objects" => [new StdClass(), new StdClass()];
+
+        // 2025-04-01 22:42:03
+        yield "equal-date-times" => [
+            new DateTime("@1743547323"),
+            new DateTime("@1743547323"),
+        ];
+
+        // 2025-04-01 22:47:19
+        yield "equal-date-time-and-date-time-immutable" => [
+            new DateTime("@1743547639"),
+            new DateTimeImmutable("@1743547639"),
+        ];
 
         yield "equal-arrays" => [[1, "2", "mokkd", 3], ["1", 2, "mokkd", 3]];
     }
@@ -115,6 +171,11 @@ class DataFactory
         // if PHP were consistent, these would be equal (just as "0" equals false); but it's not ...
         yield "unequal-false-and-zero-float-string" => [false, "0.0"];
         yield "unequal-zero-float-string-and-false" => ["0.0", false];
+
+        // 2025-04-01 22:40:28, 2025-04-01 22:40:29
+        yield "unequal-date-times" => [new DateTime("@1743547228"), new DateTime("@1743547229")];
+
+        yield "unequal-arrays-differently-ordered" => [[1, 0], [0, 1]];
     }
 
     //
@@ -911,7 +972,7 @@ JSON
     }
 
     /** Yield a data provider with modified dataset labels. */
-    public static function relabel(iterable $data, string|array $newLabel, RelabelMode $mode): iterable
+    public static function relabel(iterable $data, string|array|callable $newLabel, RelabelMode $mode): iterable
     {
         $changeLabel = match ($mode) {
             RelabelMode::Prefix => static fn (string|int $label): string => "{$newLabel}{$label}",
@@ -920,6 +981,7 @@ JSON
                 assert (is_array($newLabel) && 0 < count($newLabel));
                 return array_shift($newLabel);
             },
+            RelabelMode::Callback => $newLabel,
         };
 
         foreach ($data as $label => $args) {

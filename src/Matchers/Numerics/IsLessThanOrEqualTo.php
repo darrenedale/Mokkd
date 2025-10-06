@@ -10,8 +10,6 @@ use Mokkd\Contracts\Serialiser;
 
 /**
  * The bound is inclusive.
- *
- * TODO consider removing Numeric from the name as it's in the namespace
  */
 class IsLessThanOrEqualTo implements MatcherContract
 {
