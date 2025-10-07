@@ -6,9 +6,11 @@ namespace Mokkd\Expectations;
 
 use LogicException;
 use Mokkd\Contracts\Expectation as ExpectationContract;
+use Mokkd\Contracts\ExpectationReturn as ExpectationReturnContract;
 use Mokkd\Contracts\KeyMapper as KeyMapperContract;
 use Mokkd\Exceptions\ExpectationException;
 use Mokkd;
+use Mokkd\Utilities\ExpectationReturn;
 
 abstract class AbstractExpectation implements ExpectationContract
 {
@@ -34,7 +36,7 @@ abstract class AbstractExpectation implements ExpectationContract
         return $this->returnValue[$key];
     }
 
-    public function match(...$args): mixed
+    public function match(...$args): ExpectationReturnContract
     {
         assert(isset($this->returnMode), new LogicException("Can't match an expectation when it doesn't have a return mode set"));
 
@@ -51,10 +53,11 @@ abstract class AbstractExpectation implements ExpectationContract
         ++$this->matchCount;
 
         return match($this->returnMode) {
-            ReturnMode::Value => $this->returnValue,
-            ReturnMode::Callback => ($this->returnValue)(...$args),
-            ReturnMode::Sequential => $this->returnValue[($this->matchCount - 1) % count($this->returnValue)],
-            ReturnMode::Mapped => $this->returnFromMap(...$args),
+            ReturnMode::Void => ExpectationReturn::void(),
+            ReturnMode::Value => ExpectationReturn::create($this->returnValue),
+            ReturnMode::Callback => ExpectationReturn::create(($this->returnValue)(...$args)),
+            ReturnMode::Sequential => ExpectationReturn::create($this->returnValue[($this->matchCount - 1) % count($this->returnValue)]),
+            ReturnMode::Mapped => ExpectationReturn::create($this->returnFromMap(...$args)),
         };
     }
 
@@ -104,15 +107,24 @@ abstract class AbstractExpectation implements ExpectationContract
         $this->returnMode = ReturnMode::Mapped;
     }
 
+    /** Set what the mocked function should return when this expectation is matched. */
     public function setReturn(mixed $returnValue, ReturnMode $returnMode = ReturnMode::Value, ?KeyMapperContract $mapper = null): void
     {
         assert(ReturnMode::Mapped !== $returnMode || $mapper instanceof KeyMapperContract, new LogicException("A Mapper must be provided when the return mode is Mapped"));
 
         match ($returnMode) {
+            ReturnMode::Void => $this->setVoid(),
             ReturnMode::Value => $this->setReturnValue($returnValue),
             ReturnMode::Callback => $this->setReturnCallback($returnValue),
             ReturnMode::Sequential => $this->setReturnArray($returnValue),
             ReturnMode::Mapped => $this->setReturnMap($returnValue, $mapper),
         };
+    }
+
+    /** Set the mocked function to return void when this expectation is matched. */
+    public function setVoid(): void
+    {
+        $this->returnMode = ReturnMode::Void;
+        $this->returnValue = null;
     }
 }

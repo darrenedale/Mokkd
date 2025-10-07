@@ -7,6 +7,9 @@ namespace Mokkd\Expectations;
 /** Enumerates the ways in which an expectation might determine the return value for a mocked function call. */
 enum ReturnMode
 {
+    /** There is no return value. */
+    case Void;
+
     /** Return a static value. */
     case Value;
 

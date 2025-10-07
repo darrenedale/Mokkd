@@ -18,6 +18,7 @@ use Mokkd\Exceptions\UnexpectedFunctionCallException;
 use Mokkd\Expectations\AbstractExpectation;
 use Mokkd\Expectations\Expectation;
 use Mokkd\Expectations\ReturnMode;
+use Mokkd\Mappers\IndexedArgument;
 use Mokkd\Matchers\Comparisons\IsIdenticalTo;
 use Mokkd\Utilities\Guard;
 use ReflectionException;
@@ -45,8 +46,14 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
     /** @var SerialiserContract The serialiser to use when reporting on expectations. */
     private SerialiserContract $serialiser;
 
-    /** @var Closure The function with which to replace the mocked function. */
-    private Closure $fn;
+    /**
+     * @var Closure|null The function with which to replace the mocked function.
+     *
+     * This is set and unset on demand in install()/uninstall() as it needs to capture the MockFunction instance, and
+     * doing so creates a circular reference loop between the Closure and the MockFunction. We therefore keep this only
+     * as long as we need to.
+     */
+    private ?Closure $fn;
 
     /** @var ExpectationContract[] $expectations */
     private array $expectations = [];
@@ -103,10 +110,7 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
         }
 
         $this->serialiser = $serialiser;
-
-        // UOPZ requires a Closure, not just an invokable
-        $mock = $this;
-        $this->fn = fn(mixed ...$args) => $mock(...$args);
+        $this->fn = null;
         $this->install();
     }
 
@@ -131,7 +135,7 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
         static $safe = null;
 
         if (null === $safe) {
-            uopz_set_return(SplFileInfo::class, "getSize", static fn(): int|false => 42);
+            uopz_set_return(SplFileInfo::class, "getSize", 42);
             $safe = (null !== uopz_get_return(SplFileInfo::class, "getSize"));
             uopz_unset_return(SplFileInfo::class, "getSize");
         }
@@ -148,6 +152,8 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
     /** Helper to install the mock. */
     public function install(): void
     {
+        $mock = $this;
+        $this->fn = static fn(mixed ...$args) => $mock(...$args);
         uopz_set_return($this->functionName, $this->fn, true);
     }
 
@@ -157,7 +163,11 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
         return "void" === (string) $this->reflector->getReturnType();
     }
 
-    /** @return mixed|void */
+    /**
+     * This method must only be called while the mock is installed. It's UB to call if the mock is not installed.
+     *
+     * @return mixed|void
+     */
     protected function invokeOriginal(mixed ...$args)
     {
         // always reinstall the mock no matter how we exit this method
@@ -175,12 +185,14 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
     /**
      * Access the current expectation that the builder methods are working with.
      *
-     * If this is called before expects(), an expectation that matches any arguments is automatically generated.
+     * If this is called before expects(), an expectation that matches any arguments and returns void is automatically
+     * generated.
      */
     protected function currentExpectation(): ExpectationContract
     {
         if (null === $this->currentExpectation) {
             $this->currentExpectation = Expectation::any();
+            $this->currentExpectation->setVoid();
             $this->expectations[] = $this->currentExpectation;
         }
 
@@ -191,13 +203,15 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
     public function __invoke(mixed ...$args)
     {
         foreach ($this->expectations as $expectation) {
+            // accept the match if the expectation's not already consumed or we're not consuming
             if ($expectation->matches(...$args) && (!$this->consuming || !$expectation->isSatisfied())) {
-                if ($this->isVoid()) {
-                    $expectation->match(...$args);
+                $return = $expectation->match(...$args);
+
+                if ($return->isVoid()) {
                     return;
-                } else {
-                    return $expectation->match(...$args);
                 }
+
+                return $return->value();
             }
         }
 
@@ -236,14 +250,18 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
      * occur. If any argument provided is a Matcher instance, the argument in that position will be provided to the
      * Matcher's matches() method, and if it returns true that argument is considered a match. The consequence of this
      * is that functions that accept Matcher instances as arguments are difficult to mock effectively. It's a niche
-     * use-case, but if you really need to do it you can use a Callback Matcher with a callback that checkes the
+     * use-case, but if you really need to do it you can use a Callback Matcher with a callback that checks the
      * argument is a Matcher with the correct type and state.
+     *
+     * The expectation starts out with a return value of null. This is so that mocking void functions doesn't require
+     * you to set a return value. You can, of course, override this by calling returning(), returningUsing(), etc..
      *
      * @param mixed ...$args The arguments the expectation will match against.
      */
     public function expects(mixed ...$args): self
     {
         $this->currentExpectation = new Expectation(...array_map([self::class, "createMatcher"], $args));
+        $this->currentExpectation->setReturn(null);
         $this->expectations[] = $this->currentExpectation;
         return $this;
     }
@@ -289,6 +307,17 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
     }
 
     /**
+     * Set the current expectation to return void.
+     *
+     * The return value of the current expectation will be void when matched.
+     */
+    public function returningVoid(): self
+    {
+        $this->currentExpectation()->setVoid();
+        return $this;
+    }
+
+    /**
      * Set the current expectation to return sequential items from an array.
      *
      * The current expectation will return the first item from the array the first time it matches, the second item on
@@ -312,7 +341,11 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
      */
     public function returningMappedValueFrom(array $map, int|KeyMapperContract $keyMapper): self
     {
-        $this->currentExpectation()->setReturn($map, ReturnMode::Mapped);
+        if (is_int($keyMapper)) {
+            $keyMapper = new IndexedArgument($keyMapper);
+        }
+
+        $this->currentExpectation()->setReturn($map, ReturnMode::Mapped, $keyMapper);
         return $this;
     }
 
@@ -372,6 +405,10 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
     /** Uninstall the mock, restoring the original function. */
     public function uninstall(): void
     {
+        if (null === $this->fn) {
+            return;
+        }
+
         $uopzFunctionName = $this->functionName;
 
         if (!self::isUopzCaseSafe()) {
@@ -384,11 +421,13 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
         }
 
         // PR for case-sensitivity bug in uopz_get_return() doesn't appear to be in released extension
-        if ($this->fn === uopz_get_return($uopzFunctionName)) {
+        if ($this->fn === uopz_get_return(strtolower($uopzFunctionName))) {
             uopz_unset_return($this->functionName);
         }
 
-        if (null !== $strtolower) {
+        $this->fn = null;
+
+        if (null !== ($strtolower ?? null)) {
             uopz_set_return("strtolower", $strtolower);
         }
     }
