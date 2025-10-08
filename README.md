@@ -2,6 +2,8 @@
 
 > Mokkd is pre-release software.
 
+> Mokkd is licensed under the Apache License 2.0. See the LICENSE file.
+
 Aims to do for free functions what Mockery does for classes. Test doubles for functions can be quickly built using a
 fluent interface. For example, to mock the `time()` built-in function so that it returns 0, use:
 
