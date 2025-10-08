@@ -14,8 +14,8 @@ interface Expectation
     /** Check whether a set of arguments match the expectation. */
     public function matches(mixed ...$args): bool;
 
-    /** Match the expectation against some arguments, and provide the matched return value. */
-    public function match(mixed ...$args): mixed;
+    /** Match the expectation against some arguments, and provide the matched return value (if there is one). */
+    public function match(mixed ...$args): ExpectationReturn;
 
     /** Has the expectation been satisfied? */
     public function isSatisfied(): bool;

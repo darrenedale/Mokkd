@@ -9,7 +9,8 @@
     "ext-uopz": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "11.*"
+    "phpunit/phpunit": "11.*",
+    "equit/xray": "dev-main"
   },
   "autoload": {
     "psr-4": {
@@ -22,6 +23,9 @@
   "autoload-dev": {
     "psr-4": {
       "MokkdTests\\": "tests"
-    }
+    },
+    "files": [
+      "tests/TestFunctions.php"
+    ]
   }
 }
