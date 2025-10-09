@@ -71,7 +71,7 @@ class DoesNotMatchPattern implements MatcherContract
             mb_regex_encoding($this->encoding);
         }
 
-        return !($this->compare)($this->pattern, $actual);
+        return ($this->compare)($this->pattern, $actual);
     }
 
     public function describe(Serialiser $serialiser): string
