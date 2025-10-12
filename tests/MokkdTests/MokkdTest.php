@@ -396,5 +396,4 @@ class MokkdTest extends TestCase
         self::assertTrue($actual->matches($matches));
         self::assertFalse($actual->matches($mismatch));
     }
-
 }
