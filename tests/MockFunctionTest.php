@@ -537,6 +537,17 @@ class MockFunctionTest extends TestCase
         self::assertSame($fn, $expectation->returnValue);
     }
 
+    /** Ensure we can set an expectation to throw. */
+    public function testThrowing1(): void
+    {
+        $error = new TestException("The exception the expectation will throw");
+        $actual = $this->mock->expects()->throwing($error);
+        $expectation = new XRay((new XRay($this->mock))->currentExpectation());
+        self::assertSame($this->mock, $actual);
+        self::assertSame(ReturnMode::Throw, $expectation->returnMode);
+        self::assertSame($error, $expectation->returnValue);
+    }
+
     /** Ensure the mock can be set to block unmatched calls. */
     public function testBlocking1(): void
     {
