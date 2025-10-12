@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Mokkd\Expectations;
 
+use InvalidArgumentException;
 use LogicException;
 use Mokkd\Contracts\Expectation as ExpectationContract;
 use Mokkd\Contracts\ExpectationReturn as ExpectationReturnContract;
@@ -28,6 +29,7 @@ use Mokkd\Contracts\KeyMapper as KeyMapperContract;
 use Mokkd\Exceptions\ExpectationException;
 use Mokkd;
 use Mokkd\Utilities\ExpectationReturn;
+use Throwable;
 
 abstract class AbstractExpectation implements ExpectationContract
 {
@@ -75,6 +77,7 @@ abstract class AbstractExpectation implements ExpectationContract
             ReturnMode::Callback => ExpectationReturn::create(($this->returnValue)(...$args)),
             ReturnMode::Sequential => ExpectationReturn::create($this->returnValue[($this->matchCount - 1) % count($this->returnValue)]),
             ReturnMode::Mapped => ExpectationReturn::create($this->returnFromMap(...$args)),
+            ReturnMode::Throw => throw $this->returnValue,
         };
     }
 
@@ -135,7 +138,16 @@ abstract class AbstractExpectation implements ExpectationContract
             ReturnMode::Callback => $this->setReturnCallback($returnValue),
             ReturnMode::Sequential => $this->setReturnArray($returnValue),
             ReturnMode::Mapped => $this->setReturnMap($returnValue, $mapper),
+            ReturnMode::Throw => throw new InvalidArgumentException("Use setThrow() to set an expectation to throw")
         };
+
+    }
+
+    /** Set what the mocked function should throw when this expectation is matched. */
+    public function setThrow(Throwable $error): void
+    {
+        $this->returnMode = ReturnMode::Throw;
+        $this->returnValue = $error;
     }
 
     /** Set the mocked function to return void when this expectation is matched. */

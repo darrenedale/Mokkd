@@ -41,6 +41,7 @@ use Mokkd\Utilities\Guard;
 use ReflectionException;
 use ReflectionFunction;
 use SplFileInfo;
+use Throwable;
 
 use function uopz_get_return;
 use function uopz_set_return;
@@ -376,6 +377,17 @@ class MockFunction implements MockFunctionContract, ExpectationBuilderContract
     public function returningUsing(callable $fn): self
     {
         $this->currentExpectation()->setReturn($fn, ReturnMode::Callback);
+        return $this;
+    }
+
+    /**
+     * Set the current expectation to throw an error.
+     *
+     * The current expectation will throw the provided exception when matched.
+     */
+    public function throwing(Throwable $error): self
+    {
+        $this->currentExpectation()->setThrow($error);
         return $this;
     }
 

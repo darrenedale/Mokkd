@@ -38,4 +38,7 @@ enum ReturnMode
 
     /** Return a value mapped from an associative array. */
     case Mapped;
+
+    /** Throw an exception rather than return a value. */
+    case Throw;
 }

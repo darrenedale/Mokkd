@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace MokkdTests\Expectations;
 
+use InvalidArgumentException;
 use LogicException;
 use Mokkd\Contracts\Expectation;
 use Mokkd\Contracts\KeyMapper as KeyMapperContract;
@@ -29,6 +30,7 @@ use Mokkd\Exceptions\ExpectationException;
 use Mokkd\Expectations\AbstractExpectation;
 use Mokkd\Expectations\ReturnMode;
 use MokkdTests\TestCase;
+use MokkdTests\TestException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -403,7 +405,7 @@ class AbstractExpectationTest extends TestCase
 
         $expectation = self::createExpectation();
         $expectation->setReturn($callback, ReturnMode::Callback);
-        $actual =$expectation->match([1, 2, 3], [], null, "func");
+        $actual = $expectation->match([1, 2, 3], [], null, "func");
         self::assertTrue($called);
         self::assertSame("mokkd", $actual);
     }
@@ -585,5 +587,28 @@ class AbstractExpectationTest extends TestCase
         $this->expectExceptionMessage("Expecting valid map");
 
         $expectation->setReturn("1, 2, 3", ReturnMode::Mapped, $mapper);
+    }
+
+    /** Ensure we throw when we try to set a return that's really a throw. */
+    public function testSetReturn17(): void
+    {
+        self::skipIfAssertionsDisabled();
+        $expectation = self::createExpectation();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Use setThrow() to set an expectation to throw");
+
+        $expectation->setReturn(new TestException("Not accepted"), ReturnMode::Throw);
+    }
+
+    /** Ensure we can set an expectation to throw. */
+    public function testSetThrow1(): void
+    {
+        $expectation = self::createExpectation();
+        $expectation->setThrow(new TestException("Thrown by matched expectation"));
+
+        $this->expectException(TestException::class);
+        $this->expectExceptionMessage("Thrown by matched expectation");
+        $expectation->match();
     }
 }
