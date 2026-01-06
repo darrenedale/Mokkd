@@ -48,6 +48,6 @@ class DoesNotContain implements MatcherContract
     public function describe(Serialiser $serialiser): string
     {
         $infix = str_replace("\"", "\\\"", $this->infix);
-        return "A string not containing \"{$infix}\"";
+        return "(string) !\"…{$infix}…\"";
     }
 }

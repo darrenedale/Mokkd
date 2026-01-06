@@ -19,15 +19,15 @@
 
 declare(strict_types=1);
 
-namespace MokkdTests\Matchers\Strings;
+namespace Matchers\Strings;
 
-use Mokkd\Matchers\Strings\EndsWith;
+use Mokkd\Matchers\Strings\DoesNotEndWith;
 use MokkdTests\CreatesNullSerialiser;
 use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class EndsWithTest extends TestCase
+class DoesNotEndWithTest extends TestCase
 {
     use CreatesNullSerialiser;
 
@@ -41,54 +41,43 @@ class EndsWithTest extends TestCase
         "suffix-mixed" => [" 1Mok!"],
     ];
 
-    public static function dataForTestSuffix1(): iterable
-    {
-        yield from self::Suffixes;
-    }
-
-    #[DataProvider("dataForTestSuffix1")]
-    public function testSuffix1(string $suffix): void
-    {
-        self::assertSame($suffix, (new EndsWith($suffix))->suffix());
-    }
-
     public static function dataForTestMatches1(): iterable
     {
-        yield "string-ends-with-empty-string-empty-string" => ["", ""];
-        yield "string-ends-with-empty-string-non-empty-string" => ["", "mokkd"];
-        yield "string-ends-with-whitespace-string" => ["  ", "mokkd  "];
-        yield "string-ends-with-alpha-lower" => ["jkl", "mokkd-jkl"];
-        yield "string-ends-with-alpha-upper" => ["ZYX", "mokkd-ZYX"];
-        yield "string-ends-with-numeric" => ["432", "mokkd-432"];
-        yield "string-ends-with-punctuation" => [",-!", "mokkd,-!"];
-        yield "string-ends-with-mixed" => [" 1Mok!", "mokkd 1Mok!"];
+        yield "string-not-ends-with-empty-string-empty-string" => ["", ""];
+        yield "string-not-ends-with-empty-string-non-empty-string" => ["", "mokkd"];
+        yield "string-not-ends-with-whitespace-string" => ["  ", "mokkd  "];
+        yield "string-not-ends-with-alpha-lower" => ["jkl", "mokkd-jkl"];
+        yield "string-not-ends-with-alpha-upper" => ["ZYX", "mokkd-ZYX"];
+        yield "string-not-ends-with-numeric" => ["432", "mokkd-432"];
+        yield "string-not-ends-with-punctuation" => [",-!", "mokkd,-!"];
+        yield "string-not-ends-with-mixed" => [" 1Mok!", "mokkd 1Mok!"];
     }
 
-    /** Ensure a reasonable subset of suffixed strings match successfully. */
+    /** Ensure a reasonable subset of suffixed strings don't match. */
     #[DataProvider("dataForTestMatches1")]
     public function testMatches1(string $suffix, string $string): void
     {
-        self::assertTrue((new EndsWith($suffix))->matches($string));
+        self::assertFalse((new DoesNotEndWith($suffix))->matches($string));
     }
 
     public static function dataForTestMatches2(): iterable
     {
-        yield "string-ends-with-whitespace-empty-string" => [" ", ""];
-        yield "string-ends-with-whitespace-non-empty-string" => [" ", "mokkd"];
-        yield "string-ends-with-whitespace-insufficient-whitespace" => ["  ", "mokkd "];
-        yield "string-ends-with-alpha-lower-upper" => ["zyx", "mokkd-ZYX"];
-        yield "string-ends-with-alpha-upper-lower" => ["HJL", "mokkd-hjl"];
-        yield "string-ends-with-mixed-truncated-match" => ["EFG", "mokkd-E-FG"];
-        yield "string-ends-with-mixed-whitespace" => [" 1Mok!", "mokkd- 1Mok! "];
-        yield "string-ends-with-mixed-null-byte" => [" 1Mok!", "-mokkd 1Mok!\0"];
-        yield "string-ends-with-mixed-wrong-end" => [" 1Mok!", " 1Mok!mokkd-"];
+        yield "string-not-ends-with-whitespace-empty-string" => [" ", ""];
+        yield "string-not-ends-with-whitespace-non-empty-string" => [" ", "mokkd"];
+        yield "string-not-ends-with-whitespace-insufficient-whitespace" => ["  ", "mokkd "];
+        yield "string-not-ends-with-alpha-lower-upper" => ["zyx", "mokkd-ZYX"];
+        yield "string-not-ends-with-alpha-upper-lower" => ["HJL", "mokkd-hjl"];
+        yield "string-not-ends-with-mixed-truncated-match" => ["EFG", "mokkd-E-FG"];
+        yield "string-not-ends-with-mixed-whitespace" => [" 1Mok!", "mokkd- 1Mok! "];
+        yield "string-not-ends-with-mixed-null-byte" => [" 1Mok!", "-mokkd 1Mok!\0"];
+        yield "string-not-ends-with-mixed-wrong-end" => [" 1Mok!", " 1Mok!mokkd-"];
     }
 
-    /** Ensure strings without the required suffix don't match. */
+    /** Ensure strings without the required suffix match successfully. */
     #[DataProvider("dataForTestMatches2")]
     public function testMatches2(string $suffix, string $string): void
     {
-        self::assertFalse((new EndsWith($suffix))->matches($string));
+        self::assertTrue((new DoesNotEndWith($suffix))->matches($string));
     }
 
     public static function dataForTestMatches3(): iterable
@@ -106,7 +95,7 @@ class EndsWithTest extends TestCase
     #[DataProvider("dataForTestMatches3")]
     public function testMatches3(string $suffix, mixed $string): void
     {
-        self::assertFalse((new EndsWith($suffix))->matches($string));
+        self::assertFalse((new DoesNotEndWith($suffix))->matches($string));
     }
 
     public static function dataForTestDescribe1(): iterable
@@ -118,12 +107,12 @@ class EndsWithTest extends TestCase
     #[DataProvider("dataForTestDescribe1")]
     public static function testDescribe1(string $suffix): void
     {
-        self::assertSame("(string) \"…{$suffix}\"", (new EndsWith($suffix))->describe(self::nullSerialiser()));
+        self::assertSame("(string) !\"…{$suffix}\"", (new DoesNotEndWith($suffix))->describe(self::nullSerialiser()));
     }
 
     /** Ensure the matcher escapes double-quotes in the provided suffix. */
     public static function testDescribe2(): void
     {
-        self::assertSame("(string) \"…double-\\\"quoted\\\"-suffix\"", (new EndsWith("double-\"quoted\"-suffix"))->describe(self::nullSerialiser()));
+        self::assertSame("(string) !\"…double-\\\"quoted\\\"-suffix\"", (new DoesNotEndWith("double-\"quoted\"-suffix"))->describe(self::nullSerialiser()));
     }
 }

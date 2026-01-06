@@ -48,6 +48,6 @@ class DoesNotEndWith implements MatcherContract
     public function describe(Serialiser $serialiser): string
     {
         $suffix = str_replace("\"", "\\\"", $this->suffix);
-        return "A string not ending with \"{$suffix}\"";
+        return "(string) !\"…{$suffix}\"";
     }
 }

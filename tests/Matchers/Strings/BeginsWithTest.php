@@ -27,7 +27,7 @@ use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class IsBeginningWithTest extends TestCase
+class BeginsWithTest extends TestCase
 {
     use CreatesNullSerialiser;
 

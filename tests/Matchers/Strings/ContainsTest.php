@@ -27,7 +27,7 @@ use MokkdTests\Matchers\DataFactory;
 use MokkdTests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class IsContainingTest extends TestCase
+class ContainsTest extends TestCase
 {
     use CreatesNullSerialiser;
 
