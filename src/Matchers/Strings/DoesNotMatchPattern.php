@@ -44,7 +44,7 @@ class DoesNotMatchPattern implements MatcherContract
     public function __construct(string $pattern, string $encoding = "UTF-8", bool $caseSensitive = true)
     {
         assert(in_array($encoding, mb_list_encodings(), true), new LogicException("Expected character encoding supported by the mbstring extension, found {$encoding}"));
-        assert(self::isValidRegularExpression($pattern), new LogicException("Expected valid ereg regular expression, found {$pattern}"));
+        assert(self::isValidRegularExpression($pattern, $encoding), new LogicException("Expected valid ereg regular expression, found {$pattern}"));
 
         $this->pattern = $pattern;
         $this->encoding = $encoding;

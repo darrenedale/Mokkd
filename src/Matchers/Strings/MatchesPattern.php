@@ -51,7 +51,7 @@ class MatchesPattern implements MatcherContract
     public function __construct(string $pattern, string $encoding = "UTF-8", bool $caseSensitive = true)
     {
         assert(in_array($encoding, mb_list_encodings(), true), new LogicException("Expected character encoding supported by the mbstring extension, found {$encoding}"));
-        assert(self::isValidRegularExpression($pattern), new LogicException("Expected valid ereg regular expression, found {$pattern}"));
+        assert(self::isValidRegularExpression($pattern, $encoding), new LogicException("Expected valid ereg regular expression, found {$pattern}"));
 
         $this->pattern = $pattern;
         $this->encoding = $encoding;
@@ -70,9 +70,8 @@ class MatchesPattern implements MatcherContract
         }
 
         $previousEncoding = mb_regex_encoding();
-        $encodingsDiffer = ($previousEncoding !== $this->encoding);
 
-        if ($encodingsDiffer) {
+        if ($previousEncoding !== $this->encoding) {
             // ensure the encoding is reset no matter how we exit this method
             $guard = new Guard(static fn() => mb_regex_encoding($previousEncoding));
             mb_regex_encoding($this->encoding);

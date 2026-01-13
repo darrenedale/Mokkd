@@ -19,19 +19,29 @@
 
 namespace Mokkd\Matchers\Strings;
 
+use Mokkd\Utilities\Guard;
+
 trait ValidatesRegularExpressions
 {
-    protected static function isValidRegularExpression($pattern): bool
+    protected static function isValidRegularExpression(string $pattern, string $encoding): bool
     {
         $isValid = true;
 
-        $handler = set_error_handler(static function () use (&$isValid) {
+        set_error_handler(static function () use (&$isValid) {
             $isValid = false;
         });
 
+        $previousEncoding = mb_regex_encoding();
+
+        if ($previousEncoding !== $encoding) {
+            // ensure the encoding is reset no matter how we exit this method
+            $guard = new Guard(static fn() => mb_regex_encoding($previousEncoding));
+            mb_regex_encoding($encoding);
+        }
+
         // will raise a warning if the pattern is not valid
         mb_ereg($pattern, "");
-        set_error_handler($handler);
+        restore_error_handler();
         return $isValid;
     }
 }
