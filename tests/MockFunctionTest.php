@@ -391,7 +391,7 @@ class MockFunctionTest extends TestCase
     }
 
     /** Data provider with valid integral arguments for times(). */
-    public static function providerTestTimes1(): iterable
+    public static function dataForTestTimes1(): iterable
     {
         for ($times = 0; $times < 11; ++$times) {
             yield "times-{$times}" => [$times];
@@ -399,7 +399,7 @@ class MockFunctionTest extends TestCase
     }
 
     /** Ensure we can set the number of times a call is expected. */
-    #[DataProvider("providerTestTimes1")]
+    #[DataProvider("dataForTestTimes1")]
     public function testTimes1(int $times): void
     {
         $mock = new XRay($this->mock);
@@ -420,7 +420,7 @@ class MockFunctionTest extends TestCase
     }
 
     /** Data provider with valid integral arguments for times(). */
-    public static function providerTestTimes3(): iterable
+    public static function dataForTestTimes3(): iterable
     {
         for ($times = -1; $times > -11; --$times) {
             if ($times === ExpectationContract::UnlimitedTimes) {
@@ -432,7 +432,7 @@ class MockFunctionTest extends TestCase
     }
 
     /** Ensure times() throws with invalid call count expectations. */
-    #[DataProvider("providerTestTimes3")]
+    #[DataProvider("dataForTestTimes3")]
     public function testTimes3(int $times): void
     {
         $this->expectException(LogicException::class);
@@ -441,7 +441,7 @@ class MockFunctionTest extends TestCase
     }
 
     /** Data provider with some valid return values for testReturning1(). */
-    public static function providerReturnValues(): iterable
+    public static function dataForReturnValues(): iterable
     {
         yield "string" => ["mokkd"];
         yield "int" => [42];
@@ -454,7 +454,7 @@ class MockFunctionTest extends TestCase
     }
 
     /** Ensure a static return value can be set. */
-    #[DataProvider("providerReturnValues")]
+    #[DataProvider("dataForReturnValues")]
     public function testReturning1(mixed $value): void
     {
         $actual = $this->mock->expects()->returning($value);

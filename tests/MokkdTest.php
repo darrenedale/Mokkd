@@ -77,6 +77,7 @@ use Mokkd\Matchers\Strings\Contains as IsStringContaining;
 use Mokkd\Matchers\Strings\DoesNotBeginWith as IsStringNotBeginningWith;
 use Mokkd\Matchers\Strings\DoesNotContain as IsSringNotContaining;
 use Mokkd\Matchers\Strings\DoesNotEndWith as IsSringNotEndingWith;
+use Mokkd\Matchers\Strings\DoesNotMatchPattern as IsStringNotMatching;
 use Mokkd\Matchers\Strings\EndsWith as IsStringEndingWith;
 use Mokkd\Matchers\Strings\IsEmpty as IsEmptyString;
 use Mokkd\Matchers\Strings\IsJson as IsJsonString;
@@ -91,6 +92,7 @@ use Mokkd\Matchers\Strings\IsOfMoreBytesThan as IsStringOfMoreBytesThan;
 use Mokkd\Matchers\Strings\IsOfNoFewerBytesThan as IsStringOfNoFewerBytesThan;
 use Mokkd\Matchers\Strings\IsOfNoMoreBytesThan as IsStringOfNoMoreBytesThan;
 use Mokkd\Matchers\Strings\IsShorterThan as IsStringShorterThan;
+use Mokkd\Matchers\Strings\MatchesPattern as IsStringMatching;
 use Mokkd\Matchers\Times\IsAfter as IsTimeAfter;
 use Mokkd\Matchers\Times\IsBefore as IsTimeBefore;
 use Mokkd\Matchers\Times\IsBetween as IsTimeBetween;
@@ -120,8 +122,10 @@ use Mokkd\Matchers\Types\IsResource;
 use Mokkd\Matchers\Types\IsResourceOfType;
 use Mokkd\Matchers\Types\IsString;
 use Mokkd\Matchers\Types\IsTrue;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+#[CoversClass(Mokkd::class)]
 class MokkdTest extends TestCase
 {
     /** Helper to create a DateTimeInterface object with a given UTC date. */
@@ -154,7 +158,7 @@ class MokkdTest extends TestCase
         );
     }
 
-    public static function providerTestMatcherFactory1(): iterable
+    public static function dataForTestMatcherFactory1(): iterable
     {
         // method name, matcher class, matching value, mismatching value, ... arguments for method
         yield "isEqualTo1" => ["isEqualTo", IsEqualTo::class, "1", 0, 1,];
@@ -232,9 +236,8 @@ class MokkdTest extends TestCase
         yield "isStringContaining1" => ["isStringContaining", IsStringContaining::class, "A Mokkd function", "The original function", "Mokkd",];
         yield "isStringNotContaining1" => ["isStringNotContaining", IsSringNotContaining::class, "The original function", "A Mokkd function", "Mokkd",];
 
-        // TODO these two pass but PHPUnit complains about an error handler not being removed - is ereg installing one?
-//        yield "isStringMatching1" => ["isStringMatching", IsStringMatching::class, "Mokkd function", "Not Mokkd function", "^Mokkd function\$",];
-//        yield "isStringNotMatching1" => ["isStringNotMatching", IsSringNotMatching::class, "Not Mokkd function", "Mokkd function", "^Mokkd function\$",];
+        yield "isStringMatching1" => ["isStringMatching", IsStringMatching::class, "Mokkd function", "Not Mokkd function", "^Mokkd function\$",];
+        yield "isStringNotMatching1" => ["isStringNotMatching", IsStringNotMatching::class, "Not Mokkd function", "Mokkd function", "^Mokkd function\$",];
 
         yield "isStringLongerThan1" => ["isStringLongerThan", IsStringLongerThan::class, "The Mokkd function", "Mokkd function", 14,];
         yield "isStringNoLongerThan1" => ["isStringNoLongerThan", IsStringNoLongerThan::class, "Mokkd function", "The Mokkd function", 14,];
@@ -388,7 +391,7 @@ class MokkdTest extends TestCase
     }
 
     /** Ensure the matcher factories produce correctly-configured matcher instances. */
-    #[DataProvider("providerTestMatcherFactory1")]
+    #[DataProvider("dataForTestMatcherFactory1")]
     public function testMatcherFactory1(string $method, string $expectedClass, mixed $matches, mixed $mismatch, mixed ... $args): void
     {
         $actual = [Mokkd::class, $method](...$args);
