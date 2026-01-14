@@ -23,6 +23,7 @@ namespace Mokkd\Utilities;
 
 use LogicException;
 
+/** Encapsulation of an expectation's return.  */
 class ExpectationReturn implements \Mokkd\Contracts\ExpectationReturn
 {
     private bool $isVoid;
@@ -35,21 +36,35 @@ class ExpectationReturn implements \Mokkd\Contracts\ExpectationReturn
         $this->value = $value;
     }
 
+    /** Create an expectation that a function returns void. */
     public static function void(): self
     {
         return new self(null, true);
     }
 
+    /**
+     * Create an expectation that a function returns a value.
+     *
+     * @param mixed $value The expected return value.
+     */
     public static function create(mixed $value): self
     {
         return new self($value, false);
     }
 
+    /** Determine whether the expectation's return is void. */
     public function isVoid(): bool
     {
         return $this->isVoid;
     }
 
+    /**
+     * Fetch the expectation's return value.
+     *
+     * It's a programmer error to call this on a void return expectation.
+     *
+     * @see isVoid().
+     */
     public function value(): mixed
     {
         assert(!$this->isVoid, new LogicException("value() called on void return"));
